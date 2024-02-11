@@ -40,7 +40,7 @@ public class ListCommand extends CommandHandler {
         var trackedLinks = userRepository.findLinksById(chatId);
         if (trackedLinks.isPresent()) {
             for (Link link : trackedLinks.get()) {
-                response.append(" (")
+                response.append("(")
                     .append(link)
                     .append(")\n");
             }

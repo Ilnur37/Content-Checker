@@ -8,11 +8,13 @@ import edu.java.bot.BotApplication;
 import edu.java.bot.repository.UserRepository;
 import edu.java.bot.service.handler.StartCommand;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,19 +32,22 @@ public class StartTest {
     @Autowired
     StartCommand start;
 
-    @Test
-    @DisplayName("Регистрация пользователя (корректные данные)")
-    void registerUser_validData() {
-        var chatId = 1L;
-        assertThat(userRepository.findUserById(chatId)).isEmpty();
-
+    private void mockObjects(Long id, String command) {
         Message mockMessage = mock(Message.class);
-        Chat mockChat = mock(Chat.class);
+        Chat mockChat =  mock(Chat.class);
         when(update.message()).thenReturn(mockMessage);
         when(mockMessage.chat()).thenReturn(mockChat);
-        when(mockMessage.text()).thenReturn(start.command());
-        when(mockChat.id()).thenReturn(chatId);
+        when(mockMessage.text()).thenReturn(command);
+        when(mockChat.id()).thenReturn(id);
+    }
 
+    @Test
+    @DisplayName("Корректные данные")
+    void registrationUser_validData() {
+        Long chatId = new Random().nextLong();
+        assertThat(userRepository.findUserById(chatId)).isEmpty();
+
+        mockObjects(chatId, start.command());
         SendMessage response = start.handle(update);
 
         var newUser = userRepository.findUserById(chatId);
@@ -54,22 +59,17 @@ public class StartTest {
     }
 
     @Test
-    @DisplayName("Регистрация пользователя (корректные данные)")
-    void registerUser_RepeatChatId() {
-        var chatId = 2L;
+    @DisplayName("Повнорная регисрация")
+    void registrationUser_RepeatChatId() {
+        Long chatId = new Random().nextLong();
         assertThat(userRepository.findUserById(chatId)).isEmpty();
 
-        Message mockMessage = mock(Message.class);
-        Chat mockChat = mock(Chat.class);
-        when(update.message()).thenReturn(mockMessage);
-        when(mockMessage.chat()).thenReturn(mockChat);
-        when(mockMessage.text()).thenReturn(start.command());
-        when(mockChat.id()).thenReturn(chatId);
+        mockObjects(chatId, start.command());
 
         SendMessage response1 = start.handle(update);
         SendMessage response2 = start.handle(update);
-
         var newUser = userRepository.findUserById(chatId);
+
         assertThat(newUser).isPresent();
         Assertions.assertAll(
             () -> assertThat(newUser.get().getId()).isEqualTo(chatId),
@@ -78,4 +78,19 @@ public class StartTest {
         );
     }
 
+    @Test
+    @DisplayName("Ввод иной команды незарегестрированным поьзователем")
+    void registrationUser_missedRegistration() {
+        Long chatId = new Random().nextLong();
+        assertThat(userRepository.findUserById(chatId)).isEmpty();
+
+        mockObjects(chatId, "/a");
+
+        SendMessage response = start.handle(update);
+        var newUser = userRepository.findUserById(chatId);
+        Assertions.assertAll(
+            () -> Assertions.assertTrue(newUser.isEmpty()),
+            () -> Assertions.assertEquals(USER_MUST_BE_REGISTERED, response.getParameters().get("text"))
+        );
+    }
 }
