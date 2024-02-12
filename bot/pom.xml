@@ -130,7 +130,7 @@
         <finalName>${project.artifactId}</finalName>
         <resources>
             <resource>
-                <directory>${basedir}/src/main/resources</directory>
+                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>

@@ -9,13 +9,13 @@ import edu.java.bot.entity.Link;
 import edu.java.bot.entity.User;
 import edu.java.bot.repository.UserRepository;
 import edu.java.bot.service.handler.TrackCommand;
+import java.util.Random;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -96,6 +96,7 @@ public class TrackTest {
                 newLinks.get().contains(new Link(new Domain("https://github.com"), "/Ilnur37/Tinkoff_Course")))
         );
     }
+
     @Test
     @DisplayName("Повторное добавление поддерживаемой ссылки")
     void trackLink_repeatSupportedLinks() {

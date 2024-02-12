@@ -5,16 +5,18 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.BotApplication;
+import edu.java.bot.entity.User;
 import edu.java.bot.repository.UserRepository;
 import edu.java.bot.service.handler.StartCommand;
+import java.util.Random;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,6 +27,7 @@ public class StartTest {
     private static final String RESPONSE_USER_IS_ALREADY_REGISTERED = "Вы уже зарагестрированны";
     protected static final String USER_MUST_BE_REGISTERED =
         "Прежде чем пользоваться фцнкциями бота, вам необходимо зарегестрироваться. Введите команду \"/start\"";
+    protected static final String UNSUPPORTED_COMMAND = "Пока что я не могу распознать это сообщение";
     @MockBean
     Update update;
     @Autowired
@@ -34,7 +37,7 @@ public class StartTest {
 
     private void mockObjects(Long id, String command) {
         Message mockMessage = mock(Message.class);
-        Chat mockChat =  mock(Chat.class);
+        Chat mockChat = mock(Chat.class);
         when(update.message()).thenReturn(mockMessage);
         when(mockMessage.chat()).thenReturn(mockChat);
         when(mockMessage.text()).thenReturn(command);
@@ -78,14 +81,27 @@ public class StartTest {
         );
     }
 
-    @Test
-    @DisplayName("Ввод иной команды незарегестрированным поьзователем")
-    void registrationUser_missedRegistration() {
+    @ParameterizedTest
+    @ValueSource(strings = {"12321", "pop", "1", " ", "/star", "start", "qwerty"})
+    @DisplayName("Ввод неподдерживаемой команды зарегестрированным поьзователем")
+    void unsupportedCommand_whenUserRegistered(String command) {
         Long chatId = new Random().nextLong();
-        assertThat(userRepository.findUserById(chatId)).isEmpty();
+        userRepository.saveUser(new User(chatId));
+        assertThat(userRepository.findUserById(chatId)).isPresent();
 
-        mockObjects(chatId, "/a");
+        mockObjects(chatId, command);
 
+        SendMessage response = start.handle(update);
+        Assertions.assertEquals(UNSUPPORTED_COMMAND, response.getParameters().get("text"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"12321", "pop", "1", " ", "/star", "start", "qwerty"})
+    @DisplayName("Ввод неподдерживаемой команды незарегестрированным поьзователем")
+    void unsupportedCommand_whenUserNotRegistered(String command) {
+        Long chatId = new Random().nextLong();
+
+        mockObjects(chatId, command);
         SendMessage response = start.handle(update);
         var newUser = userRepository.findUserById(chatId);
         Assertions.assertAll(
