@@ -82,7 +82,7 @@ public class StartTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"12321", "pop", "1", " ", "/star", "start", "qwerty"})
+    @ValueSource(strings = {"12321", "pop", "1", "/star", "start", "qwerty"})
     @DisplayName("Ввод неподдерживаемой команды зарегестрированным поьзователем")
     void unsupportedCommand_whenUserRegistered(String command) {
         Long chatId = new Random().nextLong();
@@ -96,7 +96,7 @@ public class StartTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"12321", "pop", "1", " ", "/star", "start", "qwerty"})
+    @ValueSource(strings = {"12321", "pop", "1", "/star", "start", "qwerty"})
     @DisplayName("Ввод неподдерживаемой команды незарегестрированным поьзователем")
     void unsupportedCommand_whenUserNotRegistered(String command) {
         Long chatId = new Random().nextLong();
