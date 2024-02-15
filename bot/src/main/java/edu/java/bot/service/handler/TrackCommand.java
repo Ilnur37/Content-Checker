@@ -5,7 +5,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.entity.Link;
 import edu.java.bot.model.domain.SupportedDomain;
 import edu.java.bot.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
 
@@ -21,7 +20,6 @@ public class TrackCommand extends CommandHandler {
         "Извините, пока что я не могу работать с ссылкой этого домена";
     private final SupportedDomain supportedDomain;
 
-    @Autowired
     public TrackCommand(UserRepository userRepository, SupportedDomain supportedDomain) {
         super(userRepository);
         this.supportedDomain = supportedDomain;
@@ -41,43 +39,37 @@ public class TrackCommand extends CommandHandler {
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
         String[] message = update.message().text().split(" ");
-        if (!message[0].equals(command())) {
-            if (next != null) {
-                return next.handle(update);
-            }
-            return new SendMessage(chatId, UNSUPPORTED_COMMAND);
+        var isTheCorrectCommand = checkingThatThisIsTheCorrectCommand(this, message[0], update);
+        if (isTheCorrectCommand != null) {
+            return isTheCorrectCommand;
         }
 
         Link validLink;
         StringBuilder response = new StringBuilder();
         if (message.length != 2) {
-            response.append(RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER);
+            return new SendMessage(chatId, RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER);
         }
-        if (message.length != 1) {
-            if (!supportedDomain.isValid(message[1])) {
-                response.append(loggingAndCreateResponse(
-                    LINK_IS_INVALID,
-                    RESPONSE_LINK_IS_INVALID,
-                    message[1],
-                    chatId
-                ));
-            } else {
-                validLink = parsePartOfMessageIntoLink(message[1]);
-                if (isDuplicateLinks(validLink, chatId)) {
-                    return new SendMessage(chatId, RESPONSE_LINK_IS_ALREADY_BEING_TRACKED);
-                }
-
-                userRepository.saveLink(chatId, validLink);
-                response.append(loggingAndCreateResponse(
-                    LINK_HAS_STARTED_TO_BE_TRACKED,
-                    RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED,
-                    validLink.toString(),
-                    chatId
-                ));
+        if (!supportedDomain.isValid(message[1])) {
+            response.append(loggingAndCreateResponse(
+                LINK_IS_INVALID,
+                RESPONSE_LINK_IS_INVALID,
+                message[1],
+                chatId
+            ));
+        } else {
+            validLink = parsePartOfMessageIntoLink(message[1]);
+            if (isDuplicateLinks(validLink, chatId)) {
+                return new SendMessage(chatId, RESPONSE_LINK_IS_ALREADY_BEING_TRACKED);
             }
+            userRepository.saveLink(chatId, validLink);
+            response.append(loggingAndCreateResponse(
+                LINK_HAS_STARTED_TO_BE_TRACKED,
+                RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED,
+                validLink.toString(),
+                chatId
+            ));
         }
         return new SendMessage(chatId, response.toString());
-
     }
 
     private StringBuilder loggingAndCreateResponse(String log, String resp, String link, Long chatId) {

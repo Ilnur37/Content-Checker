@@ -2,17 +2,23 @@ package edu.java.bot.model.domain;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
+@PropertySource("classpath:application.yml")
+@ConfigurationProperties(prefix = "supported")
 public class SupportedDomain {
-    private static final List<String> SUPPORTED_DOMAIN = new ArrayList<>();
+    private static List<String> domains;
 
-    public SupportedDomain() {
-        SUPPORTED_DOMAIN.add("stackoverflow.com");
-        SUPPORTED_DOMAIN.add("github.com");
+    public List<String> getDomains() {
+        return domains;
+    }
+
+    public void setDomains(List<String> domains) {
+        SupportedDomain.domains = domains;
     }
 
     public boolean isValid(String link) {
@@ -23,11 +29,6 @@ public class SupportedDomain {
             throw new RuntimeException(e);
         }
         String host = uri.getHost();
-        for (String domain : SUPPORTED_DOMAIN) {
-            if (domain.equals(host)) {
-                return true;
-            }
-        }
-        return false;
+        return domains.contains(host);
     }
 }

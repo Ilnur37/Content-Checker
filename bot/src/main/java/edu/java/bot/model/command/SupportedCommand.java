@@ -7,7 +7,6 @@ import edu.java.bot.service.handler.StartCommand;
 import edu.java.bot.service.handler.TrackCommand;
 import edu.java.bot.service.handler.UnTrackCommand;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Getter
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 public class SupportedCommand {
     private final CommandHandler commandHandler;
 
-    @Autowired
     public SupportedCommand(
         HelpCommand helpCommand,
         StartCommand startCommand,

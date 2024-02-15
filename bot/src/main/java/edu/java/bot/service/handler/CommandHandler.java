@@ -12,7 +12,6 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +27,6 @@ public abstract class CommandHandler {
     @Setter
     protected CommandHandler next;
 
-    @Autowired
     public CommandHandler(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -48,5 +46,19 @@ public abstract class CommandHandler {
         URI uri = new URI(message);
         Domain domain = new Domain(uri.getScheme() + HTTP + uri.getHost());
         return new Link(domain, uri.getPath());
+    }
+
+    public SendMessage checkingThatThisIsTheCorrectCommand(
+        CommandHandler currCommandHandler,
+        String updateCommand,
+        Update update
+    ) {
+        if (!updateCommand.equals(currCommandHandler.command())) {
+            if (currCommandHandler.next != null) {
+                return currCommandHandler.next.handle(update);
+            }
+            return new SendMessage(update.message().chat().id(), UNSUPPORTED_COMMAND);
+        }
+        return null;
     }
 }

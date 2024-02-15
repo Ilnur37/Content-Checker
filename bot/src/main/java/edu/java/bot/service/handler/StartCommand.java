@@ -4,7 +4,6 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.entity.User;
 import edu.java.bot.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +14,6 @@ public class StartCommand extends CommandHandler {
     protected static final String USER_MUST_BE_REGISTERED =
         "Прежде чем пользоваться фцнкциями бота, вам необходимо зарегестрироваться. Введите команду \"/start\"";
 
-    @Autowired
     public StartCommand(UserRepository userRepository) {
         super(userRepository);
     }
@@ -34,14 +32,9 @@ public class StartCommand extends CommandHandler {
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
 
-        if (!update.message().text().equals(command())) {
-            if (userRepository.findUserById(chatId).isEmpty()) {
-                return new SendMessage(chatId, USER_MUST_BE_REGISTERED);
-            } else if (next != null) {
-                return next.handle(update);
-            } else {
-                return new SendMessage(chatId, UNSUPPORTED_COMMAND);
-            }
+        var isTheCorrectCommand = checkingThatThisIsTheCorrectCommand(this, update.message().text(), update);
+        if (isTheCorrectCommand != null) {
+            return isTheCorrectCommand;
         }
 
         StringBuilder response = new StringBuilder();
@@ -54,4 +47,24 @@ public class StartCommand extends CommandHandler {
         }
         return new SendMessage(chatId, response.toString());
     }
+
+    @Override
+    public SendMessage checkingThatThisIsTheCorrectCommand(
+        CommandHandler currCommandHandler,
+        String updateCommand,
+        Update update
+    ) {
+        Long chatId = update.message().chat().id();
+        if (!update.message().text().equals(command())) {
+            if (userRepository.findUserById(chatId).isEmpty()) {
+                return new SendMessage(chatId, USER_MUST_BE_REGISTERED);
+            } else if (next != null) {
+                return next.handle(update);
+            } else {
+                return new SendMessage(chatId, UNSUPPORTED_COMMAND);
+            }
+        }
+        return null;
+    }
+
 }

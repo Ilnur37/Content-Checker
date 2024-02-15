@@ -41,7 +41,6 @@ public class UserRepository {
         }
         Set<Link> newListOfLinks = entry.get().getValue();
         newListOfLinks.add(link);
-        registeredUsers.put(entry.get().getKey(), newListOfLinks);
     }
 
     public void deleteLink(Long id, Link link) {
@@ -51,7 +50,6 @@ public class UserRepository {
         }
         Set<Link> newListOfLinks = entry.get().getValue();
         newListOfLinks.remove(link);
-        registeredUsers.put(entry.get().getKey(), newListOfLinks);
     }
 
     public Optional<User> findUserById(Long id) {

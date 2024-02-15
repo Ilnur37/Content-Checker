@@ -6,7 +6,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +13,6 @@ public class HelpCommand extends CommandHandler {
     private static final String RESPONSE_LIST_OF_SUPPORTED_COMMANDS =
         "Вы можете воспользоваться следующими командами:\n";
 
-    @Autowired
     public HelpCommand(UserRepository userRepository) {
         super(userRepository);
     }
@@ -32,18 +30,13 @@ public class HelpCommand extends CommandHandler {
     @Override
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
-        StringBuilder response = new StringBuilder();
-        if (!update.message().text().equals(command())) {
-            if (next != null) {
-                return next.handle(update);
-            }
-            return new SendMessage(chatId, UNSUPPORTED_COMMAND);
+        var isTheCorrectCommand = checkingThatThisIsTheCorrectCommand(this, update.message().text(), update);
+        if (isTheCorrectCommand != null) {
+            return isTheCorrectCommand;
         }
 
-        response.append(RESPONSE_LIST_OF_SUPPORTED_COMMANDS);
-        response.append(getStringOfCommands());
-        return new SendMessage(chatId, response.toString());
-
+        String response = RESPONSE_LIST_OF_SUPPORTED_COMMANDS + getStringOfCommands();
+        return new SendMessage(chatId, response);
     }
 
     private StringBuilder getStringOfCommands() {
