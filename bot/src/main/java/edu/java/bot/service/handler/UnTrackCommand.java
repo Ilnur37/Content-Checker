@@ -46,6 +46,7 @@ public class UnTrackCommand extends CommandHandler {
         if (isUntrackedLink(link, chatId)) {
             return new SendMessage(chatId, RESPONSE_LINK_NOT_TRACKED);
         }
+
         userRepository.deleteLink(chatId, link);
         LOGGER.info(format(CHAT_ID_FOR_LOGGER, chatId)
             + format(LINK_FOR_LOGGER, link)
