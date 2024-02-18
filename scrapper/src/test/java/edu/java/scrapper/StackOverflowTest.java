@@ -1,8 +1,11 @@
 package edu.java.scrapper;
 
-import edu.java.dto.stackoverflow.AnswerInfo;
-import edu.java.dto.stackoverflow.QuestionInfo;
+import edu.java.dto.stackoverflow.answer.AnswerInfo;
+import edu.java.dto.stackoverflow.OwnerInfo;
+import edu.java.dto.stackoverflow.question.QuestionInfo;
 import edu.java.service.StackOverflowService;
+import java.util.List;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,51 +25,58 @@ public class StackOverflowTest extends AbstractServiceTest {
     @Autowired
     private StackOverflowService stackOverflowService;
 
+    @SneakyThrows
     @Test
-    public void testGetRepositoryInfo() {
+    public void testGetAnswerInfoByQuestion() {
         stubFor(get(urlEqualTo("/questions/123/answers?order=desc&site=stackoverflow"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", "application/json")
-                .withBody("{\n" +
-                    "    \"items\": [\n" +
-                    "        {\n" +
-                    "            \"owner\": {\n" +
-                    "                \"account_id\": 12808457,\n" +
-                    "                \"user_id\": 9267406,\n" +
-                    "                \"display_name\": \"imhvost\",\n" +
-                    "                \"link\": \"https://stackoverflow.com/users/9267406/imhvost\"\n" +
-                    "            },\n" +
-                    "            \"creation_date\": 1708162039,\n" +
-                    "            \"answer_id\": 78011584,\n" +
-                    "            \"question_id\": 74416834\n" +
-                    "        }\n" +
-                    "    ]\n" +
-                    "}")));
+                .withBody(jsonToStr("src/test/resources/stackoverflow/answer-info-by-question.json"))));
+
+        List<AnswerInfo> answerInfo = stackOverflowService.getAnswerInfoByQuestion(123L);
+
+        for (AnswerInfo info : answerInfo) {
+            assertNotNull(info);
+            OwnerInfo owner = info.getOwner();
+            assertAll("Owner info",
+                () -> assertEquals(1000, owner.getAccountId()),
+                () -> assertEquals(1002, owner.getUserId()),
+                () -> assertEquals("tempUser", owner.getDisplayName()),
+                () -> assertEquals("https://stackoverflow.com/users/1001/tempUser", owner.getLink())
+            );
+            assertAll("Answer info",
+                () -> assertEquals(1708162039, info.getLastActivityDate().toEpochSecond()),
+                () -> assertEquals(1708162039, info.getCreationDate().toEpochSecond()),
+                () -> assertEquals(1004, info.getAnswerId()),
+                () -> assertEquals(123, info.getQuestionId())
+            );
+        }
+    }
+
+    @Test
+    public void testGetQuestionInfo() {
+        stubFor(get(urlEqualTo("/questions/123?order=desc&sort=activity&site=stackoverflow"))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", "application/json")
+                .withBody(jsonToStr("src/test/resources/stackoverflow/question-info.json"))));
 
         QuestionInfo questionInfo = stackOverflowService.getQuestionInfo(123L);
 
         assertNotNull(questionInfo);
-        assertAll(
-            "QuestionInfo assertions",
-            () -> assertEquals(1, questionInfo.getItems().size()),
-            () -> {
-                AnswerInfo answerInfo = questionInfo.getItems().getFirst();
-                assertNotNull(answerInfo);
-                assertAll(
-                    "AnswerInfo assertions",
-                    () -> assertEquals(12808457, answerInfo.getOwner().getAccountId()),
-                    () -> assertEquals(9267406, answerInfo.getOwner().getUserId()),
-                    () -> assertEquals("imhvost", answerInfo.getOwner().getDisplayName()),
-                    () -> assertEquals(
-                        "https://stackoverflow.com/users/9267406/imhvost",
-                        answerInfo.getOwner().getLink()
-                    ),
-                    () -> assertEquals(1708162039, answerInfo.getCreationDate().toEpochSecond()),
-                    () -> assertEquals(78011584, answerInfo.getAnswerId()),
-                    () -> assertEquals(74416834, answerInfo.getQuestionId())
-                );
-            }
+        OwnerInfo owner = questionInfo.getOwner();
+        assertAll("Owner info",
+            () -> assertEquals(2000, owner.getAccountId()),
+            () -> assertEquals(2001, owner.getUserId()),
+            () -> assertEquals("owner", owner.getDisplayName()),
+            () -> assertEquals("https://stackoverflow.com/users/2001/owner", owner.getLink())
+        );
+        assertAll("Question info",
+            () -> assertEquals(1, questionInfo.getAnswerCount()),
+            () -> assertEquals(1708162039, questionInfo.getLastActivityDate().toEpochSecond()),
+            () -> assertEquals(1668289554, questionInfo.getCreationDate().toEpochSecond()),
+            () -> assertEquals(123, questionInfo.getQuestionId())
         );
     }
 

@@ -28,15 +28,7 @@ public class GitHubServiceTest extends AbstractServiceTest {
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", "application/json")
-                .withBody("{\n" +
-                    "    \"id\": 751871695,\n" +
-                    "    \"name\": \"Content-Checker\",\n" +
-                    "    \"full_name\": \"Ilnur37/Content-Checker\",\n" +
-                    "    \"url\": \"https://api.github.com/repos/Ilnur37/Content-Checker\",\n" +
-                    "    \"created_at\": \"2024-02-02T14:09:59Z\",\n" +
-                    "    \"updated_at\": \"2024-02-02T14:10:21Z\",\n" +
-                    "    \"pushed_at\": \"2024-02-16T18:02:44Z\"\n" +
-                    "}")));
+                .withBody(jsonToStr("src/test/resources/github/repository-info.json"))));
 
         RepositoryInfo repositoryInfo = gitHubService.getRepositoryInfo("owner", "repo");
 

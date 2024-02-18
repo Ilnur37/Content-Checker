@@ -1,0 +1,16 @@
+{
+    "items": [
+        {
+            "owner": {
+                "account_id": 2000,
+                "user_id": 2001,
+                "display_name": "owner",
+                "link": "https://stackoverflow.com/users/2001/owner"
+            },
+            "answer_count": 1,
+            "last_activity_date": 1708162039,
+            "creation_date": 1668289554,
+            "question_id": 123
+        }
+    ]
+}

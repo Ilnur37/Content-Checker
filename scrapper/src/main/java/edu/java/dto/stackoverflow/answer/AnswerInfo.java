@@ -1,7 +1,8 @@
-package edu.java.dto.stackoverflow;
+package edu.java.dto.stackoverflow.answer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.java.dto.stackoverflow.OwnerInfo;
 import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
