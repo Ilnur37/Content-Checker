@@ -11,15 +11,7 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "supported")
 public class SupportedDomain {
-    private static List<String> domains;
-
-    public List<String> getDomains() {
-        return domains;
-    }
-
-    public void setDomains(List<String> domains) {
-        SupportedDomain.domains = domains;
-    }
+    private List<String> domains;
 
     public boolean isValid(String link) {
         URI uri = null;

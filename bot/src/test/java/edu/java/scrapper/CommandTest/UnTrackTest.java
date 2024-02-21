@@ -1,4 +1,4 @@
-package CommandTest;
+package edu.java.scrapper.CommandTest;
 
 import edu.java.bot.entity.Domain;
 import edu.java.bot.entity.Link;

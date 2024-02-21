@@ -1,4 +1,4 @@
-package CommandTest;
+package edu.java.scrapper.CommandTest;
 
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.handler.HelpCommand;

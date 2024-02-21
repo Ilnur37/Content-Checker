@@ -1,3 +1,5 @@
+package edu.java.scrapper;
+
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.BotApplication;
 import edu.java.bot.entity.Domain;
