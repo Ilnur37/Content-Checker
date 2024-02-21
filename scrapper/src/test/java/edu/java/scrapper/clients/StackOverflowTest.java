@@ -1,8 +1,9 @@
-package edu.java.scrapper;
+package edu.java.scrapper.clients;
 
 import edu.java.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.dto.stackoverflow.OwnerInfo;
 import edu.java.dto.stackoverflow.question.QuestionInfo;
+import edu.java.scrapper.clients.AbstractServiceTest;
 import edu.java.service.StackOverflowService;
 import java.util.List;
 import lombok.SneakyThrows;

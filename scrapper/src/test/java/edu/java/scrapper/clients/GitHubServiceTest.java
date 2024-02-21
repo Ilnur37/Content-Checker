@@ -1,6 +1,7 @@
-package edu.java.scrapper;
+package edu.java.scrapper.clients;
 
 import edu.java.dto.github.RepositoryInfo;
+import edu.java.scrapper.clients.AbstractServiceTest;
 import edu.java.service.GitHubService;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
