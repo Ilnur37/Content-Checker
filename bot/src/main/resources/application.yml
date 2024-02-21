@@ -1,5 +1,10 @@
 app:
-  telegram-token: unset
+  telegram-token: ${TELEGRAM_API_TOKEN}
+
+supported:
+  domains:
+    - stackoverflow.com
+    - github.com
 
 spring:
   application:
