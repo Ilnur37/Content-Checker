@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.bot;
 
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.BotApplication;

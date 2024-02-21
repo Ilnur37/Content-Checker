@@ -3,10 +3,14 @@ package edu.java.bot.model.domain;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+@Setter
+@Getter
 @Component
 @PropertySource("classpath:application.yml")
 @ConfigurationProperties(prefix = "supported")

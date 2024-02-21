@@ -1,4 +1,4 @@
-package edu.java.scrapper.CommandTest;
+package edu.java.bot.CommandTest;
 
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.entity.Domain;
