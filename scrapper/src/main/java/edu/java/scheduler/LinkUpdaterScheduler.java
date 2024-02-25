@@ -1,17 +1,18 @@
 package edu.java.scheduler;
 
 import java.time.OffsetDateTime;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
+@Slf4j
 public class LinkUpdaterScheduler {
-    private static final Logger LOGGER = LogManager.getLogger();
 
-    @Scheduled(fixedDelayString = "#{@scheduler.interval}")
+    @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
     public void update() {
-        LOGGER.info(OffsetDateTime.now());
+        log.info(String.valueOf(OffsetDateTime.now()));
     }
 }

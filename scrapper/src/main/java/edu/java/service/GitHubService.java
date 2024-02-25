@@ -1,22 +1,16 @@
 package edu.java.service;
 
+import edu.java.client.GithubClient;
 import edu.java.dto.github.RepositoryInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
+@RequiredArgsConstructor
 public class GitHubService {
-    private final WebClient gitHubClient;
-
-    public GitHubService(WebClient gitHubClient) {
-        this.gitHubClient = gitHubClient;
-    }
+    private final GithubClient gitHubClient;
 
     public RepositoryInfo getRepositoryInfo(String owner, String repo) {
-        return gitHubClient.get()
-            .uri("/repos/{owner}/{repo}", owner, repo)
-            .retrieve()
-            .bodyToMono(RepositoryInfo.class)
-            .block();
+        return gitHubClient.getRepositoryInfo(owner, repo);
     }
 }

@@ -5,9 +5,6 @@ app:
     force-check-delay: 10s
   git-url: https://api.github.com
   stackoverflow-url: https://api.stackexchange.com/2.3
-  bot-url: http://localhost:8090
-
-springdoc.swagger-ui.path: /swagger-ui.html
 
 
 spring:

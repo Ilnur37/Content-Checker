@@ -16,7 +16,6 @@ public class QuestionInfo {
     @JsonIgnore
     private List<AnswerInfo> answers;
 
-    @JsonProperty("owner")
     private OwnerInfo owner;
 
     @JsonProperty("answer_count")

@@ -1,15 +1,13 @@
 package edu.java.scrapper.clients;
 
-import edu.java.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.dto.stackoverflow.OwnerInfo;
+import edu.java.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.dto.stackoverflow.question.QuestionInfo;
-import edu.java.scrapper.clients.AbstractServiceTest;
 import edu.java.service.StackOverflowService;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -21,12 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest("app.stackoverflow-url=http://localhost:8080")
 public class StackOverflowTest extends AbstractServiceTest {
     @Autowired
     private StackOverflowService stackOverflowService;
 
-    @SneakyThrows
     @Test
     public void testGetAnswerInfoByQuestion() {
         stubFor(get(urlEqualTo("/questions/123/answers?order=desc&site=stackoverflow"))
@@ -40,13 +36,15 @@ public class StackOverflowTest extends AbstractServiceTest {
         for (AnswerInfo info : answerInfo) {
             assertNotNull(info);
             OwnerInfo owner = info.getOwner();
-            assertAll("Owner info",
+            assertAll(
+                "Owner info",
                 () -> assertEquals(1000, owner.getAccountId()),
                 () -> assertEquals(1002, owner.getUserId()),
                 () -> assertEquals("tempUser", owner.getDisplayName()),
                 () -> assertEquals("https://stackoverflow.com/users/1001/tempUser", owner.getLink())
             );
-            assertAll("Answer info",
+            assertAll(
+                "Answer info",
                 () -> assertEquals(1708162039, info.getLastActivityDate().toEpochSecond()),
                 () -> assertEquals(1708162039, info.getCreationDate().toEpochSecond()),
                 () -> assertEquals(1004, info.getAnswerId()),
@@ -67,13 +65,15 @@ public class StackOverflowTest extends AbstractServiceTest {
 
         assertNotNull(questionInfo);
         OwnerInfo owner = questionInfo.getOwner();
-        assertAll("Owner info",
+        assertAll(
+            "Owner info",
             () -> assertEquals(2000, owner.getAccountId()),
             () -> assertEquals(2001, owner.getUserId()),
             () -> assertEquals("owner", owner.getDisplayName()),
             () -> assertEquals("https://stackoverflow.com/users/2001/owner", owner.getLink())
         );
-        assertAll("Question info",
+        assertAll(
+            "Question info",
             () -> assertEquals(1, questionInfo.getAnswerCount()),
             () -> assertEquals(1708162039, questionInfo.getLastActivityDate().toEpochSecond()),
             () -> assertEquals(1668289554, questionInfo.getCreationDate().toEpochSecond()),
