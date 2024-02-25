@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AnswerInfo {
-    @JsonProperty("owner")
     private OwnerInfo owner;
 
     @JsonProperty("last_activity_date")

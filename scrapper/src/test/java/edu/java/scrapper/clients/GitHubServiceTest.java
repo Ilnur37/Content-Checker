@@ -1,12 +1,10 @@
 package edu.java.scrapper.clients;
 
 import edu.java.dto.github.RepositoryInfo;
-import edu.java.scrapper.clients.AbstractServiceTest;
 import edu.java.service.GitHubService;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -18,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest("app.git-url=http://localhost:8080")
 public class GitHubServiceTest extends AbstractServiceTest {
     @Autowired
     private GitHubService gitHubService;
