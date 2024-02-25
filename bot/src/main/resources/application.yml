@@ -1,6 +1,7 @@
 app:
   telegram-token: ${TELEGRAM_API_TOKEN}
-  scrapper-url: http://localhost:8080
+  api:
+    scrapper-url: http://localhost:8080
 
 supported:
   domains:

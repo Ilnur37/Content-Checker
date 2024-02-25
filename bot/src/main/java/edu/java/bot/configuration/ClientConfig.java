@@ -1,15 +1,13 @@
 package edu.java.bot.configuration;
 
+import edu.java.bot.client.ScrapperClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class ClientConfig {
     @Bean
-    public WebClient scrapperClient(ApplicationConfig appConf) {
-        return WebClient.builder()
-            .baseUrl(appConf.scrapperUrl())
-            .build();
+    public ScrapperClient scrapperClient(ApplicationConfig appConf) {
+        return ScrapperClient.create(appConf.api().scrapperUrl());
     }
 }

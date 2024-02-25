@@ -9,6 +9,8 @@ import org.springframework.validation.annotation.Validated;
 public record ApplicationConfig(
     @NotEmpty
     String telegramToken,
-    String scrapperUrl
+    Api api
 ) {
+    public record Api(String scrapperUrl) {
+    }
 }

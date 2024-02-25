@@ -1,8 +1,8 @@
 package edu.java.scrapper.api;
 
-import edu.java.controller.ScrapperController;
-import edu.java.dto.request.AddLinkRequest;
-import edu.java.dto.request.RemoveLinkRequest;
+import edu.java.scrapper.controller.ScrapperController;
+import edu.java.scrapper.dto.request.AddLinkRequest;
+import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
