@@ -1,8 +1,11 @@
 package edu.java.bot.exception;
 
-import edu.java.bot.response.ApiErrorResponse;
+import edu.java.bot.dto.response.ApiErrorResponse;
+import edu.java.bot.exception.api.ChatIdNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,7 +40,6 @@ public class ExceptionBotApiHandler {
         return errors;
     }
 
-
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public ApiErrorResponse handleChatIdNotFoundException(ChatIdNotFoundException ex) {
@@ -46,17 +48,9 @@ public class ExceptionBotApiHandler {
             .code(HttpStatus.NOT_FOUND.toString())
             .exceptionName(ex.getClass().getName())
             .exceptionMessage(ex.getMessage())
-            .build();
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler
-    public ApiErrorResponse handleInvalidChatIdException(InvalidChatIdException ex) {
-        return ApiErrorResponse.builder()
-            .description(ex.getDescription())
-            .code(HttpStatus.BAD_REQUEST.toString())
-            .exceptionName(ex.getClass().getName())
-            .exceptionMessage(ex.getMessage())
+            .stacktrace(Arrays.stream(ex.getStackTrace())
+                .map(StackTraceElement::toString)
+                .collect(Collectors.toList()))
             .build();
     }
 }

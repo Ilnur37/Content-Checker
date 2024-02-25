@@ -1,0 +1,120 @@
+package edu.java.bot.api;
+
+import edu.java.bot.controller.BotController;
+import edu.java.bot.dto.request.LinkUpdateRequest;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
+
+public class BotControllerTest {
+
+    private final WebTestClient webTestClient = WebTestClient.bindToController(new BotController()).build();
+    private final int defaultId = 1;
+    private final String defaultUrl = "aa";
+    private final String defaultDescription = "aa";
+    private final List<Integer> defaultList = List.of(1, 2);
+
+    private LinkUpdateRequest getLinkUpdateRequest(int id, String url, String description, List<Integer> tgChatIds) {
+        LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest();
+        linkUpdateRequest.setId(id);
+        linkUpdateRequest.setUrl(url);
+        linkUpdateRequest.setDescription(description);
+        linkUpdateRequest.setTgChatIds(tgChatIds);
+        return linkUpdateRequest;
+    }
+
+    private WebTestClient.RequestHeadersSpec<?> createPostResponse(LinkUpdateRequest linkUpdateRequest) {
+        return webTestClient.post()
+            .uri("/bot-api/updates")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(linkUpdateRequest));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @DisplayName("Корректные данные ID")
+    public void sendUpdateValidId(int id) {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(id, defaultUrl, defaultDescription, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isOk();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"aa", " aa", "aa ", "aa aa"})
+    @DisplayName("Корректные данные url")
+    public void sendUpdateValidUrl(String url) {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(defaultId, url, defaultDescription, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isOk();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"aa", " aa", "aa ", "aa aa"})
+    @DisplayName("Корректные данные description")
+    public void sendUpdateValidDescription(String description) {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(defaultId, defaultUrl, description, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isOk();
+    }
+
+    @Test
+    @DisplayName("Список tgChatId пуст")
+    public void sendUpdateTgChatIdsIsEmpty() {
+        LinkUpdateRequest linkUpdateRequest =
+            getLinkUpdateRequest(defaultId, defaultUrl, defaultUrl, new ArrayList<>());
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isBadRequest();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -10, -1000, -1000000})
+    @DisplayName("Id меньше 1")
+    public void sendUpdateWhenIdLessThenOne(int id) {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(id, defaultUrl, defaultDescription, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isBadRequest();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @DisplayName("url - null")
+    public void sendUpdateWhenUrlIsNull(String url) {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(defaultId, url, defaultDescription, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isBadRequest();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @DisplayName("description - null")
+    public void sendUpdateWhenDescriptionIsNull(String description) {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(defaultId, defaultUrl, description, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isBadRequest();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @DisplayName("tgChatIds - null")
+    public void sendUpdateWhenTgChatIdsIsNull(List<Integer> tgChatIds) {
+        LinkUpdateRequest linkUpdateRequest =
+            getLinkUpdateRequest(defaultId, defaultUrl, defaultDescription, tgChatIds);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isBadRequest();
+    }
+
+    @Test
+    @DisplayName("Url имеет пустое значение")
+    public void sendUpdateWhenUrlIsEmpty() {
+        LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(defaultId, "", defaultDescription, defaultList);
+        createPostResponse(linkUpdateRequest)
+            .exchange().expectStatus().isBadRequest();
+    }
+}

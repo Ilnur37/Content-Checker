@@ -1,4 +1,4 @@
-package edu.java.bot.response;
+package edu.java.bot.dto.response;
 
 import java.util.List;
 import lombok.Builder;

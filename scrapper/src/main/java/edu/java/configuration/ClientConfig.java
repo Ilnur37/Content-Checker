@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class ClientConfiguration {
+public class ClientConfig {
 
     @Bean
     public WebClient gitHubClient(ApplicationConfig appConf) {
@@ -18,6 +18,13 @@ public class ClientConfiguration {
     public WebClient stackOverflowClient(ApplicationConfig appConf) {
         return WebClient.builder()
             .baseUrl(appConf.stackoverflowUrl())
+            .build();
+    }
+
+    @Bean
+    public WebClient botClient(ApplicationConfig appConf) {
+        return WebClient.builder()
+            .baseUrl(appConf.botUrl())
             .build();
     }
 }

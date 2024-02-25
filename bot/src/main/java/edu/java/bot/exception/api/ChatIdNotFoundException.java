@@ -1,6 +1,6 @@
-package edu.java.exception.custom;
+package edu.java.bot.exception.api;
 
-public class ChatIdNotFoundException extends CustomException {
+public class ChatIdNotFoundException extends CustomApiException {
 
     @Override
     public String getDescription() {
@@ -10,4 +10,5 @@ public class ChatIdNotFoundException extends CustomException {
     public ChatIdNotFoundException(String msg) {
         super(msg);
     }
+
 }

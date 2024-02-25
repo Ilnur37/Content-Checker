@@ -1,11 +1,18 @@
 package edu.java.exception;
 
+import edu.java.dto.response.ApiErrorResponse;
 import edu.java.exception.custom.ChatIdNotFoundException;
 import edu.java.exception.custom.CustomException;
-import edu.java.exception.custom.InvalidChatIdException;
+import edu.java.exception.custom.LinkNotFoundException;
+import edu.java.exception.custom.ReAddLinkException;
 import edu.java.exception.custom.ReRegistrationException;
-import edu.java.response.ApiErrorResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,7 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionScrapperApiHandler {
 
-    /*@ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public List<ApiErrorResponse> handleValidationExceptions(
         MethodArgumentNotValidException ex
@@ -33,30 +40,34 @@ public class ExceptionScrapperApiHandler {
                 .build();
             errors.add(errorResponse);
         });
-
         return errors;
-    }*/
-
+    }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(ChatIdNotFoundException.class)
+    @ExceptionHandler({ChatIdNotFoundException.class, LinkNotFoundException.class})
     public ApiErrorResponse handleChatIdNotFoundException(ChatIdNotFoundException ex) {
         return ApiErrorResponse.builder()
             .description(ex.getDescription())
             .code(HttpStatus.NOT_FOUND.toString())
             .exceptionName(ex.getClass().getName())
             .exceptionMessage(ex.getMessage())
+            .stacktrace(Arrays.stream(ex.getStackTrace())
+                .map(StackTraceElement::toString)
+                .collect(Collectors.toList()))
             .build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({InvalidChatIdException.class, ReRegistrationException.class})
+    @ExceptionHandler({ReRegistrationException.class, ReAddLinkException.class})
     public ApiErrorResponse handleInvalidChatIdException(CustomException ex) {
         return ApiErrorResponse.builder()
             .description(ex.getDescription())
             .code(HttpStatus.BAD_REQUEST.toString())
             .exceptionName(ex.getClass().getName())
             .exceptionMessage(ex.getMessage())
+            .stacktrace(Arrays.stream(ex.getStackTrace())
+                .map(StackTraceElement::toString)
+                .collect(Collectors.toList()))
             .build();
     }
 }
