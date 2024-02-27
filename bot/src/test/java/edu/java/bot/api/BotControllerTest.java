@@ -16,12 +16,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 public class BotControllerTest {
 
     private final WebTestClient webTestClient = WebTestClient.bindToController(new BotController()).build();
-    private final int defaultId = 1;
+    private final long defaultId = 1;
     private final String defaultUrl = "aa";
     private final String defaultDescription = "aa";
-    private final List<Integer> defaultList = List.of(1, 2);
+    private final List<Long> defaultList = List.of(1L, 2L);
 
-    private LinkUpdateRequest getLinkUpdateRequest(int id, String url, String description, List<Integer> tgChatIds) {
+    private LinkUpdateRequest getLinkUpdateRequest(long id, String url, String description, List<Long> tgChatIds) {
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest();
         linkUpdateRequest.setId(id);
         linkUpdateRequest.setUrl(url);
@@ -38,9 +38,9 @@ public class BotControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
     @DisplayName("Корректные данные ID")
-    public void sendUpdateValidId(int id) {
+    public void sendUpdateValidId(long id) {
         LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(id, defaultUrl, defaultDescription, defaultList);
         createPostResponse(linkUpdateRequest)
             .exchange().expectStatus().isOk();
@@ -74,9 +74,9 @@ public class BotControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1, -10, -1000, -1000000})
+    @ValueSource(longs = {0L, -1L, -10L, -1000L, -1000000L})
     @DisplayName("Id меньше 1")
-    public void sendUpdateWhenIdLessThenOne(int id) {
+    public void sendUpdateWhenIdLessThenOne(long id) {
         LinkUpdateRequest linkUpdateRequest = getLinkUpdateRequest(id, defaultUrl, defaultDescription, defaultList);
         createPostResponse(linkUpdateRequest)
             .exchange().expectStatus().isBadRequest();
@@ -103,7 +103,7 @@ public class BotControllerTest {
     @ParameterizedTest
     @NullSource
     @DisplayName("tgChatIds - null")
-    public void sendUpdateWhenTgChatIdsIsNull(List<Integer> tgChatIds) {
+    public void sendUpdateWhenTgChatIdsIsNull(List<Long> tgChatIds) {
         LinkUpdateRequest linkUpdateRequest =
             getLinkUpdateRequest(defaultId, defaultUrl, defaultDescription, tgChatIds);
         createPostResponse(linkUpdateRequest)

@@ -2,7 +2,7 @@ package edu.java.bot.service;
 
 import edu.java.bot.client.ScrapperClient;
 import edu.java.bot.dto.response.scrapper.LinkResponse;
-import java.util.List;
+import edu.java.bot.dto.response.scrapper.ListLinksResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class ScrapperService {
         return scrapperClient.deleteChat(id);
     }
 
-    public ResponseEntity<List<LinkResponse>> getAllLinks(int id) {
+    public ResponseEntity<ListLinksResponse> getAllLinks(int id) {
         return scrapperClient.getAllLinks(id);
     }
 

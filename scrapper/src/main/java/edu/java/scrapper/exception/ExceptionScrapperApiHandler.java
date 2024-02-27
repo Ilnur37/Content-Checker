@@ -45,7 +45,7 @@ public class ExceptionScrapperApiHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({ChatIdNotFoundException.class, LinkNotFoundException.class})
-    public ApiErrorResponse handleChatIdNotFoundException(ChatIdNotFoundException ex) {
+    public ApiErrorResponse handleChatIdNotFoundException(CustomException ex) {
         return ApiErrorResponse.builder()
             .description(ex.getDescription())
             .code(HttpStatus.NOT_FOUND.toString())
@@ -57,12 +57,12 @@ public class ExceptionScrapperApiHandler {
             .build();
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler({ReRegistrationException.class, ReAddLinkException.class})
     public ApiErrorResponse handleInvalidChatIdException(CustomException ex) {
         return ApiErrorResponse.builder()
             .description(ex.getDescription())
-            .code(HttpStatus.BAD_REQUEST.toString())
+            .code(HttpStatus.CONFLICT.toString())
             .exceptionName(ex.getClass().getName())
             .exceptionMessage(ex.getMessage())
             .stacktrace(Arrays.stream(ex.getStackTrace())

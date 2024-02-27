@@ -2,7 +2,7 @@ package edu.java.bot.client;
 
 import edu.java.bot.dto.request.scrapper.AddLinkRequest;
 import edu.java.bot.dto.response.scrapper.LinkResponse;
-import java.util.List;
+import edu.java.bot.dto.response.scrapper.ListLinksResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -25,7 +25,7 @@ public class ScrapperClient extends Client {
         return new ScrapperClient(webClient);
     }
 
-    public ResponseEntity<Void> registerChat(int id) {
+    public ResponseEntity<Void> registerChat(long id) {
         return webClient.post()
             .uri(urlTgChatId, id)
             .retrieve()
@@ -33,7 +33,7 @@ public class ScrapperClient extends Client {
             .block();
     }
 
-    public ResponseEntity<Void> deleteChat(int id) {
+    public ResponseEntity<Void> deleteChat(long id) {
         return webClient.delete()
             .uri(urlTgChatId, id)
             .retrieve()
@@ -41,16 +41,16 @@ public class ScrapperClient extends Client {
             .block();
     }
 
-    public ResponseEntity<List<LinkResponse>> getAllLinks(int id) {
+    public ResponseEntity<ListLinksResponse> getAllLinks(long id) {
         return webClient.get()
             .uri(urlLinks)
             .header(headerTgChatId, String.valueOf(id))
             .retrieve()
-            .toEntityList(LinkResponse.class)
+            .toEntity(ListLinksResponse.class)
             .block();
     }
 
-    public ResponseEntity<LinkResponse> addLink(int id, String link) {
+    public ResponseEntity<LinkResponse> addLink(long id, String link) {
         return webClient.post()
             .uri(urlLinks)
             .header(headerTgChatId, String.valueOf(id))
@@ -60,7 +60,7 @@ public class ScrapperClient extends Client {
             .block();
     }
 
-    public ResponseEntity<LinkResponse> removeLink(int id, String link) {
+    public ResponseEntity<LinkResponse> removeLink(long id, String link) {
         return webClient.method(HttpMethod.DELETE)
             .uri(urlLinks)
             .header(headerTgChatId, String.valueOf(id))

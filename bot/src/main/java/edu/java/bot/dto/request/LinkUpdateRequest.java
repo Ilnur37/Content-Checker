@@ -5,14 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class LinkUpdateRequest {
     @Min(1)
-    private int id;
+    private long id;
     @NotBlank(message = "This field can not be null")
     private String url;
 
@@ -20,5 +18,5 @@ public class LinkUpdateRequest {
     private String description;
 
     @NotEmpty(message = "Array is empty")
-    private List<Integer> tgChatIds;
+    private List<Long> tgChatIds;
 }

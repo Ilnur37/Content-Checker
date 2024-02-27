@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class LinkResponse {
-    private int id;
+    private long id;
     private String url;
 }

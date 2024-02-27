@@ -31,27 +31,27 @@ public class ScrapperControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
     @DisplayName("Регистрация чата, корректные данные")
-    void registerChat(int id) {
+    void registerChat(long id) {
         webTestClient.post()
             .uri("/scrapper-api/tg-chat/{id}", id)
             .exchange().expectStatus().isOk();
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
     @DisplayName("Удаление чата, корректные данные")
-    void deleteChat(int id) {
+    void deleteChat(long id) {
         webTestClient.delete()
             .uri("/scrapper-api/tg-chat/{id}", id)
             .exchange().expectStatus().isOk();
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
     @DisplayName("Получить все отслеживаемые ссылки, корректные данные")
-    void getAllLinks(int id) {
+    void getAllLinks(long id) {
         webTestClient.get()
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
@@ -59,9 +59,9 @@ public class ScrapperControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
     @DisplayName("Добавить ссылку, корректные данные")
-    void addLink(int id) {
+    void addLink(long id) {
         webTestClient.post()
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
@@ -71,9 +71,9 @@ public class ScrapperControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 10, 1000, 1000000})
+    @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
     @DisplayName("Удалить ссылку, корректные данные")
-    void removeLink(int id) {
+    void removeLink(long id) {
         webTestClient.method(HttpMethod.DELETE)
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
@@ -83,27 +83,27 @@ public class ScrapperControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1, -10, -1000, -1000000})
+    @ValueSource(longs = {0L, -1L, -10L, -1000L, -1000000L})
     @DisplayName("Регистрация чата, не корректные данные ID")
-    void registerChatWhenInvalidId(int id) {
+    void registerChatWhenInvalidId(long id) {
         webTestClient.post()
             .uri("/scrapper-api/tg-chat/{id}", id)
             .exchange().expectStatus().isBadRequest();
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1, -10, -1000, -1000000})
+    @ValueSource(longs = {0L, -1L, -10L, -1000L, -1000000L})
     @DisplayName("Удаление чата, не корректные данные ID")
-    void deleteChatWhenInvalidId(int id) {
+    void deleteChatWhenInvalidId(long id) {
         webTestClient.delete()
             .uri("/scrapper-api/tg-chat/{id}", id)
             .exchange().expectStatus().isBadRequest();
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1, -10, -1000, -1000000})
+    @ValueSource(longs = {0L, -1L, -10L, -1000L, -1000000L})
     @DisplayName("Получить все отслеживаемые ссылки, не корректные данные ID")
-    void getAllLinksWhenInvalidId(int id) {
+    void getAllLinksWhenInvalidId(long id) {
         webTestClient.get()
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
@@ -111,9 +111,9 @@ public class ScrapperControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1, -10, -1000, -1000000})
+    @ValueSource(longs = {0L, -1L, -10L, -1000L, -1000000L})
     @DisplayName("Добавить ссылку, не корректные данные")
-    void addLinkWhenInvalidId(int id) {
+    void addLinkWhenInvalidId(long id) {
         webTestClient.post()
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))

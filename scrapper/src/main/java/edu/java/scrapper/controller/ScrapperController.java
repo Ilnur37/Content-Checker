@@ -3,16 +3,12 @@ package edu.java.scrapper.controller;
 import edu.java.scrapper.dto.request.AddLinkRequest;
 import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
+import edu.java.scrapper.dto.response.ListLinksResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,30 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("scrapper-api")
-public class ScrapperController {
-    @PostMapping("/tg-chat/{id}")
-    public ResponseEntity<Void> registerChat(@Min(1) @PathVariable int id) {
+public class ScrapperController implements ScrapperApi {
+    @Override
+    public ResponseEntity<Void> registerChat(@Min(1) @PathVariable long id) {
         // Логика регистрации чата
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/tg-chat/{id}")
-    public ResponseEntity<Void> deleteChat(@Min(1) @PathVariable int id) {
+    @Override
+    public ResponseEntity<Void> deleteChat(@Min(1) @PathVariable long id) {
         // Логика удаления чата
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/links")
-    public ResponseEntity<List<LinkResponse>> getAllLinks(@Min(1) @RequestHeader("Tg-Chat-Id") int tgChatId) {
+    @Override
+    public ResponseEntity<ListLinksResponse> getAllLinks(@Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId) {
         // Логика получения всех ссылок для указанного чата
-        List<LinkResponse> links = new ArrayList<>();
+        ListLinksResponse links = new ListLinksResponse();
         // Заполнение списка ссылок
         return new ResponseEntity<>(links, HttpStatus.OK);
     }
 
-    @PostMapping("/links")
+    @Override
     public ResponseEntity<LinkResponse> addLink(
-        @Min(1) @RequestHeader("Tg-Chat-Id") int tgChatId,
+        @Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId,
         @Valid @RequestBody AddLinkRequest addLinkRequest
     ) {
         // Логика добавления ссылки для указанного чата
@@ -51,9 +47,9 @@ public class ScrapperController {
         return new ResponseEntity<>(linkResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/links")
+    @Override
     public ResponseEntity<LinkResponse> removeLink(
-        @Min(1) @RequestHeader("Tg-Chat-Id") int tgChatId,
+        @Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId,
         @Valid @RequestBody RemoveLinkRequest removeLinkRequest
     ) {
         // Логика удаления ссылки для указанного чата
