@@ -1,0 +1,4 @@
+app:
+  api:
+    git-url: http://localhost:8080
+    stackoverflow-url: http://localhost:8080
