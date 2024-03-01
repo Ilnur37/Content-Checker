@@ -1,4 +1,4 @@
-package edu.java.bot.exception.api;
+package edu.java.models.exception;
 
 public abstract class CustomApiException extends RuntimeException {
     public abstract String getDescription();

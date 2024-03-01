@@ -1,8 +1,8 @@
 package edu.java.bot.service;
 
 import edu.java.bot.client.ScrapperClient;
-import edu.java.bot.dto.response.scrapper.LinkResponse;
-import edu.java.bot.dto.response.scrapper.ListLinksResponse;
+import edu.java.models.dto.response.LinkResponse;
+import edu.java.models.dto.response.ListLinksResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

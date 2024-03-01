@@ -1,8 +1,8 @@
 package edu.java.scrapper.exception;
 
-import edu.java.scrapper.dto.response.ApiErrorResponse;
-import edu.java.scrapper.exception.custom.ChatIdNotFoundException;
-import edu.java.scrapper.exception.custom.CustomException;
+import edu.java.models.dto.response.ApiErrorResponse;
+import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.CustomApiException;
 import edu.java.scrapper.exception.custom.LinkNotFoundException;
 import edu.java.scrapper.exception.custom.ReAddLinkException;
 import edu.java.scrapper.exception.custom.ReRegistrationException;
@@ -45,7 +45,7 @@ public class ExceptionScrapperApiHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({ChatIdNotFoundException.class, LinkNotFoundException.class})
-    public ApiErrorResponse handleChatIdNotFoundException(CustomException ex) {
+    public ApiErrorResponse handleChatIdNotFoundException(CustomApiException ex) {
         return ApiErrorResponse.builder()
             .description(ex.getDescription())
             .code(HttpStatus.NOT_FOUND.toString())
@@ -59,7 +59,7 @@ public class ExceptionScrapperApiHandler {
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler({ReRegistrationException.class, ReAddLinkException.class})
-    public ApiErrorResponse handleInvalidChatIdException(CustomException ex) {
+    public ApiErrorResponse handleInvalidChatIdException(CustomApiException ex) {
         return ApiErrorResponse.builder()
             .description(ex.getDescription())
             .code(HttpStatus.CONFLICT.toString())

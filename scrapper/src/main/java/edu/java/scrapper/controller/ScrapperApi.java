@@ -1,10 +1,10 @@
 package edu.java.scrapper.controller;
 
-import edu.java.scrapper.dto.request.AddLinkRequest;
-import edu.java.scrapper.dto.request.RemoveLinkRequest;
-import edu.java.scrapper.dto.response.ApiErrorResponse;
-import edu.java.scrapper.dto.response.LinkResponse;
-import edu.java.scrapper.dto.response.ListLinksResponse;
+import edu.java.models.dto.request.AddLinkRequest;
+import edu.java.models.dto.request.RemoveLinkRequest;
+import edu.java.models.dto.response.ApiErrorResponse;
+import edu.java.models.dto.response.LinkResponse;
+import edu.java.models.dto.response.ListLinksResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

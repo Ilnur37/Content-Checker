@@ -1,4 +1,4 @@
-package edu.java.bot.exception.api;
+package edu.java.models.exception;
 
 public class ChatIdNotFoundException extends CustomApiException {
 

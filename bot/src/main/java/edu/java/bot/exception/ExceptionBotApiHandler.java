@@ -1,7 +1,7 @@
 package edu.java.bot.exception;
 
-import edu.java.bot.dto.response.ApiErrorResponse;
-import edu.java.bot.exception.api.ChatIdNotFoundException;
+import edu.java.models.dto.response.ApiErrorResponse;
+import edu.java.models.exception.ChatIdNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -1,6 +1,8 @@
 package edu.java.scrapper.exception.custom;
 
-public class ReAddLinkException extends CustomException {
+import edu.java.models.exception.CustomApiException;
+
+public class ReAddLinkException extends CustomApiException {
     @Override
     public String getDescription() {
         return "This link already exists";

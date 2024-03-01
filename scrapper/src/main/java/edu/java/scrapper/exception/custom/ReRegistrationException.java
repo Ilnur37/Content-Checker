@@ -1,6 +1,8 @@
 package edu.java.scrapper.exception.custom;
 
-public class ReRegistrationException extends CustomException {
+import edu.java.models.exception.CustomApiException;
+
+public class ReRegistrationException extends CustomApiException {
 
     @Override
     public String getDescription() {
