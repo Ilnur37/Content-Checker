@@ -15,8 +15,9 @@ public class UnTrackCommand extends CommandHandler {
     private static final String RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER =
         "Вы можете передать только 1 ссылку с этой командой";
 
-    public UnTrackCommand(UserRepository userRepository) {
+    public UnTrackCommand(UserRepository userRepository, ListCommand listCommand) {
         super(userRepository);
+        this.next = listCommand;
     }
 
     @Override

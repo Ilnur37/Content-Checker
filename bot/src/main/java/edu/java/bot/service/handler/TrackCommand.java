@@ -3,7 +3,7 @@ package edu.java.bot.service.handler;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.entity.Link;
-import edu.java.bot.model.domain.SupportedDomain;
+import edu.java.bot.domain.SupportedDomain;
 import edu.java.bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
@@ -20,9 +20,10 @@ public class TrackCommand extends CommandHandler {
         "Извините, пока что я не могу работать с ссылкой этого домена";
     private final SupportedDomain supportedDomain;
 
-    public TrackCommand(UserRepository userRepository, SupportedDomain supportedDomain) {
+    public TrackCommand(UserRepository userRepository, SupportedDomain supportedDomain, UnTrackCommand unTrackCommand) {
         super(userRepository);
         this.supportedDomain = supportedDomain;
+        this.next = unTrackCommand;
     }
 
     @Override

@@ -24,7 +24,7 @@ public abstract class CommandHandler {
     protected final UserRepository userRepository;
 
     @Getter
-    @Setter
+    //@Setter
     protected CommandHandler next;
 
     public CommandHandler(UserRepository userRepository) {

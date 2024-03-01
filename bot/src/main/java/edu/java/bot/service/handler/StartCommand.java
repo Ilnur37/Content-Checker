@@ -14,8 +14,9 @@ public class StartCommand extends CommandHandler {
     protected static final String USER_MUST_BE_REGISTERED =
         "Прежде чем пользоваться фцнкциями бота, вам необходимо зарегестрироваться. Введите команду \"/start\"";
 
-    public StartCommand(UserRepository userRepository) {
+    public StartCommand(UserRepository userRepository, TrackCommand trackCommand) {
         super(userRepository);
+        this.next = trackCommand;
     }
 
     @Override

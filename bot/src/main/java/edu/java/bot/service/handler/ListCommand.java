@@ -12,6 +12,7 @@ public class ListCommand extends CommandHandler {
 
     public ListCommand(UserRepository userRepository) {
         super(userRepository);
+        this.next = null;
     }
 
     @Override

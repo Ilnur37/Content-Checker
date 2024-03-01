@@ -1,4 +1,4 @@
-package edu.java.bot.model.domain;
+package edu.java.bot.domain;
 
 import java.net.URI;
 import java.net.URISyntaxException;
