@@ -1,8 +1,8 @@
 package edu.java.scrapper.api;
 
 import edu.java.scrapper.controller.ScrapperController;
-import edu.java.scrapper.dto.request.AddLinkRequest;
-import edu.java.scrapper.dto.request.RemoveLinkRequest;
+import edu.java.models.dto.request.AddLinkRequest;
+import edu.java.models.dto.request.RemoveLinkRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,18 +17,6 @@ public class ScrapperControllerTest {
     private final WebTestClient webTestClient = WebTestClient.bindToController(new ScrapperController()).build();
     private final String defaultLink = "aa";
     private final int defaultId = 1;
-
-    private AddLinkRequest getAddLinkRequest(String link) {
-        AddLinkRequest addLinkRequest = new AddLinkRequest();
-        addLinkRequest.setLink(link);
-        return addLinkRequest;
-    }
-
-    private RemoveLinkRequest getRemoveLinkRequest(String link) {
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest();
-        removeLinkRequest.setLink(link);
-        return removeLinkRequest;
-    }
 
     @ParameterizedTest
     @ValueSource(longs = {1L, 10L, 1000L, 1000000L})
@@ -66,7 +54,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getAddLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(defaultLink)))
             .exchange().expectStatus().isOk();
     }
 
@@ -78,7 +66,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getRemoveLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new RemoveLinkRequest(defaultLink)))
             .exchange().expectStatus().isOk();
     }
 
@@ -118,7 +106,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getAddLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(defaultLink)))
             .exchange().expectStatus().isBadRequest();
     }
 
@@ -130,7 +118,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(defaultId))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getAddLinkRequest(link)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(link)))
             .exchange().expectStatus().isBadRequest();
     }
 
@@ -141,7 +129,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(defaultId))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getAddLinkRequest("")))
+            .body(BodyInserters.fromValue(new AddLinkRequest("")))
             .exchange().expectStatus().isBadRequest();
     }
 
@@ -153,7 +141,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(defaultId))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getRemoveLinkRequest(link)))
+            .body(BodyInserters.fromValue(new RemoveLinkRequest(link)))
             .exchange().expectStatus().isBadRequest();
     }
 
@@ -164,7 +152,7 @@ public class ScrapperControllerTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(defaultId))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(getRemoveLinkRequest("")))
+            .body(BodyInserters.fromValue(new RemoveLinkRequest("")))
             .exchange().expectStatus().isBadRequest();
     }
 }

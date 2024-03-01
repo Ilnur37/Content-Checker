@@ -70,6 +70,11 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>edu.java</groupId>
+            <artifactId>models</artifactId>
+            <version>0.1</version>
+        </dependency>
 
         <!-- Tests -->
         <dependency>

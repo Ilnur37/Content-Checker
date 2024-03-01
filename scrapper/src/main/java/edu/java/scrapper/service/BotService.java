@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class BotService {
     private final BotClient botClient;
 
-    public ResponseEntity<Void> sendUpdate(int id, String url, String description, List<Integer> tgChatIds) {
+    public ResponseEntity<Void> sendUpdate(int id, String url, String description, List<Long> tgChatIds) {
         return botClient.sendUpdate(id, url, description, tgChatIds);
     }
 }

@@ -1,7 +1,7 @@
 package edu.java.bot.api;
 
 import edu.java.bot.controller.BotController;
-import edu.java.bot.dto.request.LinkUpdateRequest;
+import edu.java.models.dto.request.LinkUpdateRequest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +22,7 @@ public class BotControllerTest {
     private final List<Long> defaultList = List.of(1L, 2L);
 
     private LinkUpdateRequest getLinkUpdateRequest(long id, String url, String description, List<Long> tgChatIds) {
-        LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest();
-        linkUpdateRequest.setId(id);
-        linkUpdateRequest.setUrl(url);
-        linkUpdateRequest.setDescription(description);
-        linkUpdateRequest.setTgChatIds(tgChatIds);
-        return linkUpdateRequest;
+        return new LinkUpdateRequest(id, url, description, tgChatIds);
     }
 
     private WebTestClient.RequestHeadersSpec<?> createPostResponse(LinkUpdateRequest linkUpdateRequest) {

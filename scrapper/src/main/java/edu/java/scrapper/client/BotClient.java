@@ -1,6 +1,6 @@
 package edu.java.scrapper.client;
 
-import edu.java.scrapper.dto.request.bot.LinkUpdateRequest;
+import edu.java.models.dto.request.LinkUpdateRequest;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class BotClient extends Client {
         return new BotClient(webClient);
     }
 
-    public ResponseEntity<Void> sendUpdate(int id, String url, String description, List<Integer> tgChatIds) {
+    public ResponseEntity<Void> sendUpdate(int id, String url, String description, List<Long> tgChatIds) {
         return webClient.post()
             .uri("/bot-api/updates")
             .contentType(MediaType.APPLICATION_JSON)

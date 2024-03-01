@@ -1,8 +1,9 @@
 package edu.java.bot.client;
 
-import edu.java.bot.dto.request.scrapper.AddLinkRequest;
-import edu.java.bot.dto.response.scrapper.LinkResponse;
-import edu.java.bot.dto.response.scrapper.ListLinksResponse;
+import edu.java.models.dto.request.AddLinkRequest;
+import edu.java.models.dto.request.RemoveLinkRequest;
+import edu.java.models.dto.response.LinkResponse;
+import edu.java.models.dto.response.ListLinksResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -64,7 +65,7 @@ public class ScrapperClient extends Client {
         return webClient.method(HttpMethod.DELETE)
             .uri(urlLinks)
             .header(headerTgChatId, String.valueOf(id))
-            .body(BodyInserters.fromValue(new AddLinkRequest(link)))
+            .body(BodyInserters.fromValue(new RemoveLinkRequest(link)))
             .retrieve()
             .toEntity(LinkResponse.class)
             .block();
