@@ -6,7 +6,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

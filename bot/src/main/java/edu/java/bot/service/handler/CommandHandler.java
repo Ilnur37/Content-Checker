@@ -8,7 +8,6 @@ import edu.java.bot.entity.Link;
 import edu.java.bot.repository.UserRepository;
 import java.net.URI;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -3,9 +3,9 @@ package edu.java.bot.controller;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.service.handler.HelpCommand;
 import java.util.List;
 import java.util.Objects;
-import edu.java.bot.service.handler.HelpCommand;
 import org.springframework.stereotype.Controller;
 
 @Controller

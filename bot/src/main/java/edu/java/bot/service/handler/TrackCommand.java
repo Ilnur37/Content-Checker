@@ -2,8 +2,8 @@ package edu.java.bot.service.handler;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.entity.Link;
 import edu.java.bot.domain.SupportedDomain;
+import edu.java.bot.entity.Link;
 import edu.java.bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
