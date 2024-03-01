@@ -1,7 +1,5 @@
 package edu.java.scrapper;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import liquibase.Contexts;
