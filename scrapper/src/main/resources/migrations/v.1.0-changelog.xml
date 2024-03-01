@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
+    <changeSet id="init_table_chat" author="Ilnur37">
+        <sqlFile path="sql/create-table-chat.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+    <changeSet id="init_table_link" author="Ilnur37">
+        <sqlFile path="sql/create-table-link.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+    <changeSet id="init_table_chat_link_mapping" author="Ilnur37">
+        <sqlFile path="sql/create-table-chat_link_mapping.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+</databaseChangeLog>
