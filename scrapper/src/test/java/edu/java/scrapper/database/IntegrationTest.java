@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.scrapper.database;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;

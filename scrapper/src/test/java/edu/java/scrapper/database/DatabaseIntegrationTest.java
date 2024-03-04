@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.scrapper.database;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
