@@ -22,7 +22,6 @@ public class ChatDao implements Dao<Chat> {
             .query(chatRowMapper).optional();
     }
 
-    @Override
     public Optional<Chat> getById(long id) {
         String sql = "SELECT * FROM chat WHERE id = ?";
         return jdbcClient.sql(sql)

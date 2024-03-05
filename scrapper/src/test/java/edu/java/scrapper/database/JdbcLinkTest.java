@@ -27,7 +27,7 @@ public class JdbcLinkTest extends IntegrationTest {
     @Autowired
     private LinkRowMapper linkRowMapper;
     private final String getAllSQL = "SELECT * FROM link";
-    private final String saveLinkSQL =
+    private final String saveSQL =
         "INSERT INTO link(url, created_at, last_update_at) VALUES ('%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
     private final String defaultUrl = "defaultUrl";
 
@@ -49,9 +49,9 @@ public class JdbcLinkTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void getByUrlTest() {
+    void getByUrl() {
         //Добавление ссылки с заданным url
-        jdbcClient.sql(String.format(saveLinkSQL, defaultUrl))
+        jdbcClient.sql(String.format(saveSQL, defaultUrl))
             .update();
         List<Link> actualLinks = jdbcClient.sql(getAllSQL)
             .query(linkRowMapper).list();
@@ -73,9 +73,9 @@ public class JdbcLinkTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void getByIdTest() {
+    void getById() {
         //Добавление ссылки с заданным url
-        jdbcClient.sql(String.format(saveLinkSQL, defaultUrl))
+        jdbcClient.sql(String.format(saveSQL, defaultUrl))
             .update();
         List<Link> actualLinks = jdbcClient.sql(getAllSQL)
             .query(linkRowMapper).list();
@@ -98,16 +98,15 @@ public class JdbcLinkTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void getAllTest() {
+    void getAll() {
         long count = 10;
         //Добавление нескольких ссылок
         for (long id = 1; id < 10; id++) {
-            jdbcClient.sql(String.format(saveLinkSQL, defaultUrl + id))
+            jdbcClient.sql(String.format(saveSQL, defaultUrl + id))
                 .update();
         }
 
-        List<Link> actualLinks = jdbcClient.sql(getAllSQL)
-            .query(linkRowMapper).list();
+        List<Link> actualLinks = linkDao.getAll();
         assertAll(
             "Поддтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),
@@ -118,7 +117,7 @@ public class JdbcLinkTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void addTest() {
+    void save() {
         //Добавление ссылки с заданным url
         linkDao.save(createLink(defaultUrl));
 
@@ -133,9 +132,9 @@ public class JdbcLinkTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void removeTest() {
+    void remove() {
         //Добавление ссылки с заданным url
-        jdbcClient.sql(String.format(saveLinkSQL, defaultUrl))
+        jdbcClient.sql(String.format(saveSQL, defaultUrl))
             .update();
         List<Link> links = jdbcClient.sql(getAllSQL)
             .query(linkRowMapper).list();

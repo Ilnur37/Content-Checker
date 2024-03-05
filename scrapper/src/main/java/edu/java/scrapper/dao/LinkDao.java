@@ -22,7 +22,6 @@ public class LinkDao implements Dao<Link> {
             .query(linkRowMapper).optional();
     }
 
-    @Override
     public Optional<Link> getById(long id) {
         String sql = "SELECT * FROM link WHERE id = ?";
         return jdbcClient.sql(sql)
