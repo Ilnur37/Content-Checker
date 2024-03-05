@@ -1,6 +1,7 @@
-package edu.java.scrapper.database;
+package edu.java.scrapper.database.dao;
 
 import edu.java.scrapper.dao.ChatDao;
+import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chat.ChatRowMapper;
 import java.time.OffsetDateTime;

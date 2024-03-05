@@ -3,7 +3,7 @@ package edu.java.scrapper.clients;
 import edu.java.scrapper.dto.stackoverflow.OwnerInfo;
 import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
-import edu.java.scrapper.service.StackOverflowService;
+import edu.java.scrapper.service.web.StackOverflowService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +86,9 @@ public class StackOverflowTest extends AbstractServiceTest {
             .willReturn(aResponse()
                 .withStatus(HttpStatus.NOT_FOUND.value())));
 
-        assertThrows(WebClientResponseException.NotFound.class, () -> {
-            stackOverflowService.getQuestionInfo(123L);
-        });
+        assertThrows(
+            WebClientResponseException.NotFound.class,
+            () -> stackOverflowService.getQuestionInfo(123L)
+        );
     }
 }

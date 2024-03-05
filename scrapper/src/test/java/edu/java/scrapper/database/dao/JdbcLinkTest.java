@@ -1,6 +1,7 @@
-package edu.java.scrapper.database;
+package edu.java.scrapper.database.dao;
 
 import edu.java.scrapper.dao.LinkDao;
+import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.model.link.LinkRowMapper;
 import java.time.OffsetDateTime;

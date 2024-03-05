@@ -4,16 +4,15 @@ import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chat.ChatRowMapper;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class ChatDao implements Dao<Chat> {
-    @Autowired
-    public JdbcClient jdbcClient;
-    @Autowired
-    private ChatRowMapper chatRowMapper;
+    public final JdbcClient jdbcClient;
+    private final ChatRowMapper chatRowMapper;
 
     public Optional<Chat> getByTgChatId(long id) {
         String sql = "SELECT * FROM chat WHERE tg_chat_id = ?";

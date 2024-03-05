@@ -3,16 +3,15 @@ package edu.java.scrapper.dao;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class ChatLinkDao implements Dao<ChatLink> {
-    @Autowired
-    public JdbcClient jdbcClient;
-    @Autowired
-    private ChatLinkRowMapper chatLinkRowMapper;
+    public final JdbcClient jdbcClient;
+    private final ChatLinkRowMapper chatLinkRowMapper;
 
     public List<ChatLink> getByChatId(long id) {
         String sql = "SELECT * FROM chat_link WHERE chat_id = ?";

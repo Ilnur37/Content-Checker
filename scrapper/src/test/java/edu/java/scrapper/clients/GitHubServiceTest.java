@@ -1,7 +1,7 @@
 package edu.java.scrapper.clients;
 
 import edu.java.scrapper.dto.github.RepositoryInfo;
-import edu.java.scrapper.service.GitHubService;
+import edu.java.scrapper.service.web.GitHubService;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +45,9 @@ public class GitHubServiceTest extends AbstractServiceTest {
             .willReturn(aResponse()
                 .withStatus(HttpStatus.NOT_FOUND.value())));
 
-        assertThrows(WebClientResponseException.NotFound.class, () -> {
-            gitHubService.getRepositoryInfo("owner", "repo");
-        });
+        assertThrows(
+            WebClientResponseException.NotFound.class,
+            () -> gitHubService.getRepositoryInfo("owner", "repo")
+        );
     }
 }

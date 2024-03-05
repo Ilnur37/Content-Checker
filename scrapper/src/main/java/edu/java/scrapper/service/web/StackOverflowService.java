@@ -1,4 +1,4 @@
-package edu.java.scrapper.service;
+package edu.java.scrapper.service.web;
 
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;

@@ -1,6 +1,7 @@
-package edu.java.scrapper.database;
+package edu.java.scrapper.database.dao;
 
 import edu.java.scrapper.dao.ChatLinkDao;
+import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
 import java.util.ArrayList;
