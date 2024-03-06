@@ -3,7 +3,6 @@ package edu.java.scrapper.database.dao;
 import edu.java.scrapper.dao.ChatDao;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.chat.Chat;
-import edu.java.scrapper.model.chat.ChatRowMapper;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,21 +13,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import static edu.java.scrapper.database.dao.UtilityDb.getAllFromChat;
+import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoChat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@Rollback
+@Transactional
 public class JdbcChatTest extends IntegrationTest {
     @Autowired
     private ChatDao chatDao;
     @Autowired
-    public JdbcClient jdbcClient;
-    @Autowired
-    private ChatRowMapper chatRowMapper;
-    private final String getAllSQL = "SELECT * FROM chat";
-    private final String saveSQL = "INSERT INTO chat(tg_chat_id, created_at) VALUES (%d, CURRENT_TIMESTAMP)";
+    private JdbcClient jdbcClient;
+
     private final long tgChatId = 10;
 
     private Chat createChat(long tgChatId) {
@@ -40,20 +40,14 @@ public class JdbcChatTest extends IntegrationTest {
 
     @BeforeEach
     public void checkThatTableIsEmpty() {
-        List<Chat> chats = jdbcClient.sql(getAllSQL)
-            .query(chatRowMapper).list();
-        assertTrue(chats.isEmpty());
+        assertTrue(getAllFromChat(jdbcClient).isEmpty());
     }
 
     @Test
-    @Transactional
-    @Rollback
     void getByTgChatId() {
         //Добавление чата с заданным tgChatId
-        jdbcClient.sql(String.format(saveSQL, tgChatId))
-            .update();
-        List<Chat> actualChats = jdbcClient.sql(getAllSQL)
-            .query(chatRowMapper).list();
+        insertRowIntoChat(jdbcClient, tgChatId);
+        List<Chat> actualChats = getAllFromChat(jdbcClient);
         assertAll(
             "Поддтверждение, что появился 1 чат",
             () -> assertFalse(actualChats.isEmpty()),
@@ -70,22 +64,18 @@ public class JdbcChatTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void getById() {
         //Добавление чата с заданным tgChatId
-        jdbcClient.sql(String.format(saveSQL, tgChatId))
-            .update();
-        List<Chat> actualChats = jdbcClient.sql(getAllSQL)
-            .query(chatRowMapper).list();
+        insertRowIntoChat(jdbcClient, tgChatId);
+        List<Chat> actualChats = getAllFromChat(jdbcClient);
         assertAll(
             "Поддтверждение, что появился 1 чат",
             () -> assertFalse(actualChats.isEmpty()),
             () -> assertEquals(actualChats.getFirst().getTgChatId(), tgChatId)
         );
+        long id = actualChats.getFirst().getId();
 
         //Получениие чата с присвоенным id
-        long id = actualChats.getFirst().getId();
         Optional<Chat> chat = chatDao.getById(id);
         assertAll(
             "Поддтверждение, что это только что добавленный чат",
@@ -95,15 +85,11 @@ public class JdbcChatTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void getAll() {
-        long count = 10;
-
         //Добавление нескольких чатов
-        for (long id = 1; id < 10; id++) {
-            jdbcClient.sql(String.format(saveSQL, id))
-                .update();
+        long count = 10;
+        for (long id = 1; id < count; id++) {
+            insertRowIntoChat(jdbcClient, id);
         }
 
         List<Chat> actualChats = chatDao.getAll();
@@ -115,14 +101,11 @@ public class JdbcChatTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void save() {
         //Добавление чата с заданным tgChatId
         chatDao.save(createChat(tgChatId));
 
-        List<Chat> actualChatsList = jdbcClient.sql(getAllSQL)
-            .query(chatRowMapper).list();
+        List<Chat> actualChatsList = getAllFromChat(jdbcClient);
         assertAll(
             () -> assertFalse(actualChatsList.isEmpty()),
             () -> assertEquals(actualChatsList.getFirst().getTgChatId(), tgChatId)
@@ -130,14 +113,10 @@ public class JdbcChatTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void remove() {
         //Добавление чата с заданным tgChatId
-        jdbcClient.sql(String.format(saveSQL, tgChatId))
-            .update();
-        List<Chat> chats = jdbcClient.sql(getAllSQL)
-            .query(chatRowMapper).list();
+        insertRowIntoChat(jdbcClient, tgChatId);
+        List<Chat> chats = getAllFromChat(jdbcClient);
         assertAll(
             "Поддтверждение, что появился 1 чат",
             () -> assertFalse(chats.isEmpty()),
@@ -146,8 +125,7 @@ public class JdbcChatTest extends IntegrationTest {
 
         //Удаление чата с заданным tgChatId
         chatDao.delete(createChat(tgChatId));
-        List<Chat> actualChats = jdbcClient.sql(getAllSQL)
-            .query(chatRowMapper).list();
+        List<Chat> actualChats = getAllFromChat(jdbcClient);
         assertTrue(actualChats.isEmpty());
     }
 }

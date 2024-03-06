@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class ChatDao implements Dao<Chat> {
-    public final JdbcClient jdbcClient;
+    private final JdbcClient jdbcClient;
     private final ChatRowMapper chatRowMapper;
 
     public Optional<Chat> getByTgChatId(long id) {

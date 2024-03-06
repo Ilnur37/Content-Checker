@@ -14,12 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import static edu.java.scrapper.database.dao.UtilityDb.checkThatTableLinkIsEmpty;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@Transactional
+@Rollback
 public class JdbcLinkTest extends IntegrationTest {
     @Autowired
     private LinkDao linkDao;
@@ -27,6 +30,7 @@ public class JdbcLinkTest extends IntegrationTest {
     public JdbcClient jdbcClient;
     @Autowired
     private LinkRowMapper linkRowMapper;
+
     private final String getAllSQL = "SELECT * FROM link";
     private final String saveSQL =
         "INSERT INTO link(url, created_at, last_update_at) VALUES ('%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
@@ -42,14 +46,10 @@ public class JdbcLinkTest extends IntegrationTest {
 
     @BeforeEach
     public void checkThatTableIsEmpty() {
-        List<Link> links = jdbcClient.sql(getAllSQL)
-            .query(linkRowMapper).list();
-        assertTrue(links.isEmpty());
+        checkThatTableLinkIsEmpty(jdbcClient);
     }
 
     @Test
-    @Transactional
-    @Rollback
     void getByUrl() {
         //Добавление ссылки с заданным url
         jdbcClient.sql(String.format(saveSQL, defaultUrl))
@@ -72,8 +72,6 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void getById() {
         //Добавление ссылки с заданным url
         jdbcClient.sql(String.format(saveSQL, defaultUrl))
@@ -97,8 +95,6 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void getAll() {
         long count = 10;
         //Добавление нескольких ссылок
@@ -116,8 +112,6 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void save() {
         //Добавление ссылки с заданным url
         linkDao.save(createLink(defaultUrl));
@@ -131,8 +125,6 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void remove() {
         //Добавление ссылки с заданным url
         jdbcClient.sql(String.format(saveSQL, defaultUrl))

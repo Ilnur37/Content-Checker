@@ -14,6 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import static edu.java.scrapper.database.dao.UtilityDb.checkThatTableChatLinkIsEmpty;
+import static edu.java.scrapper.database.dao.UtilityDb.getIdFromChatByTgChatId;
+import static edu.java.scrapper.database.dao.UtilityDb.getIdFromLinkByUrl;
+import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoChat;
+import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,6 +32,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
     public JdbcClient jdbcClient;
     @Autowired
     private ChatLinkRowMapper chatLinkRowMapper;
+
     private final String getAllSQL = "SELECT * FROM chat_link";
     private final String saveSQL = "INSERT INTO chat_link(chat_id, link_id) VALUES (%d, %d)";
     private final String defaultUrl = "defaultUrl";
@@ -39,39 +45,9 @@ public class JdbcChatLinkTest extends IntegrationTest {
         return chatLink;
     }
 
-    private void insertRowIntoChat(long tgChatId) {
-        jdbcClient.sql(String.format(
-                "INSERT INTO chat(tg_chat_id, created_at) VALUES (%d, CURRENT_TIMESTAMP)",
-                tgChatId
-            ))
-            .update();
-    }
-
-    private void insertRowIntoLink(String url) {
-        jdbcClient.sql(String.format(
-                "INSERT INTO link(url, created_at, last_update_at) VALUES ('%s', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-                url
-            ))
-            .update();
-    }
-
-    private long getIdFromChat(long tgChatId) {
-        return jdbcClient.sql("SELECT (id) FROM chat WHERE tg_chat_id = ?")
-            .param(tgChatId)
-            .query(Long.class).single();
-    }
-
-    private long getIdFromLink(String url) {
-        return jdbcClient.sql("SELECT (id) FROM link WHERE url = ?")
-            .param(url)
-            .query(Long.class).single();
-    }
-
     @BeforeEach
     public void checkThatTableIsEmpty() {
-        List<ChatLink> content = jdbcClient.sql(getAllSQL)
-            .query(chatLinkRowMapper).list();
-        assertTrue(content.isEmpty());
+        checkThatTableChatLinkIsEmpty(jdbcClient);
     }
 
     @Test
@@ -80,10 +56,10 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @DisplayName("getByLinkId (В таблице chat_link 1 значение с искомой ссылкой)")
     void getByLinkIdWhenOneChat() {
         //Добавление в таблицы chat, link строк
-        insertRowIntoChat(defaultTgChatId);
-        insertRowIntoLink(defaultUrl);
-        long chatId = getIdFromChat(defaultTgChatId);
-        long linkId = getIdFromLink(defaultUrl);
+        insertRowIntoChat(jdbcClient, defaultTgChatId);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        long chatId = getIdFromChatByTgChatId(jdbcClient, defaultTgChatId).orElseThrow();
+        long linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
 
         //Добавление связи в chat_link
         jdbcClient.sql(String.format(saveSQL, chatId, linkId))
@@ -105,11 +81,11 @@ public class JdbcChatLinkTest extends IntegrationTest {
         long linkId;
         List<Long> chatIds = new ArrayList<>();
         //Добавление в таблицы chat, link строк
-        insertRowIntoLink(defaultUrl);
-        linkId = getIdFromLink(defaultUrl);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
         for (int i = 0; i < count; i++) {
-            insertRowIntoChat(defaultTgChatId + i);
-            chatIds.add(getIdFromChat(defaultTgChatId + i));
+            insertRowIntoChat(jdbcClient, defaultTgChatId + i);
+            chatIds.add(getIdFromChatByTgChatId(jdbcClient, defaultTgChatId + i).orElseThrow());
         }
 
         //Добавление связи в chat_link
@@ -130,10 +106,10 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Rollback
     void getByChatId() {
         //Добавление в таблицы chat, link строк
-        insertRowIntoChat(defaultTgChatId);
-        insertRowIntoLink(defaultUrl);
-        long chatId = getIdFromChat(defaultTgChatId);
-        long linkId = getIdFromLink(defaultUrl);
+        insertRowIntoChat(jdbcClient, defaultTgChatId);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        long chatId = getIdFromChatByTgChatId(jdbcClient, defaultTgChatId).orElseThrow();
+        long linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
 
         //Добавление связи в chat_link
         jdbcClient.sql(String.format(saveSQL, chatId, linkId))
@@ -155,11 +131,11 @@ public class JdbcChatLinkTest extends IntegrationTest {
         List<Long> chatIds = new ArrayList<>();
 
         //Добавление в таблицы chat, link строк
-        insertRowIntoLink(defaultUrl);
-        linkId = getIdFromLink(defaultUrl);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
         for (int i = 0; i < count; i++) {
-            insertRowIntoChat(defaultTgChatId + i);
-            chatIds.add(getIdFromChat(defaultTgChatId + i));
+            insertRowIntoChat(jdbcClient, defaultTgChatId + i);
+            chatIds.add(getIdFromChatByTgChatId(jdbcClient, defaultTgChatId + i).orElseThrow());
         }
 
         //Добавление связи в chat_link
@@ -181,10 +157,10 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Rollback
     void save() {
         //Добавление в таблицы chat, link строк
-        insertRowIntoChat(defaultTgChatId);
-        insertRowIntoLink(defaultUrl);
-        long chatId = getIdFromChat(defaultTgChatId);
-        long linkId = getIdFromLink(defaultUrl);
+        insertRowIntoChat(jdbcClient, defaultTgChatId);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        long chatId = getIdFromChatByTgChatId(jdbcClient, defaultTgChatId).orElseThrow();
+        long linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
 
         //Добавление связи в chat_link
         chatLinkDao.save(createChatLink(chatId, linkId));
@@ -204,10 +180,10 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Rollback
     void remove() {
         //Добавление в таблицы chat, link строк
-        insertRowIntoChat(defaultTgChatId);
-        insertRowIntoLink(defaultUrl);
-        long chatId = getIdFromChat(defaultTgChatId);
-        long linkId = getIdFromLink(defaultUrl);
+        insertRowIntoChat(jdbcClient, defaultTgChatId);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        long chatId = getIdFromChatByTgChatId(jdbcClient, defaultTgChatId).orElseThrow();
+        long linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
 
         //Добавление связи в chat_link
         jdbcClient.sql(String.format(saveSQL, chatId, linkId))

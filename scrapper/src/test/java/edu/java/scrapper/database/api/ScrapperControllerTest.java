@@ -1,22 +1,35 @@
-package edu.java.scrapper.api;
+package edu.java.scrapper.database.api;
 
-import edu.java.scrapper.controller.ScrapperController;
 import edu.java.models.dto.request.AddLinkRequest;
 import edu.java.models.dto.request.RemoveLinkRequest;
+import edu.java.scrapper.controller.ScrapperController;
+import edu.java.scrapper.database.IntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 
-public class ScrapperControllerTest {
-    private final WebTestClient webTestClient = WebTestClient.bindToController(new ScrapperController()).build();
+@SpringBootTest
+@Rollback
+@Transactional
+public class ScrapperControllerTest extends IntegrationTest {
+    private final WebTestClient webTestClient;
     private final String defaultLink = "aa";
     private final int defaultId = 1;
+
+    @Autowired
+    public ScrapperControllerTest(ScrapperController scrapperController) {
+        webTestClient = WebTestClient.bindToController(scrapperController).build();
+    }
 
     @ParameterizedTest
     @ValueSource(longs = {1L, 10L, 1000L, 1000000L})

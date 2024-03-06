@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class LinkDao implements Dao<Link> {
-    public final JdbcClient jdbcClient;
+    private final JdbcClient jdbcClient;
     private final LinkRowMapper linkRowMapper;
 
     public Optional<Link> getByUrl(String url) {

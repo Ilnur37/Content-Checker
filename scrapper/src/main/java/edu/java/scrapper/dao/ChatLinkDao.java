@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class ChatLinkDao implements Dao<ChatLink> {
-    public final JdbcClient jdbcClient;
+    private final JdbcClient jdbcClient;
     private final ChatLinkRowMapper chatLinkRowMapper;
 
     public List<ChatLink> getByChatId(long id) {

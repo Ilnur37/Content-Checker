@@ -9,7 +9,7 @@ import edu.java.scrapper.service.jdbc.JdbcLinkService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("scrapper-api")
-@RequiredArgsConstructor
 public class ScrapperController implements ScrapperApi {
     private final JdbcChatService chatService;
     private final JdbcLinkService linkService;
     private final String defaultLink = "aa";
     private final int defaultId = 1;
+
+    @Autowired
+    public ScrapperController(JdbcChatService chatService, JdbcLinkService linkService) {
+        this.chatService = chatService;
+        this.linkService = linkService;
+    }
 
     @Override
     public ResponseEntity<Void> registerChat(@Min(1) @PathVariable long id) {
@@ -45,6 +50,7 @@ public class ScrapperController implements ScrapperApi {
             .stream()
             .map(link -> new LinkResponse(link.getId(), link.getUrl()))
             .toList();
+        //List<LinkResponse> linkResponses = new ArrayList<>();
         ListLinksResponse links = new ListLinksResponse(linkResponses, linkResponses.size());
         return new ResponseEntity<>(links, HttpStatus.OK);
     }
