@@ -3,7 +3,6 @@ package edu.java.scrapper.database.dao;
 import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.chatLink.ChatLink;
-import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.dao.UtilityDb.checkThatTableChatLinkIsEmpty;
+import static edu.java.scrapper.database.dao.UtilityDb.getAllFromChatLink;
 import static edu.java.scrapper.database.dao.UtilityDb.getIdFromChatByTgChatId;
 import static edu.java.scrapper.database.dao.UtilityDb.getIdFromLinkByUrl;
 import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoChat;
@@ -30,10 +29,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
     private ChatLinkDao chatLinkDao;
     @Autowired
     public JdbcClient jdbcClient;
-    @Autowired
-    private ChatLinkRowMapper chatLinkRowMapper;
 
-    private final String getAllSQL = "SELECT * FROM chat_link";
     private final String saveSQL = "INSERT INTO chat_link(chat_id, link_id) VALUES (%d, %d)";
     private final String defaultUrl = "defaultUrl";
     private final long defaultTgChatId = 10;
@@ -47,7 +43,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
 
     @BeforeEach
     public void checkThatTableIsEmpty() {
-        checkThatTableChatLinkIsEmpty(jdbcClient);
+        assertTrue(getAllFromChatLink(jdbcClient).isEmpty());
     }
 
     @Test
@@ -165,8 +161,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
         //Добавление связи в chat_link
         chatLinkDao.save(createChatLink(chatId, linkId));
 
-        List<ChatLink> content = jdbcClient.sql(getAllSQL)
-            .query(chatLinkRowMapper).list();
+        List<ChatLink> content = getAllFromChatLink(jdbcClient);
         assertAll(
             "Поддтверждение, что появилась 1 связь",
             () -> assertFalse(content.isEmpty()),
@@ -188,8 +183,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
         //Добавление связи в chat_link
         jdbcClient.sql(String.format(saveSQL, chatId, linkId))
             .update();
-        List<ChatLink> content = jdbcClient.sql(getAllSQL)
-            .query(chatLinkRowMapper).list();
+        List<ChatLink> content = getAllFromChatLink(jdbcClient);
         assertAll(
             "Поддтверждение, что появилась 1 связь",
             () -> assertFalse(content.isEmpty()),
@@ -199,8 +193,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
 
         //Удаление связи
         chatLinkDao.delete(createChatLink(chatId, linkId));
-        List<ChatLink> actualContent = jdbcClient.sql(getAllSQL)
-            .query(chatLinkRowMapper).list();
+        List<ChatLink> actualContent = getAllFromChatLink(jdbcClient);
         assertTrue(actualContent.isEmpty());
     }
 }

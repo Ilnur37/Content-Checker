@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UtilityClass
 public class UtilityDb {
@@ -27,16 +26,16 @@ public class UtilityDb {
             .list();
     }
 
-    public static void checkThatTableLinkIsEmpty(JdbcClient jdbcClient) {
-        List<Link> links = jdbcClient.sql(getAllFromLink)
-            .query(linkRowMapper).list();
-        assertTrue(links.isEmpty());
+    public static List<Link> getAllFromLink(JdbcClient jdbcClient) {
+        return jdbcClient.sql(getAllFromLink)
+            .query(linkRowMapper)
+            .list();
     }
 
-    public static void checkThatTableChatLinkIsEmpty(JdbcClient jdbcClient) {
-        List<ChatLink> content = jdbcClient.sql(getAllFromChatLink)
-            .query(chatLinkRowMapper).list();
-        assertTrue(content.isEmpty());
+    public static List<ChatLink> getAllFromChatLink(JdbcClient jdbcClient) {
+        return jdbcClient.sql(getAllFromChatLink)
+            .query(chatLinkRowMapper)
+            .list();
     }
 
     public static Optional<Long> getIdFromChatByTgChatId(JdbcClient jdbcClient, long tgChatId) {
