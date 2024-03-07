@@ -1,7 +1,6 @@
 package edu.java.bot;
 
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.BotApplication;
 import edu.java.bot.entity.Domain;
 import edu.java.bot.entity.Link;
 import edu.java.bot.repository.UserRepository;

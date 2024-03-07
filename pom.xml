@@ -136,6 +136,7 @@
                     <excludes>
                         <exclude>**/configuration/*</exclude>
                         <exclude>**/dto/**</exclude>
+                        <exclude>**/exception/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

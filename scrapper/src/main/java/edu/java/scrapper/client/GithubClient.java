@@ -10,10 +10,7 @@ public class GithubClient extends Client {
     }
 
     public static GithubClient create(String baseUrl) {
-        WebClient webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .build();
-
+        WebClient webClient = WebClient.create(baseUrl);
         return new GithubClient(webClient);
     }
 
