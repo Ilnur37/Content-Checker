@@ -14,10 +14,7 @@ public class StackOverflowClient extends Client {
     }
 
     public static StackOverflowClient create(String baseUrl) {
-        WebClient webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .build();
-
+        WebClient webClient = WebClient.create(baseUrl);
         return new StackOverflowClient(webClient);
     }
 
@@ -28,7 +25,7 @@ public class StackOverflowClient extends Client {
                 .bodyToMono(QuestionItems.class)
                 .block())
             .getQuestionInfo()
-            .getFirst();
+            .get(0);
     }
 
     public List<AnswerInfo> getAnswerInfoByQuestion(Long question) {

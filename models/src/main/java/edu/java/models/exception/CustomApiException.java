@@ -6,5 +6,4 @@ public abstract class CustomApiException extends RuntimeException {
     public CustomApiException(String msg) {
         super(msg);
     }
-
 }

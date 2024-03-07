@@ -15,13 +15,14 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class AbstractServiceTest {
     private WireMockServer wireMockServer;
+    private final int port = 8080;
+    private final String host = "localhost";
 
     @BeforeEach
     public void setUp() {
-        int port = 8080;
         wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().port(port));
         wireMockServer.start();
-        WireMock.configureFor("localhost", port);
+        WireMock.configureFor(host, port);
     }
 
     @AfterEach

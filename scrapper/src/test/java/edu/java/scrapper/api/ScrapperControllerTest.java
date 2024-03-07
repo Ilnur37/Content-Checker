@@ -1,8 +1,8 @@
 package edu.java.scrapper.api;
 
-import edu.java.scrapper.controller.ScrapperController;
 import edu.java.models.dto.request.AddLinkRequest;
 import edu.java.models.dto.request.RemoveLinkRequest;
+import edu.java.scrapper.controller.ScrapperController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +24,7 @@ public class ScrapperControllerTest {
     void registerChat(long id) {
         webTestClient.post()
             .uri("/scrapper-api/tg-chat/{id}", id)
-            .exchange().expectStatus().isOk();
+            .exchange().expectStatus().isCreated();
     }
 
     @ParameterizedTest

@@ -4,7 +4,6 @@ import edu.java.bot.client.ScrapperClient;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,23 +11,23 @@ import org.springframework.stereotype.Service;
 public class ScrapperService {
     private final ScrapperClient scrapperClient;
 
-    public ResponseEntity<Void> registerChat(int id) {
-        return scrapperClient.registerChat(id);
+    public void registerChat(int id) {
+        scrapperClient.registerChat(id);
     }
 
-    public ResponseEntity<Void> deleteChat(int id) {
-        return scrapperClient.deleteChat(id);
+    public void deleteChat(int id) {
+        scrapperClient.deleteChat(id);
     }
 
-    public ResponseEntity<ListLinksResponse> getAllLinks(int id) {
+    public ListLinksResponse getAllLinks(int id) {
         return scrapperClient.getAllLinks(id);
     }
 
-    public ResponseEntity<LinkResponse> addLink(int id, String link) {
+    public LinkResponse addLink(int id, String link) {
         return scrapperClient.addLink(id, link);
     }
 
-    public ResponseEntity<LinkResponse> removeLink(int id, String link) {
+    public LinkResponse removeLink(int id, String link) {
         return scrapperClient.removeLink(id, link);
     }
 }
