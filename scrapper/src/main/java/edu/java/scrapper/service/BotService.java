@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class BotService {
     private final BotClient botClient;
 
-    public void sendUpdate(int id, String url, String description, List<Long> tgChatIds) {
+    public void sendUpdate(long id, String url, String description, List<Long> tgChatIds) {
         botClient.sendUpdate(id, url, description, tgChatIds);
     }
 }

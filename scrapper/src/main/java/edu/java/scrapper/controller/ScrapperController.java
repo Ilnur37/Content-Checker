@@ -32,8 +32,6 @@ public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
     public static final String LINK_MAPPING = "/links";
     public static final String SCRAPPER_MAPPING = "scrapper-api";
-    private final String defaultLink = "aa";
-    private final int defaultId = 1;
     private final JdbcChatService chatService;
     private final JdbcLinkService linkService;
 
@@ -131,7 +129,6 @@ public class ScrapperController {
         @Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId,
         @Valid @RequestBody RemoveLinkRequest removeLinkRequest
     ) {
-        // Логика удаления ссылки для указанного чата
         return linkService.remove(tgChatId, removeLinkRequest);
     }
 }

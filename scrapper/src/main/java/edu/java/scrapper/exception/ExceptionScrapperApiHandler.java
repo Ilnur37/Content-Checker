@@ -33,7 +33,8 @@ public class ExceptionScrapperApiHandler {
                     ((FieldError) error).getField(),
                     error.getObjectName()
                 ),
-                httpStatus.toString());
+                httpStatus.toString()
+            );
             errors.add(errorResponse);
         });
         return ResponseEntity.status(httpStatus).body(errors);

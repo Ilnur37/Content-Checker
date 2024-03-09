@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatLinkDao implements Dao<ChatLink> {
+public class ChatLinkDao {
     private final JdbcClient jdbcClient;
     private final ChatLinkRowMapper chatLinkRowMapper;
 
@@ -27,14 +27,12 @@ public class ChatLinkDao implements Dao<ChatLink> {
             .query(chatLinkRowMapper).list();
     }
 
-    @Override
     public List<ChatLink> getAll() {
         String sql = "SELECT * FROM chat_link";
         return jdbcClient.sql(sql)
             .query(chatLinkRowMapper).list();
     }
 
-    @Override
     public int save(ChatLink chatLink) {
         String sql = "INSERT INTO chat_link(chat_id, link_id) VALUES (?, ?)";
         return jdbcClient.sql(sql)
@@ -42,11 +40,10 @@ public class ChatLinkDao implements Dao<ChatLink> {
             .update();
     }
 
-    @Override
-    public int delete(ChatLink chatLink) {
+    public int delete(long chatId, long linkId) {
         String sql = "DELETE FROM chat_link WHERE chat_id = ? AND link_id = ?";
         return jdbcClient.sql(sql)
-            .params(chatLink.getChatId(), chatLink.getLinkId())
+            .params(chatId, linkId)
             .update();
     }
 }

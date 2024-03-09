@@ -13,8 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.dao.UtilityDb.getAllFromLink;
-import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoLink;
+import static edu.java.scrapper.database.UtilityDb.createLink;
+import static edu.java.scrapper.database.UtilityDb.getAllFromLink;
+import static edu.java.scrapper.database.UtilityDb.insertRowIntoLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,14 +31,6 @@ public class JdbcLinkTest extends IntegrationTest {
     public JdbcClient jdbcClient;
 
     private final String defaultUrl = "defaultUrl";
-
-    private Link createLink(String url) {
-        Link link = new Link();
-        link.setUrl(url);
-        link.setCreatedAt(OffsetDateTime.now());
-        link.setLastUpdateAt(OffsetDateTime.now());
-        return link;
-    }
 
     @BeforeEach
     public void checkThatTableIsEmpty() {
@@ -114,7 +107,24 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    void remove() {
+    void updateLastUpdateAtById() {
+        //Добавление ссылки с заданным url
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        List<Link> links = getAllFromLink(jdbcClient);
+        assertAll(
+            "Поддтверждение, что появилась 1 ссылка",
+            () -> assertFalse(links.isEmpty()),
+            () -> assertEquals(links.getFirst().getUrl(), defaultUrl)
+        );
+
+        //Изменение поля last_update_at
+        linkDao.updateLastUpdateAtById(links.getFirst().getId(), OffsetDateTime.MAX);
+        List<Link> actualLinks = getAllFromLink(jdbcClient);
+        assertEquals(actualLinks.getFirst().getLastUpdateAt(), OffsetDateTime.MAX);
+    }
+
+    @Test
+    void deleteByUrl() {
         //Добавление ссылки с заданным url
         insertRowIntoLink(jdbcClient, defaultUrl);
         List<Link> links = getAllFromLink(jdbcClient);
@@ -125,7 +135,24 @@ public class JdbcLinkTest extends IntegrationTest {
         );
 
         //Удаление ссылки с заданным url
-        linkDao.delete(createLink(defaultUrl));
+        linkDao.deleteByUrl(defaultUrl);
+        List<Link> actualLinks = getAllFromLink(jdbcClient);
+        assertTrue(actualLinks.isEmpty());
+    }
+
+    @Test
+    void deleteById() {
+        //Добавление ссылки с заданным url
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        List<Link> links = getAllFromLink(jdbcClient);
+        assertAll(
+            "Поддтверждение, что появилась 1 ссылка",
+            () -> assertFalse(links.isEmpty()),
+            () -> assertEquals(links.getFirst().getUrl(), defaultUrl)
+        );
+
+        //Удаление ссылки с заданным id
+        linkDao.deleteById(links.getFirst().getId());
         List<Link> actualLinks = getAllFromLink(jdbcClient);
         assertTrue(actualLinks.isEmpty());
     }

@@ -19,5 +19,4 @@ public class StackOverflowService {
     public List<AnswerInfo> getAnswerInfoByQuestion(Long question) {
         return stackOverflowClient.getAnswerInfoByQuestion(question);
     }
-
 }

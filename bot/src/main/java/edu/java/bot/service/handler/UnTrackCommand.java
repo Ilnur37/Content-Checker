@@ -2,11 +2,12 @@ package edu.java.bot.service.handler;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.entity.Link;
-import edu.java.bot.repository.UserRepository;
+import edu.java.bot.service.ScrapperService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
 
+@Slf4j
 @Service
 public class UnTrackCommand extends CommandHandler {
     private static final String LINK_IS_NO_LONGER_BEING_TRACKED = "Ссылка перестала отслеживается";
@@ -15,8 +16,8 @@ public class UnTrackCommand extends CommandHandler {
     private static final String RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER =
         "Вы можете передать только 1 ссылку с этой командой";
 
-    public UnTrackCommand(UserRepository userRepository, ListCommand listCommand) {
-        super(userRepository);
+    public UnTrackCommand(ScrapperService scrapperService, ListCommand listCommand) {
+        super(scrapperService);
         this.next = listCommand;
     }
 
@@ -41,27 +42,34 @@ public class UnTrackCommand extends CommandHandler {
         if (message.length != 2) {
             return new SendMessage(chatId, RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER);
         }
-
+        String link = message[1];
         StringBuilder response = new StringBuilder();
-        Link link = parsePartOfMessageIntoLink(message[1]);
-        if (isUntrackedLink(link, chatId)) {
-            return new SendMessage(chatId, RESPONSE_LINK_NOT_TRACKED);
+        try {
+            scrapperService.removeLink(chatId, link);
+            log.info(format(CHAT_ID_FOR_LOGGER, chatId)
+                + format(LINK_FOR_LOGGER, link)
+                + LINK_IS_NO_LONGER_BEING_TRACKED);
+            response.append(toResponse(RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED, link));
+        } catch (RuntimeException ex) {
+            switch (ex.getMessage()) {
+                case BAD_REQUEST_HTTP:
+                    response.append(BAD_REQUEST);
+                    break;
+                case NOT_FOUND_HTTP:
+                    response.append(RESPONSE_LINK_NOT_TRACKED);
+                    break;
+                default:
+                    throw ex;
+            }
         }
-
-        userRepository.deleteLink(chatId, link);
-        LOGGER.info(format(CHAT_ID_FOR_LOGGER, chatId)
-            + format(LINK_FOR_LOGGER, link)
-            + LINK_IS_NO_LONGER_BEING_TRACKED);
-        response.append(RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED)
-            .append(" (")
-            .append(link)
-            .append(")\n");
-
         return new SendMessage(chatId, response.toString());
     }
 
-    private boolean isUntrackedLink(Link link, Long chatId) {
-        var userLinks = userRepository.findLinksById(chatId);
-        return userLinks.map(links -> !links.contains(link)).orElse(true);
+    private StringBuilder toResponse(String resp, String link) {
+        return new StringBuilder()
+            .append(resp)
+            .append(" (")
+            .append(link)
+            .append(")\n");
     }
 }

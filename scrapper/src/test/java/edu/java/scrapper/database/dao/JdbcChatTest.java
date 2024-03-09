@@ -3,7 +3,6 @@ package edu.java.scrapper.database.dao;
 import edu.java.scrapper.dao.ChatDao;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.chat.Chat;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.dao.UtilityDb.getAllFromChat;
-import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoChat;
+import static edu.java.scrapper.database.UtilityDb.createChat;
+import static edu.java.scrapper.database.UtilityDb.getAllFromChat;
+import static edu.java.scrapper.database.UtilityDb.insertRowIntoChat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,13 +30,6 @@ public class JdbcChatTest extends IntegrationTest {
     private JdbcClient jdbcClient;
 
     private final long tgChatId = 10;
-
-    private Chat createChat(long tgChatId) {
-        Chat chat = new Chat();
-        chat.setTgChatId(tgChatId);
-        chat.setCreatedAt(OffsetDateTime.now());
-        return chat;
-    }
 
     @BeforeEach
     public void checkThatTableIsEmpty() {
@@ -113,7 +106,7 @@ public class JdbcChatTest extends IntegrationTest {
     }
 
     @Test
-    void remove() {
+    void delete() {
         //Добавление чата с заданным tgChatId
         insertRowIntoChat(jdbcClient, tgChatId);
         List<Chat> chats = getAllFromChat(jdbcClient);
@@ -124,7 +117,7 @@ public class JdbcChatTest extends IntegrationTest {
         );
 
         //Удаление чата с заданным tgChatId
-        chatDao.delete(createChat(tgChatId));
+        chatDao.delete(tgChatId);
         List<Chat> actualChats = getAllFromChat(jdbcClient);
         assertTrue(actualChats.isEmpty());
     }

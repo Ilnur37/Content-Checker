@@ -13,11 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.dao.UtilityDb.getAllFromChatLink;
-import static edu.java.scrapper.database.dao.UtilityDb.getIdFromChatByTgChatId;
-import static edu.java.scrapper.database.dao.UtilityDb.getIdFromLinkByUrl;
-import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoChat;
-import static edu.java.scrapper.database.dao.UtilityDb.insertRowIntoLink;
+import static edu.java.scrapper.database.UtilityDb.createChatLink;
+import static edu.java.scrapper.database.UtilityDb.getAllFromChatLink;
+import static edu.java.scrapper.database.UtilityDb.getIdFromChatByTgChatId;
+import static edu.java.scrapper.database.UtilityDb.getIdFromLinkByUrl;
+import static edu.java.scrapper.database.UtilityDb.insertRowIntoChat;
+import static edu.java.scrapper.database.UtilityDb.insertRowIntoLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,13 +34,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     private final String saveSQL = "INSERT INTO chat_link(chat_id, link_id) VALUES (%d, %d)";
     private final String defaultUrl = "defaultUrl";
     private final long defaultTgChatId = 10;
-
-    private ChatLink createChatLink(long chatId, long linkId) {
-        ChatLink chatLink = new ChatLink();
-        chatLink.setChatId(chatId);
-        chatLink.setLinkId(linkId);
-        return chatLink;
-    }
 
     @BeforeEach
     public void checkThatTableIsEmpty() {
@@ -192,7 +186,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
         );
 
         //Удаление связи
-        chatLinkDao.delete(createChatLink(chatId, linkId));
+        chatLinkDao.delete(chatId, linkId);
         List<ChatLink> actualContent = getAllFromChatLink(jdbcClient);
         assertTrue(actualContent.isEmpty());
     }

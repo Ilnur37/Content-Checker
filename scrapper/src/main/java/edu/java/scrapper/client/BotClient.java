@@ -16,7 +16,7 @@ public class BotClient extends Client {
         return new BotClient(webClient);
     }
 
-    public void sendUpdate(int id, String url, String description, List<Long> tgChatIds) {
+    public void sendUpdate(long id, String url, String description, List<Long> tgChatIds) {
         webClient.post()
             .uri("/bot-api/updates")
             .contentType(MediaType.APPLICATION_JSON)

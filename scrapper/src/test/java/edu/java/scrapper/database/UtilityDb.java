@@ -1,4 +1,4 @@
-package edu.java.scrapper.database.dao;
+package edu.java.scrapper.database;
 
 import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chat.ChatRowMapper;
@@ -6,6 +6,7 @@ import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.model.link.LinkRowMapper;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
@@ -61,5 +62,27 @@ public class UtilityDb {
                 "INSERT INTO link(url, created_at, last_update_at) VALUES (?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)")
             .param(url)
             .update();
+    }
+
+    public static Chat createChat(long tgChatId) {
+        Chat chat = new Chat();
+        chat.setTgChatId(tgChatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        return chat;
+    }
+
+    public static Link createLink(String url) {
+        Link link = new Link();
+        link.setUrl(url);
+        link.setCreatedAt(OffsetDateTime.now());
+        link.setLastUpdateAt(OffsetDateTime.now());
+        return link;
+    }
+
+    public static ChatLink createChatLink(long chatId, long linkId) {
+        ChatLink chatLink = new ChatLink();
+        chatLink.setChatId(chatId);
+        chatLink.setLinkId(linkId);
+        return chatLink;
     }
 }

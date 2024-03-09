@@ -37,7 +37,7 @@ public class ScrapperControllerTest extends IntegrationTest {
     void registerChat(long id) {
         webTestClient.post()
             .uri("/scrapper-api/tg-chat/{id}", id)
-            .exchange().expectStatus().isOk();
+            .exchange().expectStatus().isCreated();
     }
 
     @ParameterizedTest

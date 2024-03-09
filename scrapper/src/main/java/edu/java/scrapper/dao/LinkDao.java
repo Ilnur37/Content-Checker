@@ -2,6 +2,7 @@ package edu.java.scrapper.dao;
 
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.model.link.LinkRowMapper;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +11,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class LinkDao implements Dao<Link> {
+public class LinkDao {
     private final JdbcClient jdbcClient;
     private final LinkRowMapper linkRowMapper;
+
+    public List<Link> getAll() {
+        String sql = "SELECT * FROM link";
+        return jdbcClient.sql(sql)
+            .query(linkRowMapper).list();
+    }
 
     public Optional<Link> getByUrl(String url) {
         String sql = "SELECT * FROM link WHERE url = ?";
@@ -28,14 +35,13 @@ public class LinkDao implements Dao<Link> {
             .query(linkRowMapper).optional();
     }
 
-    @Override
-    public List<Link> getAll() {
-        String sql = "SELECT * FROM link";
+    public List<Link> getByLustUpdate(OffsetDateTime dateTime) {
+        String sql = "SELECT * FROM link WHERE last_update_at < ?";
         return jdbcClient.sql(sql)
+            .param(dateTime)
             .query(linkRowMapper).list();
     }
 
-    @Override
     public int save(Link link) {
         String sql = "INSERT INTO link(url, created_at, last_update_at) VALUES (?, ?, ?)";
         return jdbcClient.sql(sql)
@@ -43,11 +49,24 @@ public class LinkDao implements Dao<Link> {
             .update();
     }
 
-    @Override
-    public int delete(Link link) {
+    public void updateLastUpdateAtById(long id, OffsetDateTime dateTime) {
+        String sql = "UPDATE link SET last_update_at = ? WHERE id = ?";
+        jdbcClient.sql(sql)
+            .params(dateTime, id)
+            .update();
+    }
+
+    public int deleteByUrl(String url) {
         String sql = "DELETE FROM link WHERE url = ?";
         return jdbcClient.sql(sql)
-            .param(link.getUrl())
+            .param(url)
+            .update();
+    }
+
+    public void deleteById(long id) {
+        String sql = "DELETE FROM link WHERE id = ?";
+        jdbcClient.sql(sql)
+            .param(id)
             .update();
     }
 }

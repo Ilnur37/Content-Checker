@@ -10,14 +10,20 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatDao implements Dao<Chat> {
+public class ChatDao {
     private final JdbcClient jdbcClient;
     private final ChatRowMapper chatRowMapper;
 
-    public Optional<Chat> getByTgChatId(long id) {
+    public List<Chat> getAll() {
+        String sql = "SELECT * FROM chat";
+        return jdbcClient.sql(sql)
+            .query(chatRowMapper).list();
+    }
+
+    public Optional<Chat> getByTgChatId(long tgChatId) {
         String sql = "SELECT * FROM chat WHERE tg_chat_id = ?";
         return jdbcClient.sql(sql)
-            .param(id)
+            .param(tgChatId)
             .query(chatRowMapper).optional();
     }
 
@@ -28,14 +34,6 @@ public class ChatDao implements Dao<Chat> {
             .query(chatRowMapper).optional();
     }
 
-    @Override
-    public List<Chat> getAll() {
-        String sql = "SELECT * FROM chat";
-        return jdbcClient.sql(sql)
-            .query(chatRowMapper).list();
-    }
-
-    @Override
     public int save(Chat chat) {
         String sql = "INSERT INTO chat(tg_chat_id, created_at) VALUES (?, ?)";
         return jdbcClient.sql(sql)
@@ -43,11 +41,10 @@ public class ChatDao implements Dao<Chat> {
             .update();
     }
 
-    @Override
-    public int delete(Chat chat) {
+    public int delete(long tgChatId) {
         String sql = "DELETE FROM chat WHERE tg_chat_id = ?";
         return jdbcClient.sql(sql)
-            .param(chat.getTgChatId())
+            .param(tgChatId)
             .update();
     }
 }

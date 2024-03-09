@@ -10,11 +10,15 @@ import org.springframework.validation.annotation.Validated;
 public record ApplicationConfig(
     @NotNull
     Scheduler scheduler,
-    Api api
+    Api api,
+    Supported supported
 ) {
     public record Api(String gitUrl, String stackoverflowUrl, String botUrl) {
     }
 
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
+    }
+
+    public record Supported(String stackoverflow, String github) {
     }
 }

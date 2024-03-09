@@ -14,7 +14,6 @@ import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.link.Link;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,22 +30,11 @@ public class JdbcLinkService {
     private final ChatLinkDao chatLinkDao;
 
     public ListLinksResponse getAll(long tgChatId) {
-        long chatId = getChatId(tgChatId);
+        long chatId = getChatByTgChatId(tgChatId).getId();
         List<ChatLink> chatLinksByChat = chatLinkDao.getByChatId(chatId);
 
-        //Удаление строк из chat_link с отсутствующей записью в link
-        List<Long> emptyLinksInChatLink = chatLinksByChat.stream()
-            .map(ChatLink::getLinkId)
-            .filter(linkId -> linkDao.getById(linkId).isEmpty())
-            .toList();
-        for (long linkId : emptyLinksInChatLink) {
-            ChatLink chatLink = createChatLink(chatId, linkId);
-            chatLinkDao.delete(chatLink);
-        }
-
         List<LinkResponse> linkResponses = chatLinksByChat.stream()
-            .map(row -> linkDao.getById(row.getLinkId()))
-            .map(Optional::get)
+            .map(row -> linkDao.getById(row.getLinkId()).orElseThrow())
             .map(link -> new LinkResponse(link.getId(), link.getUrl()))
             .toList();
 
@@ -55,49 +43,50 @@ public class JdbcLinkService {
 
     public LinkResponse add(long tgChatId, AddLinkRequest linkRequest) {
         String url = linkRequest.link();
-        long chatId = getChatId(tgChatId);
-        Link resultLink;
+        long chatId = getChatByTgChatId(tgChatId).getId();
+        Link actualLink;
 
+        //Создание ссылки в таблице ссылок, если ее нет
         if (linkDao.getByUrl(url).isEmpty()) {
             Link createLink = new Link();
             createLink.setUrl(url);
             createLink.setCreatedAt(now());
             createLink.setLastUpdateAt(now());
             linkDao.save(createLink);
-            resultLink = linkDao.getByUrl(url).get();
+            actualLink = linkDao.getByUrl(url).get();
         } else {
-            resultLink = linkDao.getByUrl(url).get();
-            for (ChatLink chatLink : chatLinkDao.getByChatId(tgChatId)) {
-                if (chatLink.getLinkId() == resultLink.getId()) {
+            //Иначе проверка на предмет повторного добавления
+            actualLink = linkDao.getByUrl(url).get();
+            for (ChatLink chatLink : chatLinkDao.getByChatId(chatId)) {
+                if (chatLink.getLinkId() == actualLink.getId()) {
                     throw new ReAddLinkException(
-                        getExMsg(EX_CHAT, String.valueOf(tgChatId))
+                        toExMsg(EX_CHAT, String.valueOf(tgChatId))
                             + ", "
-                            + getExMsg(EX_LINK, resultLink.getUrl())
+                            + toExMsg(EX_LINK, actualLink.getUrl())
                     );
                 }
             }
         }
 
-        ChatLink chatLink = createChatLink(chatId, resultLink.getId());
+        ChatLink chatLink = createChatLink(chatId, actualLink.getId());
         chatLinkDao.save(chatLink);
 
-        return new LinkResponse(resultLink.getId(), resultLink.getUrl());
+        return new LinkResponse(actualLink.getId(), actualLink.getUrl());
     }
 
     public LinkResponse remove(long tgChatId, RemoveLinkRequest linkRequest) {
         String url = linkRequest.link();
-        long chatId = getChatId(tgChatId);
-        long linkId = getLinkId(url);
-
-        Link resultLink = linkDao.getById(linkId).get();
-        ChatLink chatLink = createChatLink(chatId, linkId);
-        chatLinkDao.delete(chatLink);
-
-        if (chatLinkDao.getByLinkId(linkId).isEmpty()) {
-            linkDao.delete(resultLink);
+        Link actualLink = getLinkByUrl(url);
+        long chatId = getChatByTgChatId(tgChatId).getId();
+        long linkId = actualLink.getId();
+        int countChatTrackLink = chatLinkDao.getByLinkId(linkId).size();
+        chatLinkDao.delete(chatId, linkId);
+        //Если ссылку отслеживает 1 чат, удалить из таблицы ссылок
+        if (countChatTrackLink == 1) {
+            linkDao.deleteByUrl(url);
         }
 
-        return new LinkResponse(resultLink.getId(), resultLink.getUrl());
+        return new LinkResponse(actualLink.getId(), actualLink.getUrl());
     }
 
     private ChatLink createChatLink(long chatId, long linkId) {
@@ -107,23 +96,21 @@ public class JdbcLinkService {
         return chatLink;
     }
 
-    private long getChatId(long id) {
-        Chat chat = chatDao.getByTgChatId(id)
+    private Chat getChatByTgChatId(long id) {
+        return chatDao.getByTgChatId(id)
             .orElseThrow(
-                () -> new ChatIdNotFoundException(getExMsg(EX_CHAT, String.valueOf(id)))
+                () -> new ChatIdNotFoundException(toExMsg(EX_CHAT, String.valueOf(id)))
             );
-        return chat.getId();
     }
 
-    private long getLinkId(String url) {
-        Link link = linkDao.getByUrl(url)
+    private Link getLinkByUrl(String url) {
+        return linkDao.getByUrl(url)
             .orElseThrow(
-                () -> new LinkNotFoundException(getExMsg(EX_LINK, url))
+                () -> new LinkNotFoundException(toExMsg(EX_LINK, url))
             );
-        return link.getId();
     }
 
-    private String getExMsg(String ex, String value) {
+    private String toExMsg(String ex, String value) {
         return ex + value;
     }
 }

@@ -2,16 +2,19 @@ package edu.java.bot.service.handler;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.entity.Link;
-import edu.java.bot.repository.UserRepository;
+import edu.java.bot.service.ScrapperService;
+import edu.java.models.dto.response.LinkResponse;
+import edu.java.models.dto.response.ListLinksResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ListCommand extends CommandHandler {
     private static final String RESPONSE_LIST_OF_TRACKED_LINKS = "Вы отслеживаете %d ссылок \n";
 
-    public ListCommand(UserRepository userRepository) {
-        super(userRepository);
+    public ListCommand(ScrapperService scrapperService) {
+        super(scrapperService);
         this.next = null;
     }
 
@@ -34,17 +37,26 @@ public class ListCommand extends CommandHandler {
             return isTheCorrectCommand;
         }
 
-        var trackedLinks = userRepository.findLinksById(chatId);
-        int countLinks = 0;
-        if (trackedLinks.isPresent()) {
-            for (Link link : trackedLinks.get()) {
-                response.append("(")
+        try {
+            ListLinksResponse links = scrapperService.getAllLinks(chatId);
+            response.append(String.format(RESPONSE_LIST_OF_TRACKED_LINKS, links.size()));
+            for (LinkResponse link : links.links()) {
+                response.append("\n(")
                     .append(link)
-                    .append(")\n");
-                countLinks++;
+                    .append(")");
+            }
+        } catch (RuntimeException ex) {
+            switch (ex.getMessage()) {
+                case BAD_REQUEST_HTTP:
+                    response.append(BAD_REQUEST);
+                    break;
+                case NOT_FOUND_HTTP:
+                    response.append(USER_IS_NOT_REGISTERED);
+                    break;
+                default:
+                    throw ex;
             }
         }
-        response.insert(0, String.format(RESPONSE_LIST_OF_TRACKED_LINKS, countLinks));
         return new SendMessage(chatId, response.toString());
     }
 }
