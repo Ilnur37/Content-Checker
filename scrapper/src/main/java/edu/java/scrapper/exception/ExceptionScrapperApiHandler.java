@@ -24,19 +24,13 @@ public class ExceptionScrapperApiHandler {
         MethodArgumentNotValidException ex
     ) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        List<ApiErrorResponse> errors = new ArrayList<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            ApiErrorResponse errorResponse = toApiErrorResponse(
-                ex,
-                String.format(
-                    "Error in field %s %s",
-                    ((FieldError) error).getField(),
-                    error.getObjectName()
-                ),
-                httpStatus.toString()
-            );
-            errors.add(errorResponse);
-        });
+        List<ApiErrorResponse> errors = ex.getBindingResult().getAllErrors().stream()
+            .map(error -> toApiErrorResponse(
+                    ex,
+                    String.format("Error in field %s %s", ((FieldError) error).getField(), error.getObjectName()),
+                    httpStatus.toString()
+                )
+            ).toList();
         return ResponseEntity.status(httpStatus).body(errors);
     }
 

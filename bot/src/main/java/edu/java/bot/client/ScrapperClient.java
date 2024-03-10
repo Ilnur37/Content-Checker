@@ -8,7 +8,6 @@ import edu.java.models.dto.response.ListLinksResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -72,7 +71,7 @@ public class ScrapperClient extends Client {
         return webClient.post()
             .uri(URL_LINKS)
             .header(HEADER_TG_CHAT_ID, String.valueOf(id))
-            .body(BodyInserters.fromValue(new AddLinkRequest(link)))
+            .bodyValue(new AddLinkRequest(link))
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
@@ -87,7 +86,7 @@ public class ScrapperClient extends Client {
         return webClient.method(HttpMethod.DELETE)
             .uri(URL_LINKS)
             .header(HEADER_TG_CHAT_ID, String.valueOf(id))
-            .body(BodyInserters.fromValue(new RemoveLinkRequest(link)))
+            .bodyValue(new RemoveLinkRequest(link))
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
