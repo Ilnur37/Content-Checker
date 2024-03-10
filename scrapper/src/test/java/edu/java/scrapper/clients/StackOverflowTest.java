@@ -1,11 +1,10 @@
 package edu.java.scrapper.clients;
 
-import edu.java.dto.stackoverflow.OwnerInfo;
-import edu.java.dto.stackoverflow.answer.AnswerInfo;
-import edu.java.dto.stackoverflow.question.QuestionInfo;
-import edu.java.service.StackOverflowService;
+import edu.java.scrapper.dto.stackoverflow.OwnerInfo;
+import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
+import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
+import edu.java.scrapper.service.StackOverflowService;
 import java.util.List;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

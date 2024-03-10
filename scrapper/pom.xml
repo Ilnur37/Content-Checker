@@ -12,6 +12,10 @@
     <artifactId>scrapper</artifactId>
     <version>${revision}</version>
 
+    <properties>
+        <springdoc.version>2.3.0</springdoc.version>
+    </properties>
+
     <dependencies>
         <!-- Web -->
         <dependency>
@@ -59,6 +63,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>edu.java</groupId>
+            <artifactId>models</artifactId>
+            <version>0.1</version>
         </dependency>
 
         <!-- Tests -->
@@ -118,6 +127,14 @@
             <artifactId>kafka</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
