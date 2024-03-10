@@ -1,9 +1,9 @@
 package edu.java.scrapper.model.chatLink;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ChatLinkWithUrlRowMapper implements RowMapper<ChatLinkWithUrl> {

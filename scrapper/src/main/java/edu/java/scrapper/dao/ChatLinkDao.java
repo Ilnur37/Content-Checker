@@ -2,11 +2,11 @@ package edu.java.scrapper.dao;
 
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
-import java.util.List;
 import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
 import edu.java.scrapper.model.chatLink.ChatLinkWithTgChatRowMapper;
 import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
 import edu.java.scrapper.model.chatLink.ChatLinkWithUrlRowMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -34,10 +34,10 @@ public class ChatLinkDao {
 
     public List<ChatLinkWithUrl> getByChatIdJoinLink(long id) {
         String sql = """
-                SELECT cl.chat_id, cl.link_id, l.url
-                FROM chat_link cl
-                JOIN link l ON l.id = cl.link_id
-                WHERE chat_id = ?""";
+            SELECT cl.chat_id, cl.link_id, l.url
+            FROM chat_link cl
+            JOIN link l ON l.id = cl.link_id
+            WHERE chat_id = ?""";
         return jdbcClient.sql(sql)
             .param(id)
             .query(chatLinkWithUrlRowMapper).list();
@@ -52,10 +52,10 @@ public class ChatLinkDao {
 
     public List<ChatLinkWithTgChat> getByLinkIdIdJoinChat(long id) {
         String sql = """
-                SELECT cl.chat_id, cl.link_id, c.tg_chat_id
-                FROM chat_link cl
-                JOIN chat c ON c.id = cl.chat_id
-                WHERE link_id = ?""";
+            SELECT cl.chat_id, cl.link_id, c.tg_chat_id
+            FROM chat_link cl
+            JOIN chat c ON c.id = cl.chat_id
+            WHERE link_id = ?""";
         return jdbcClient.sql(sql)
             .param(id)
             .query(chatLinkWithTgChatRowMapper).list();
