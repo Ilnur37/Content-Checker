@@ -9,17 +9,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+@SpringBootTest
 public class BotControllerTest {
-
-    private final WebTestClient webTestClient = WebTestClient.bindToController(new BotController()).build();
+    private final WebTestClient webTestClient;
     private final long defaultId = 1;
     private final String defaultUrl = "aa";
     private final String defaultDescription = "aa";
     private final List<Long> defaultList = List.of(1L, 2L);
+
+    @Autowired
+    public BotControllerTest(BotController botController) {
+        webTestClient = WebTestClient.bindToController(botController).build();
+    }
 
     private LinkUpdateRequest getLinkUpdateRequest(long id, String url, String description, List<Long> tgChatIds) {
         return new LinkUpdateRequest(id, url, description, tgChatIds);

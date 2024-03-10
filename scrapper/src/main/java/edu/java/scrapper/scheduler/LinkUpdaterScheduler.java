@@ -1,6 +1,7 @@
 package edu.java.scrapper.scheduler;
 
 import edu.java.scrapper.configuration.ApplicationConfig;
+import edu.java.scrapper.dao.ChatDao;
 import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.dao.LinkDao;
 import edu.java.scrapper.dto.github.RepositoryInfo;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
 @Slf4j
 public class LinkUpdaterScheduler {
+    private final ChatDao chatDao;
     private final LinkDao linkDao;
     private final ChatLinkDao chatLinkDao;
     private final BotService botService;
@@ -31,6 +33,7 @@ public class LinkUpdaterScheduler {
     private static final Duration NEED_TO_CHECK = Duration.ofSeconds(30);
 
     public LinkUpdaterScheduler(
+        ChatDao chatDao,
         LinkDao linkDao,
         ChatLinkDao chatLinkDao,
         BotService botService,
@@ -38,6 +41,7 @@ public class LinkUpdaterScheduler {
         StackOverflowService stackOverflowService,
         ApplicationConfig appConf
     ) {
+        this.chatDao = chatDao;
         this.linkDao = linkDao;
         this.chatLinkDao = chatLinkDao;
         this.botService = botService;
@@ -83,6 +87,7 @@ public class LinkUpdaterScheduler {
         List<Long> chatIdsToSendMsg = chatLinkDao.getByLinkId(linkId)
             .stream()
             .map(ChatLink::getChatId)
+            .map(id -> chatDao.getById(id).orElseThrow().getTgChatId())
             .toList();
         botService.sendUpdate(linkId, url, "template description", chatIdsToSendMsg);
     }

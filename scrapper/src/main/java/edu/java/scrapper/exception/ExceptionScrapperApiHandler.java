@@ -6,7 +6,6 @@ import edu.java.models.exception.CustomApiException;
 import edu.java.scrapper.exception.custom.LinkNotFoundException;
 import edu.java.scrapper.exception.custom.ReAddLinkException;
 import edu.java.scrapper.exception.custom.ReRegistrationException;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
