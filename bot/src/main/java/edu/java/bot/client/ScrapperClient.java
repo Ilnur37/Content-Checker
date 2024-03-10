@@ -5,7 +5,6 @@ import edu.java.models.dto.request.RemoveLinkRequest;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class ScrapperClient extends Client {
@@ -51,7 +50,7 @@ public class ScrapperClient extends Client {
         return webClient.post()
             .uri(urlLinks)
             .header(headerTgChatId, String.valueOf(id))
-            .body(BodyInserters.fromValue(new AddLinkRequest(link)))
+            .bodyValue(new AddLinkRequest(link))
             .retrieve()
             .bodyToMono(LinkResponse.class)
             .block();
@@ -61,7 +60,7 @@ public class ScrapperClient extends Client {
         return webClient.method(HttpMethod.DELETE)
             .uri(urlLinks)
             .header(headerTgChatId, String.valueOf(id))
-            .body(BodyInserters.fromValue(new RemoveLinkRequest(link)))
+            .bodyValue(new RemoveLinkRequest(link))
             .retrieve()
             .bodyToMono(LinkResponse.class)
             .block();

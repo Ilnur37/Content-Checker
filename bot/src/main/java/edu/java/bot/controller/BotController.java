@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import static edu.java.bot.controller.BotController.BOOT_MAPPING;
+import static edu.java.bot.controller.BotController.BOT_MAPPING;
 
 @RestController
-@RequestMapping(BOOT_MAPPING)
+@RequestMapping(BOT_MAPPING)
 public class BotController {
-    public static final String BOOT_MAPPING = "bot-api";
+    public static final String BOT_MAPPING = "bot-api";
     public static final String UPDATE_MAPPING = "/updates";
 
     @Operation(summary = "Отправить обновление", description = "Ok")
