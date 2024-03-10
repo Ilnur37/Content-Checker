@@ -5,6 +5,8 @@ import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import java.util.ArrayList;
 import java.util.List;
+import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
+import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@Transactional
+@Rollback
 public class JdbcChatLinkTest extends IntegrationTest {
     @Autowired
     private ChatLinkDao chatLinkDao;
@@ -41,8 +45,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     @DisplayName("getByLinkId (В таблице chat_link 1 значение с искомой ссылкой)")
     void getByLinkIdWhenOneChat() {
         //Добавление в таблицы chat, link строк
@@ -63,8 +65,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     @DisplayName("getByLinkId (В таблице chat_link несколько значений с искомой ссылкой)")
     void getByLinkIdWhenManyChats() {
         int count = 5;
@@ -92,8 +92,34 @@ public class JdbcChatLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
+    @DisplayName("getByLinkIdIdJoinChat (В таблице chat_link несколько значений с искомой ссылкой)")
+    void getByLinkIdIdJoinChatWhenManyChats() {
+        int count = 5;
+        long linkId;
+        List<Long> chatIds = new ArrayList<>();
+        //Добавление в таблицы chat, link строк
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
+        for (int i = 0; i < count; i++) {
+            insertRowIntoChat(jdbcClient, defaultTgChatId + i);
+            chatIds.add(getIdFromChatByTgChatId(jdbcClient, defaultTgChatId + i).orElseThrow());
+        }
+
+        //Добавление связи в chat_link
+        for (long chatId : chatIds) {
+            jdbcClient.sql(String.format(saveSQL, chatId, linkId))
+                .update();
+        }
+
+        List<ChatLinkWithTgChat> contentByLinkId = chatLinkDao.getByLinkIdIdJoinChat(linkId);
+        assertEquals(chatIds.size(), contentByLinkId.size());
+        for (int i = 0; i < chatIds.size(); i++) {
+            assertEquals(chatIds.get(i), contentByLinkId.get(i).getChatId());
+            assertEquals(defaultTgChatId + i, contentByLinkId.get(i).getTgChatId());
+        }
+    }
+
+    @Test
     void getByChatId() {
         //Добавление в таблицы chat, link строк
         insertRowIntoChat(jdbcClient, defaultTgChatId);
@@ -113,8 +139,26 @@ public class JdbcChatLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
+    void getByChatIdJoinLink() {
+        //Добавление в таблицы chat, link строк
+        insertRowIntoChat(jdbcClient, defaultTgChatId);
+        insertRowIntoLink(jdbcClient, defaultUrl);
+        long chatId = getIdFromChatByTgChatId(jdbcClient, defaultTgChatId).orElseThrow();
+        long linkId = getIdFromLinkByUrl(jdbcClient, defaultUrl).orElseThrow();
+
+        //Добавление связи в chat_link
+        jdbcClient.sql(String.format(saveSQL, chatId, linkId))
+            .update();
+
+        List<ChatLinkWithUrl> contentByChatId = chatLinkDao.getByChatIdJoinLink(chatId);
+        assertAll(
+            () -> assertEquals(1, contentByChatId.size()),
+            () -> assertEquals(contentByChatId.getFirst().getLinkId(), linkId),
+        () -> assertEquals(contentByChatId.getFirst().getUrl(), defaultUrl)
+        );
+    }
+
+    @Test
     void getAll() {
         int count = 5;
         long linkId;
@@ -143,8 +187,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void save() {
         //Добавление в таблицы chat, link строк
         insertRowIntoChat(jdbcClient, defaultTgChatId);
@@ -165,8 +207,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void remove() {
         //Добавление в таблицы chat, link строк
         insertRowIntoChat(jdbcClient, defaultTgChatId);

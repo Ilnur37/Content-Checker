@@ -6,7 +6,7 @@ import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.dao.LinkDao;
 import edu.java.scrapper.dto.github.RepositoryInfo;
 import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
-import edu.java.scrapper.model.chatLink.ChatLink;
+import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.service.BotService;
 import edu.java.scrapper.service.web.GitHubService;
@@ -84,10 +84,9 @@ public class LinkUpdaterScheduler {
 
     private void updateTablesAndSendMsg(long linkId, OffsetDateTime newUpdateTime, String url) {
         linkDao.updateLastUpdateAtById(linkId, newUpdateTime);
-        List<Long> chatIdsToSendMsg = chatLinkDao.getByLinkId(linkId)
+        List<Long> chatIdsToSendMsg = chatLinkDao.getByLinkIdIdJoinChat(linkId)
             .stream()
-            .map(ChatLink::getChatId)
-            .map(id -> chatDao.getById(id).orElseThrow().getTgChatId())
+            .map(ChatLinkWithTgChat::getTgChatId)
             .toList();
         botService.sendUpdate(linkId, url, "template description", chatIdsToSendMsg);
     }

@@ -3,6 +3,10 @@ package edu.java.scrapper.dao;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
 import java.util.List;
+import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
+import edu.java.scrapper.model.chatLink.ChatLinkWithTgChatRowMapper;
+import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
+import edu.java.scrapper.model.chatLink.ChatLinkWithUrlRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -12,12 +16,31 @@ import org.springframework.stereotype.Repository;
 public class ChatLinkDao {
     private final JdbcClient jdbcClient;
     private final ChatLinkRowMapper chatLinkRowMapper;
+    private final ChatLinkWithUrlRowMapper chatLinkWithUrlRowMapper;
+    private final ChatLinkWithTgChatRowMapper chatLinkWithTgChatRowMapper;
+
+    public List<ChatLink> getAll() {
+        String sql = "SELECT * FROM chat_link";
+        return jdbcClient.sql(sql)
+            .query(chatLinkRowMapper).list();
+    }
 
     public List<ChatLink> getByChatId(long id) {
         String sql = "SELECT * FROM chat_link WHERE chat_id = ?";
         return jdbcClient.sql(sql)
             .param(id)
             .query(chatLinkRowMapper).list();
+    }
+
+    public List<ChatLinkWithUrl> getByChatIdJoinLink(long id) {
+        String sql = """
+                SELECT cl.chat_id, cl.link_id, l.url
+                FROM chat_link cl
+                JOIN link l ON l.id = cl.link_id
+                WHERE chat_id = ?""";
+        return jdbcClient.sql(sql)
+            .param(id)
+            .query(chatLinkWithUrlRowMapper).list();
     }
 
     public List<ChatLink> getByLinkId(long id) {
@@ -27,10 +50,15 @@ public class ChatLinkDao {
             .query(chatLinkRowMapper).list();
     }
 
-    public List<ChatLink> getAll() {
-        String sql = "SELECT * FROM chat_link";
+    public List<ChatLinkWithTgChat> getByLinkIdIdJoinChat(long id) {
+        String sql = """
+                SELECT cl.chat_id, cl.link_id, c.tg_chat_id
+                FROM chat_link cl
+                JOIN chat c ON c.id = cl.chat_id
+                WHERE link_id = ?""";
         return jdbcClient.sql(sql)
-            .query(chatLinkRowMapper).list();
+            .param(id)
+            .query(chatLinkWithTgChatRowMapper).list();
     }
 
     public int save(ChatLink chatLink) {

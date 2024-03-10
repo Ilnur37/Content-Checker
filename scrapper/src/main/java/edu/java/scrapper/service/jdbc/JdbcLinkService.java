@@ -12,6 +12,7 @@ import edu.java.scrapper.exception.custom.LinkNotFoundException;
 import edu.java.scrapper.exception.custom.ReAddLinkException;
 import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chatLink.ChatLink;
+import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
 import edu.java.scrapper.model.link.Link;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +32,10 @@ public class JdbcLinkService {
 
     public ListLinksResponse getAll(long tgChatId) {
         long chatId = getChatByTgChatId(tgChatId).getId();
-        List<ChatLink> chatLinksByChat = chatLinkDao.getByChatId(chatId);
 
+        List<ChatLinkWithUrl> chatLinksByChat = chatLinkDao.getByChatIdJoinLink(chatId);
         List<LinkResponse> linkResponses = chatLinksByChat.stream()
-            .map(row -> linkDao.getById(row.getLinkId()).orElseThrow())
-            .map(link -> new LinkResponse(link.getId(), link.getUrl()))
+            .map(row -> new LinkResponse(row.getLinkId(), row.getUrl()))
             .toList();
 
         return new ListLinksResponse(linkResponses, linkResponses.size());

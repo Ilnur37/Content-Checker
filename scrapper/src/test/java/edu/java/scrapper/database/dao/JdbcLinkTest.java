@@ -79,6 +79,26 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
+    void getByLustUpdate() {
+        //Добавление нескольких ссылок
+        OffsetDateTime now = OffsetDateTime.now();
+        String sql = "INSERT INTO link(url, created_at, last_update_at) VALUES (?, CURRENT_TIMESTAMP, ?)";
+        long count = 10;
+        for (long id = 1; id <= 10; id++) {
+            jdbcClient.sql(sql)
+                .params(defaultUrl + id, now.plusSeconds(5 * id))
+                .update();
+        }
+
+        List<Link> actualLinks = linkDao.getByLustUpdate(now.plusSeconds(25));
+        assertAll(
+            "Поддтверждение, что ссылки добавились",
+            () -> assertFalse(actualLinks.isEmpty()),
+            () -> assertEquals(actualLinks.size(), count/2 - 1)
+        );
+    }
+
+    @Test
     void getAll() {
         //Добавление нескольких ссылок
         long count = 10;
