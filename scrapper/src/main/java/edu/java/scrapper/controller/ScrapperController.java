@@ -5,6 +5,8 @@ import edu.java.models.dto.request.RemoveLinkRequest;
 import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
+import edu.java.scrapper.service.ChatService;
+import edu.java.scrapper.service.LinkService;
 import edu.java.scrapper.service.jdbc.JdbcChatService;
 import edu.java.scrapper.service.jdbc.JdbcLinkService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,8 +34,8 @@ public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
     public static final String LINK_MAPPING = "/links";
     public static final String SCRAPPER_MAPPING = "scrapper-api";
-    private final JdbcChatService chatService;
-    private final JdbcLinkService linkService;
+    private final ChatService chatService;
+    private final LinkService linkService;
 
     @Autowired
     public ScrapperController(JdbcChatService chatService, JdbcLinkService linkService) {
