@@ -11,4 +11,6 @@ public class Link {
     private String url;
     private OffsetDateTime createdAt;
     private OffsetDateTime lastUpdateAt;
+    private String name;
+    private String author;
 }
