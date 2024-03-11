@@ -9,9 +9,15 @@ import lombok.Setter;
 @Setter
 public class RepositoryInfo {
     private Long id;
-    @JsonProperty("full_name")
-    private String fullName;
-    private String url;
-    @JsonProperty("pushed_at")
+    private String ref;
+    @JsonProperty("timestamp")
     private OffsetDateTime pushedAt;
+    @JsonProperty("activity_type")
+    private String activityType;
+    private Actor actor;
+
+    public void setRef(String ref) {
+        String[] strings = ref.split("/");
+        this.ref = strings[strings.length - 1];
+    }
 }
