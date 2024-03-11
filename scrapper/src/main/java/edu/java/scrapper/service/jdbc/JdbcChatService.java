@@ -7,6 +7,7 @@ import edu.java.scrapper.dao.LinkDao;
 import edu.java.scrapper.exception.custom.ReRegistrationException;
 import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chatLink.ChatLink;
+import edu.java.scrapper.service.ChatService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,12 @@ import static java.time.OffsetDateTime.now;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class JdbcChatService {
-    private static final String EXCEPTION = "tg_chat_id = %d";
+public class JdbcChatService implements ChatService {
     private final ChatDao chatDao;
     private final LinkDao linkDao;
     private final ChatLinkDao chatLinkDao;
 
+    @Override
     public void register(long tgChatId) {
         if (chatDao.getByTgChatId(tgChatId).isPresent()) {
             throw new ReRegistrationException(toExMsg(tgChatId));
@@ -32,6 +33,7 @@ public class JdbcChatService {
         chatDao.save(chat);
     }
 
+    @Override
     public void unregister(long tgChatId) {
         long id = chatDao.getByTgChatId(tgChatId)
             .orElseThrow(
@@ -49,9 +51,5 @@ public class JdbcChatService {
             }
         }
         chatDao.delete(tgChatId);
-    }
-
-    private String toExMsg(long id) {
-        return String.format(EXCEPTION, id);
     }
 }

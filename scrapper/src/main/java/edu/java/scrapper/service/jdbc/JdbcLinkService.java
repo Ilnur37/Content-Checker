@@ -14,6 +14,7 @@ import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
 import edu.java.scrapper.model.link.Link;
+import edu.java.scrapper.service.LinkService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,12 @@ import static java.time.OffsetDateTime.now;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class JdbcLinkService {
-    private static final String EX_CHAT = "tg_chat_id = ";
-    private static final String EX_LINK = "url = ";
+public class JdbcLinkService implements LinkService {
     private final ChatDao chatDao;
     private final LinkDao linkDao;
     private final ChatLinkDao chatLinkDao;
 
+    @Override
     public ListLinksResponse getAll(long tgChatId) {
         long chatId = getChatByTgChatId(tgChatId).getId();
 
@@ -41,6 +41,7 @@ public class JdbcLinkService {
         return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
+    @Override
     public LinkResponse add(long tgChatId, AddLinkRequest linkRequest) {
         String url = linkRequest.link();
         long chatId = getChatByTgChatId(tgChatId).getId();
@@ -74,6 +75,7 @@ public class JdbcLinkService {
         return new LinkResponse(actualLink.getId(), actualLink.getUrl());
     }
 
+    @Override
     public LinkResponse remove(long tgChatId, RemoveLinkRequest linkRequest) {
         String url = linkRequest.link();
         Link actualLink = getLinkByUrl(url);
@@ -108,9 +110,5 @@ public class JdbcLinkService {
             .orElseThrow(
                 () -> new LinkNotFoundException(toExMsg(EX_LINK, url))
             );
-    }
-
-    private String toExMsg(String ex, String value) {
-        return ex + value;
     }
 }
