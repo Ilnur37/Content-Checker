@@ -14,6 +14,13 @@ springdoc.swagger-ui.path: /swagger-ui.html
 spring:
   application:
     name: scrapper
+  liquibase:
+    enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scrapper
+    username: ${USERNAME_DB}
+    password: ${PASSWORD_DB}
+    driver-class-name: org.postgresql.Driver
 
 server:
   port: 8080
