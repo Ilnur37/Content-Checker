@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.ScrapperService;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
+import edu.java.models.exception.ChatIdNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -46,15 +47,10 @@ public class ListCommand extends CommandHandler {
                     .append(")");
             }
         } catch (RuntimeException ex) {
-            switch (ex.getMessage()) {
-                case BAD_REQUEST_HTTP:
-                    response.append(BAD_REQUEST);
-                    break;
-                case NOT_FOUND_HTTP:
-                    response.append(USER_IS_NOT_REGISTERED);
-                    break;
-                default:
-                    throw ex;
+            switch (ex) {
+                case ChatIdNotFoundException chatIdNotFoundException -> response.append(USER_IS_NOT_REGISTERED);
+                case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
+                default -> throw ex;
             }
         }
         return new SendMessage(chatId, response.toString());

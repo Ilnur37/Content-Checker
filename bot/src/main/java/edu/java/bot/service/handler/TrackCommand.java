@@ -4,6 +4,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.domain.SupportedDomain;
 import edu.java.bot.service.ScrapperService;
+import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.ReAddLinkException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
@@ -64,18 +66,12 @@ public class TrackCommand extends CommandHandler {
                     + format(LINK_FOR_LOGGER, link)
                     + LINK_HAS_STARTED_TO_BE_TRACKED);
             } catch (RuntimeException ex) {
-                switch (ex.getMessage()) {
-                    case BAD_REQUEST_HTTP:
-                        response.append(BAD_REQUEST);
-                        break;
-                    case NOT_FOUND_HTTP:
-                        response.append(USER_IS_NOT_REGISTERED);
-                        break;
-                    case CONFLICT_HTTP:
+                switch (ex) {
+                    case ReAddLinkException reAddLinkException ->
                         response.append(RESPONSE_LINK_IS_ALREADY_BEING_TRACKED);
-                        break;
-                    default:
-                        throw ex;
+                    case ChatIdNotFoundException chatIdNotFoundException -> response.append(USER_IS_NOT_REGISTERED);
+                    case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
+                    default -> throw ex;
                 }
             }
         }

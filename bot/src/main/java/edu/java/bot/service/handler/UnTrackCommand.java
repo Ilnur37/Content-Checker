@@ -3,6 +3,8 @@ package edu.java.bot.service.handler;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.ScrapperService;
+import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.LinkNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
@@ -51,15 +53,11 @@ public class UnTrackCommand extends CommandHandler {
                 + LINK_IS_NO_LONGER_BEING_TRACKED);
             response.append(toResponse(RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED, link));
         } catch (RuntimeException ex) {
-            switch (ex.getMessage()) {
-                case BAD_REQUEST_HTTP:
-                    response.append(BAD_REQUEST);
-                    break;
-                case NOT_FOUND_HTTP:
-                    response.append(RESPONSE_LINK_NOT_TRACKED);
-                    break;
-                default:
-                    throw ex;
+            switch (ex) {
+                case LinkNotFoundException linkNotFoundException -> response.append(RESPONSE_LINK_NOT_TRACKED);
+                case ChatIdNotFoundException chatIdNotFoundException -> response.append(USER_IS_NOT_REGISTERED);
+                case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
+                default -> throw ex;
             }
         }
         return new SendMessage(chatId, response.toString());

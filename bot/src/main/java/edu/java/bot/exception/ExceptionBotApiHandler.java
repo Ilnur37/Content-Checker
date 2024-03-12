@@ -1,5 +1,6 @@
 package edu.java.bot.exception;
 
+import edu.java.models.ReasonOfError;
 import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import java.util.List;
@@ -21,7 +22,8 @@ public class ExceptionBotApiHandler {
             .map(error -> toApiErrorResponse(
                     ex,
                     String.format("Error in field %s %s", ((FieldError) error).getField(), error.getObjectName()),
-                    httpStatus.toString()
+                    httpStatus.toString(),
+                    ReasonOfError.ELSE
                 )
             ).toList();
         return ResponseEntity.status(httpStatus).body(errors);
@@ -30,7 +32,8 @@ public class ExceptionBotApiHandler {
     @ExceptionHandler
     public ResponseEntity<ApiErrorResponse> handleChatIdNotFoundException(ChatIdNotFoundException ex) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        ApiErrorResponse response = toApiErrorResponse(ex, ex.getDescription(), httpStatus.toString());
+        ApiErrorResponse response =
+            toApiErrorResponse(ex, ex.getDescription(), httpStatus.toString(), ReasonOfError.CHAT);
         return ResponseEntity.status(httpStatus).body(response);
     }
 }
