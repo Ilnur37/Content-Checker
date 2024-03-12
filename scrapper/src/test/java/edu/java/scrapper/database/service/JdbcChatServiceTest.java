@@ -5,7 +5,7 @@ import edu.java.scrapper.dao.ChatDao;
 import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.dao.LinkDao;
 import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.exception.custom.ReRegistrationException;
+import edu.java.models.exception.ReRegistrationException;
 import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.link.Link;

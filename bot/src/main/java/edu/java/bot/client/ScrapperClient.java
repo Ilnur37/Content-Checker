@@ -5,8 +5,13 @@ import edu.java.models.dto.request.RemoveLinkRequest;
 import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
+import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.LinkNotFoundException;
+import edu.java.models.exception.ReAddLinkException;
+import edu.java.models.exception.ReRegistrationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -34,7 +39,7 @@ public class ScrapperClient extends Client {
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
                     log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(new RuntimeException(error.getCode()));
+                    return Mono.error(getCustomApiException(error));
                 }))
             .bodyToMono(Void.class)
             .block();
@@ -47,7 +52,7 @@ public class ScrapperClient extends Client {
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
                     log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(new RuntimeException(error.getCode()));
+                    return Mono.error(getCustomApiException(error));
                 }))
             .bodyToMono(Void.class)
             .block();
@@ -61,7 +66,7 @@ public class ScrapperClient extends Client {
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
                     log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(new RuntimeException(error.getCode()));
+                    return Mono.error(getCustomApiException(error));
                 }))
             .bodyToMono(ListLinksResponse.class)
             .block();
@@ -76,7 +81,7 @@ public class ScrapperClient extends Client {
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
                     log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(new RuntimeException(error.getCode()));
+                    return Mono.error(getCustomApiException(error));
                 }))
             .bodyToMono(LinkResponse.class)
             .block();
@@ -91,9 +96,37 @@ public class ScrapperClient extends Client {
             .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> {
                     log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(new RuntimeException(error.getCode()));
+                    return Mono.error(getCustomApiException(error));
                 }))
             .bodyToMono(LinkResponse.class)
             .block();
+    }
+
+    @SuppressWarnings({"ReturnCount", "MissingSwitchDefault"})
+    private RuntimeException getCustomApiException(ApiErrorResponse apiErrorResponse) {
+        String msg = apiErrorResponse.getExceptionMessage();
+        String code = apiErrorResponse.getCode();
+        switch (apiErrorResponse.getReasonOfError()) {
+            case CHAT -> {
+                if (code.equals(HttpStatus.CONFLICT.toString())) {
+                    return new ReRegistrationException(msg);
+                }
+                if (code.equals(HttpStatus.NOT_FOUND.toString())) {
+                    return new ChatIdNotFoundException(msg);
+                }
+            }
+            case LINK -> {
+                if (code.equals(HttpStatus.CONFLICT.toString())) {
+                    return new ReAddLinkException(msg);
+                }
+                if (code.equals(HttpStatus.NOT_FOUND.toString())) {
+                    return new LinkNotFoundException(msg);
+                }
+            }
+            case ELSE -> {
+                return new IllegalArgumentException();
+            }
+        }
+        return new RuntimeException();
     }
 }

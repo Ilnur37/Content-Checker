@@ -9,7 +9,7 @@ import edu.java.scrapper.dao.ChatDao;
 import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.dao.LinkDao;
 import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.exception.custom.ReAddLinkException;
+import edu.java.models.exception.ReAddLinkException;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.service.jdbc.JdbcLinkService;

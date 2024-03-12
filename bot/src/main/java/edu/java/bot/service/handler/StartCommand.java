@@ -3,6 +3,7 @@ package edu.java.bot.service.handler;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.ScrapperService;
+import edu.java.models.exception.ReRegistrationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import static java.lang.String.format;
@@ -44,15 +45,11 @@ public class StartCommand extends CommandHandler {
             log.info(format(CHAT_ID_FOR_LOGGER, chatId) + USER_SUCCESSFULLY_REGISTERED);
             response.append(RESPONSE_USER_SUCCESSFULLY_REGISTERED);
         } catch (RuntimeException ex) {
-            switch (ex.getMessage()) {
-                case BAD_REQUEST_HTTP:
-                    response.append(BAD_REQUEST);
-                    break;
-                case CONFLICT_HTTP:
+            switch (ex) {
+                case ReRegistrationException reRegistrationException ->
                     response.append(RESPONSE_USER_IS_ALREADY_REGISTERED);
-                    break;
-                default:
-                    throw ex;
+                case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
+                default -> throw ex;
             }
         }
         return new SendMessage(chatId, response.toString());
