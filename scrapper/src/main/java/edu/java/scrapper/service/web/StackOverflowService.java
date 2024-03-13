@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class StackOverflowService {
     private final StackOverflowClient stackOverflowClient;
 
-    //DELETE
     public QuestionInfo getQuestionInfo(Long question) {
         return stackOverflowClient.getQuestionInfo(question);
     }

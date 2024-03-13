@@ -1,16 +1,14 @@
 package edu.java.scrapper.scheduler;
 
-import edu.java.scrapper.configuration.ApplicationConfig;
 import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.dao.LinkDao;
-import edu.java.scrapper.dto.github.RepositoryInfo;
+import edu.java.scrapper.dto.github.ActionsInfo;
 import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.scrapper.dto.stackoverflow.comment.CommentInfo;
 import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.service.BotService;
-import edu.java.scrapper.service.web.GitHubService;
-import edu.java.scrapper.service.web.StackOverflowService;
+import edu.java.scrapper.service.web.WebResourceHandler;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,24 +33,18 @@ public class LinkUpdaterScheduler {
     private final LinkDao linkDao;
     private final ChatLinkDao chatLinkDao;
     private final BotService botService;
-    private final GitHubService gitHubService;
-    private final StackOverflowService stackOverflowService;
-    private final ApplicationConfig.Supported api;
+    private final WebResourceHandler webResourceHandler;
 
     public LinkUpdaterScheduler(
         LinkDao linkDao,
         ChatLinkDao chatLinkDao,
         BotService botService,
-        GitHubService gitHubService,
-        StackOverflowService stackOverflowService,
-        ApplicationConfig appConf
+        WebResourceHandler webResourceHandler
     ) {
         this.linkDao = linkDao;
         this.chatLinkDao = chatLinkDao;
         this.botService = botService;
-        this.gitHubService = gitHubService;
-        this.stackOverflowService = stackOverflowService;
-        this.api = appConf.supported();
+        this.webResourceHandler = webResourceHandler;
     }
 
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
@@ -60,7 +52,7 @@ public class LinkUpdaterScheduler {
         OffsetDateTime now = OffsetDateTime.now();
         List<Link> links = linkDao.getByLustUpdate(now.minus(NEED_TO_CHECK));
         for (Link link : links) {
-            if (link.getUrl().contains(api.github())) {
+            if (webResourceHandler.isGitHubUrl(link.getUrl())) {
                 gitHubProcess(link, now);
             } else {
                 stackOverflowProcess(link, now);
@@ -69,15 +61,12 @@ public class LinkUpdaterScheduler {
     }
 
     private void gitHubProcess(Link link, OffsetDateTime now) {
-        String[] url = link.getUrl().split("/");
-        String owner = url[url.length - 2];
-        String repo = url[url.length - 1];
-        List<RepositoryInfo> repositoryInfo = gitHubService.getRepositoryInfo(owner, repo);
-        if (link.getLastUpdateAt().isBefore(repositoryInfo.getFirst().getPushedAt())) {
+        List<ActionsInfo> actionsInfo = webResourceHandler.getActionsGitHubInfoByUrl(link.getUrl());
+        if (link.getLastUpdateAt().isBefore(actionsInfo.getFirst().getPushedAt())) {
             StringBuilder description =
-                new StringBuilder(format(GIT_HEAD, repo, owner, repositoryInfo.size()));
-            repositoryInfo.stream()
-                .filter(repI -> repI.getPushedAt().isBefore(now))
+                new StringBuilder(format(GIT_HEAD, link.getName(), link.getAuthor(), actionsInfo.size()));
+            actionsInfo.stream()
+                .filter(repI -> repI.getPushedAt().isAfter(link.getLastUpdateAt()))
                 .map(repI -> format(
                     GIT_ABOUT,
                     repI.getRef(),
@@ -90,15 +79,13 @@ public class LinkUpdaterScheduler {
     }
 
     private void stackOverflowProcess(Link link, OffsetDateTime now) {
-        String[] url = link.getUrl().split("/");
-        Long question = Long.valueOf(url[url.length - 2]);
-        List<AnswerInfo> newAnswers = stackOverflowService.getAnswerInfoByQuestion(question)
+        List<AnswerInfo> newAnswers = webResourceHandler.getAnswersStackOverflowByUrl(link.getUrl())
             .stream()
-            .filter(answer -> answer.getLastActivityDate().isBefore(now))
+            .filter(answer -> answer.getLastActivityDate().isAfter(link.getLastUpdateAt()))
             .toList();
-        List<CommentInfo> newComments = stackOverflowService.getCommentInfoByQuestion(question)
+        List<CommentInfo> newComments = webResourceHandler.getCommentsStackOverflowByUrl(link.getUrl())
             .stream()
-            .filter(comment -> comment.getCreationDate().isBefore(now))
+            .filter(comment -> comment.getCreationDate().isAfter(link.getLastUpdateAt()))
             .toList();
 
         if (!newAnswers.isEmpty() || !newComments.isEmpty()) {
@@ -107,12 +94,13 @@ public class LinkUpdaterScheduler {
             newAnswers.forEach(answer -> description.append(format(
                 SOF_ANSWER,
                 answer.getOwner().getDisplayName(),
-                answer.getLastEditDate()
+                answer.getLastEditDate() == null ? answer.getLastActivityDate().format(FORMATTER)
+                    : answer.getLastEditDate().format(FORMATTER)
             )));
             newComments.forEach(comment -> description.append(format(
                 SOF_COMMENT,
                 comment.getOwner().getDisplayName(),
-                comment.getCreationDate()
+                comment.getCreationDate().format(FORMATTER)
             )));
             updateTablesAndSendMsg(link, now, description.toString());
         }
