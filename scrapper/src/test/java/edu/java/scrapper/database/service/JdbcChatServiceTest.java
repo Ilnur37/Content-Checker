@@ -1,14 +1,14 @@
 package edu.java.scrapper.database.service;
 
 import edu.java.models.exception.ChatIdNotFoundException;
-import edu.java.scrapper.dao.ChatDao;
-import edu.java.scrapper.dao.ChatLinkDao;
-import edu.java.scrapper.dao.LinkDao;
+import edu.java.scrapper.domain.jdbc.dao.ChatDao;
+import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
+import edu.java.scrapper.domain.jdbc.dao.LinkDao;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.models.exception.ReRegistrationException;
-import edu.java.scrapper.model.chat.Chat;
-import edu.java.scrapper.model.chatLink.ChatLink;
-import edu.java.scrapper.model.link.Link;
+import edu.java.scrapper.domain.jdbc.model.chat.Chat;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
+import edu.java.scrapper.domain.jdbc.model.link.Link;
 import edu.java.scrapper.service.jdbc.JdbcChatService;
 import java.time.OffsetDateTime;
 import java.util.List;

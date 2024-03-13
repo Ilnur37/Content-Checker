@@ -1,4 +1,4 @@
-package edu.java.scrapper.model.link;
+package edu.java.scrapper.domain.jdbc.model.link;
 
 import java.time.OffsetDateTime;
 import lombok.Getter;

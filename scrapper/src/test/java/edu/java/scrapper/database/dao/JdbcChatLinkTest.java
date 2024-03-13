@@ -1,12 +1,12 @@
 package edu.java.scrapper.database.dao;
 
-import edu.java.scrapper.dao.ChatLinkDao;
+import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
 import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.model.chatLink.ChatLink;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
 import java.util.ArrayList;
 import java.util.List;
-import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
-import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChat;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

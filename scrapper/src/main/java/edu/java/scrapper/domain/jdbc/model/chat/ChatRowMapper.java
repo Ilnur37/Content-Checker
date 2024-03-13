@@ -1,4 +1,4 @@
-package edu.java.scrapper.model.chat;
+package edu.java.scrapper.domain.jdbc.model.chat;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

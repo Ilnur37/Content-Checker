@@ -1,4 +1,4 @@
-package edu.java.scrapper.model.chatLink;
+package edu.java.scrapper.domain.jdbc.model.chatLink;
 
 import lombok.Getter;
 import lombok.Setter;

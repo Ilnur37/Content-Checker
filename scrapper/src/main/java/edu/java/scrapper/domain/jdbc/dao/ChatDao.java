@@ -1,7 +1,7 @@
-package edu.java.scrapper.dao;
+package edu.java.scrapper.domain.jdbc.dao;
 
-import edu.java.scrapper.model.chat.Chat;
-import edu.java.scrapper.model.chat.ChatRowMapper;
+import edu.java.scrapper.domain.jdbc.model.chat.Chat;
+import edu.java.scrapper.domain.jdbc.model.chat.ChatRowMapper;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

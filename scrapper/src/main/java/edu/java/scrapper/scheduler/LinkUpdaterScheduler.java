@@ -1,13 +1,12 @@
 package edu.java.scrapper.scheduler;
 
 import edu.java.scrapper.configuration.ApplicationConfig;
-import edu.java.scrapper.dao.ChatDao;
-import edu.java.scrapper.dao.ChatLinkDao;
-import edu.java.scrapper.dao.LinkDao;
+import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
+import edu.java.scrapper.domain.jdbc.dao.LinkDao;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChat;
+import edu.java.scrapper.domain.jdbc.model.link.Link;
 import edu.java.scrapper.dto.github.RepositoryInfo;
 import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
-import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
-import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.service.BotService;
 import edu.java.scrapper.service.web.GitHubService;
 import edu.java.scrapper.service.web.StackOverflowService;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
 @Slf4j
 public class LinkUpdaterScheduler {
-    private final ChatDao chatDao;
     private final LinkDao linkDao;
     private final ChatLinkDao chatLinkDao;
     private final BotService botService;
@@ -33,7 +31,6 @@ public class LinkUpdaterScheduler {
     private static final Duration NEED_TO_CHECK = Duration.ofSeconds(30);
 
     public LinkUpdaterScheduler(
-        ChatDao chatDao,
         LinkDao linkDao,
         ChatLinkDao chatLinkDao,
         BotService botService,
@@ -41,7 +38,6 @@ public class LinkUpdaterScheduler {
         StackOverflowService stackOverflowService,
         ApplicationConfig appConf
     ) {
-        this.chatDao = chatDao;
         this.linkDao = linkDao;
         this.chatLinkDao = chatLinkDao;
         this.botService = botService;

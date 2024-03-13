@@ -1,4 +1,4 @@
-package edu.java.scrapper.model.link;
+package edu.java.scrapper.domain.jdbc.model.link;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

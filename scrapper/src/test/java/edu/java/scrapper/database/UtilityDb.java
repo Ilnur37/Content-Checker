@@ -1,11 +1,11 @@
 package edu.java.scrapper.database;
 
-import edu.java.scrapper.model.chat.Chat;
-import edu.java.scrapper.model.chat.ChatRowMapper;
-import edu.java.scrapper.model.chatLink.ChatLink;
-import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
-import edu.java.scrapper.model.link.Link;
-import edu.java.scrapper.model.link.LinkRowMapper;
+import edu.java.scrapper.domain.jdbc.model.chat.Chat;
+import edu.java.scrapper.domain.jdbc.model.chat.ChatRowMapper;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkRowMapper;
+import edu.java.scrapper.domain.jdbc.model.link.Link;
+import edu.java.scrapper.domain.jdbc.model.link.LinkRowMapper;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
