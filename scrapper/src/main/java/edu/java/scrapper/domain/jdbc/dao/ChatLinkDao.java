@@ -1,11 +1,11 @@
-package edu.java.scrapper.dao;
+package edu.java.scrapper.domain.jdbc.dao;
 
-import edu.java.scrapper.model.chatLink.ChatLink;
-import edu.java.scrapper.model.chatLink.ChatLinkRowMapper;
-import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
-import edu.java.scrapper.model.chatLink.ChatLinkWithTgChatRowMapper;
-import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
-import edu.java.scrapper.model.chatLink.ChatLinkWithUrlRowMapper;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkRowMapper;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChat;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChatRowMapper;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrl;
+import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrlRowMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
