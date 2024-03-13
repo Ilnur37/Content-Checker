@@ -10,11 +10,14 @@ import edu.java.models.exception.ReAddLinkException;
 import edu.java.scrapper.dao.ChatDao;
 import edu.java.scrapper.dao.ChatLinkDao;
 import edu.java.scrapper.dao.LinkDao;
+import edu.java.scrapper.dto.github.RepositoryInfo;
+import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
 import edu.java.scrapper.model.chat.Chat;
 import edu.java.scrapper.model.chatLink.ChatLink;
 import edu.java.scrapper.model.chatLink.ChatLinkWithUrl;
 import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.web.WebResourceHandler;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,9 +28,11 @@ import static java.time.OffsetDateTime.now;
 @RequiredArgsConstructor
 @Transactional
 public class JdbcLinkService implements LinkService {
+    private static final String EMPTY_STRING = "";
     private final ChatDao chatDao;
     private final LinkDao linkDao;
     private final ChatLinkDao chatLinkDao;
+    private final WebResourceHandler webResourceHandler;
 
     @Override
     public ListLinksResponse getAll(long tgChatId) {
@@ -44,6 +49,18 @@ public class JdbcLinkService implements LinkService {
     @Override
     public LinkResponse add(long tgChatId, AddLinkRequest linkRequest) {
         String url = linkRequest.link();
+        String author = EMPTY_STRING;
+        String title = EMPTY_STRING;
+        if (webResourceHandler.isGitHubUrl(url)) {
+            RepositoryInfo repositoryInfo = webResourceHandler.getRepositoryGitHubInfoByUrl(url);
+            author = repositoryInfo.getActor().getLogin();
+            title = repositoryInfo.getName();
+        } else if (webResourceHandler.isStackOverflowUrl(url)) {
+            QuestionInfo questionInfo = webResourceHandler.getQuestionStackOverflowByUrl(url);
+            author = questionInfo.getOwner().getDisplayName();
+            title = questionInfo.getTitle();
+        }
+
         long chatId = getChatByTgChatId(tgChatId).getId();
         Link actualLink;
 
@@ -53,6 +70,8 @@ public class JdbcLinkService implements LinkService {
             createLink.setUrl(url);
             createLink.setCreatedAt(now());
             createLink.setLastUpdateAt(now());
+            createLink.setAuthor(author);
+            createLink.setName(title);
             linkDao.save(createLink);
             actualLink = linkDao.getByUrl(url).get();
         } else {

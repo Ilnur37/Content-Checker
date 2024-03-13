@@ -20,7 +20,10 @@ public class UpdateService {
     public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
         List<SendMessage> messages = linkUpdateRequest.tgChatIds()
             .stream()
-            .map(tgChatId -> new SendMessage(tgChatId, DESCRIPTION + linkUpdateRequest.url()))
+            .map(tgChatId -> new SendMessage(
+                tgChatId,
+                DESCRIPTION + linkUpdateRequest.url() + "\n\n" + linkUpdateRequest.description()
+            ))
             .toList();
         List<Long> badIds = new ArrayList<>();
 

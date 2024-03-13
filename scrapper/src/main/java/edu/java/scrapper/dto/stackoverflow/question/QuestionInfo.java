@@ -25,4 +25,6 @@ public class QuestionInfo {
 
     @JsonProperty("question_id")
     private long questionId;
+
+    private String title;
 }

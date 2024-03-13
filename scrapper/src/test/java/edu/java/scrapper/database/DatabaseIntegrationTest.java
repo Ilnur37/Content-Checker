@@ -34,6 +34,7 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
+            () -> Assertions.assertEquals(3, columns.size()),
             () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("tg_chat_id")),
             () -> Assertions.assertTrue(columns.contains("created_at"))
@@ -49,10 +50,13 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
+            () -> Assertions.assertEquals(6, columns.size()),
             () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("url")),
             () -> Assertions.assertTrue(columns.contains("created_at")),
-            () -> Assertions.assertTrue(columns.contains("last_update_at"))
+            () -> Assertions.assertTrue(columns.contains("last_update_at")),
+            () -> Assertions.assertTrue(columns.contains("name")),
+            () -> Assertions.assertTrue(columns.contains("author"))
         );
     }
 
@@ -65,6 +69,7 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
+            () -> Assertions.assertEquals(2, columns.size()),
             () -> Assertions.assertTrue(columns.contains("chat_id")),
             () -> Assertions.assertTrue(columns.contains("link_id"))
         );

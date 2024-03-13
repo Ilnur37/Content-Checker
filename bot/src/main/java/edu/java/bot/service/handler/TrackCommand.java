@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.domain.SupportedDomain;
 import edu.java.bot.service.ScrapperService;
 import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.InvalidUrlException;
 import edu.java.models.exception.ReAddLinkException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class TrackCommand extends CommandHandler {
     private static final String LINK_HAS_STARTED_TO_BE_TRACKED = "Начала отслеживаться ссылка";
     private static final String RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED = "Вы начали отслеживать контент по ссылке";
     private static final String RESPONSE_LINK_IS_ALREADY_BEING_TRACKED = "Вы уже отслеживаете контент этой по ссылке";
+    private static final String  RESPONSE_URL_IS_EMPTY = "Не найдено ресурса по этой ссылке";
     private static final String RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER =
         "Вы должны передать 1 ссылку с этой командой";
     private static final String RESPONSE_LINK_IS_INVALID =
@@ -71,6 +73,7 @@ public class TrackCommand extends CommandHandler {
                         response.append(RESPONSE_LINK_IS_ALREADY_BEING_TRACKED);
                     case ChatIdNotFoundException chatIdNotFoundException -> response.append(USER_IS_NOT_REGISTERED);
                     case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
+                    case InvalidUrlException invalidUrlException -> response.append(RESPONSE_URL_IS_EMPTY);
                     default -> throw ex;
                 }
             }

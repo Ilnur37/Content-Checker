@@ -6,6 +6,7 @@ import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.InvalidUrlException;
 import edu.java.models.exception.LinkNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
 import edu.java.models.exception.ReRegistrationException;
@@ -122,6 +123,9 @@ public class ScrapperClient extends Client {
                 if (code.equals(HttpStatus.NOT_FOUND.toString())) {
                     return new LinkNotFoundException(msg);
                 }
+            }
+            case URL -> {
+                return new InvalidUrlException(msg);
             }
             case ELSE -> {
                 return new IllegalArgumentException();
