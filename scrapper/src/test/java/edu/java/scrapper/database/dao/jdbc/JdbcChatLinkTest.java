@@ -111,7 +111,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
                 .update();
         }
 
-        List<ChatLinkWithTgChat> contentByLinkId = chatLinkDao.getByLinkIdIdJoinChat(linkId);
+        List<ChatLinkWithTgChat> contentByLinkId = chatLinkDao.getByLinkIdJoinChat(linkId);
         assertEquals(chatIds.size(), contentByLinkId.size());
         for (int i = 0; i < chatIds.size(); i++) {
             assertEquals(chatIds.get(i), contentByLinkId.get(i).getChatId());
