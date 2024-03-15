@@ -101,6 +101,11 @@ public class Link extends TableImpl<LinkRecord> {
      */
     public final TableField<LinkRecord, String> AUTHOR = createField(DSL.name("AUTHOR"), SQLDataType.VARCHAR(1000000000).nullable(false).defaultValue(DSL.field(DSL.raw("''"), SQLDataType.VARCHAR)), this, "");
 
+    /**
+     * The column <code>LINK.LAST_CHECK_AT</code>.
+     */
+    public final TableField<LinkRecord, OffsetDateTime> LAST_CHECK_AT = createField(DSL.name("LAST_CHECK_AT"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "");
+
     private Link(Name alias, Table<LinkRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

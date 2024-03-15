@@ -2,10 +2,10 @@ package edu.java.scrapper.domain.jdbc.dao;
 
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkRowMapper;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChat;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChatRowMapper;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrl;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrlRowMapper;
+import edu.java.scrapper.domain.model.ChatLinkWithTgChat;
+import edu.java.scrapper.domain.model.ChatLinkWithUrl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatLinkDao {
+public class JdbcChatLinkDao {
     private final JdbcClient jdbcClient;
     private final ChatLinkRowMapper chatLinkRowMapper;
     private final ChatLinkWithUrlRowMapper chatLinkWithUrlRowMapper;

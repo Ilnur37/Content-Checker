@@ -37,6 +37,7 @@ public class Link implements Serializable {
     private OffsetDateTime lastUpdateAt;
     private String name;
     private String author;
+    private OffsetDateTime lastCheckAt;
 
     public Link() {}
 
@@ -47,16 +48,18 @@ public class Link implements Serializable {
         this.lastUpdateAt = value.lastUpdateAt;
         this.name = value.name;
         this.author = value.author;
+        this.lastCheckAt = value.lastCheckAt;
     }
 
-    @ConstructorProperties({ "id", "url", "createdAt", "lastUpdateAt", "name", "author" })
+    @ConstructorProperties({ "id", "url", "createdAt", "lastUpdateAt", "name", "author", "lastCheckAt" })
     public Link(
         @Nullable Long id,
         @NotNull String url,
         @NotNull OffsetDateTime createdAt,
         @NotNull OffsetDateTime lastUpdateAt,
         @Nullable String name,
-        @Nullable String author
+        @Nullable String author,
+        @NotNull OffsetDateTime lastCheckAt
     ) {
         this.id = id;
         this.url = url;
@@ -64,6 +67,7 @@ public class Link implements Serializable {
         this.lastUpdateAt = lastUpdateAt;
         this.name = name;
         this.author = author;
+        this.lastCheckAt = lastCheckAt;
     }
 
     /**
@@ -162,6 +166,22 @@ public class Link implements Serializable {
         this.author = author;
     }
 
+    /**
+     * Getter for <code>LINK.LAST_CHECK_AT</code>.
+     */
+    @jakarta.validation.constraints.NotNull
+    @NotNull
+    public OffsetDateTime getLastCheckAt() {
+        return this.lastCheckAt;
+    }
+
+    /**
+     * Setter for <code>LINK.LAST_CHECK_AT</code>.
+     */
+    public void setLastCheckAt(@NotNull OffsetDateTime lastCheckAt) {
+        this.lastCheckAt = lastCheckAt;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -207,6 +227,12 @@ public class Link implements Serializable {
         }
         else if (!this.author.equals(other.author))
             return false;
+        if (this.lastCheckAt == null) {
+            if (other.lastCheckAt != null)
+                return false;
+        }
+        else if (!this.lastCheckAt.equals(other.lastCheckAt))
+            return false;
         return true;
     }
 
@@ -220,6 +246,7 @@ public class Link implements Serializable {
         result = prime * result + ((this.lastUpdateAt == null) ? 0 : this.lastUpdateAt.hashCode());
         result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
         result = prime * result + ((this.author == null) ? 0 : this.author.hashCode());
+        result = prime * result + ((this.lastCheckAt == null) ? 0 : this.lastCheckAt.hashCode());
         return result;
     }
 
@@ -233,6 +260,7 @@ public class Link implements Serializable {
         sb.append(", ").append(lastUpdateAt);
         sb.append(", ").append(name);
         sb.append(", ").append(author);
+        sb.append(", ").append(lastCheckAt);
 
         sb.append(")");
         return sb.toString();

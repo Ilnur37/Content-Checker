@@ -6,6 +6,8 @@ import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.scrapper.service.ChatService;
+import edu.java.scrapper.service.JdbcAndJooq.jooq.JooqChatService;
+import edu.java.scrapper.service.JdbcAndJooq.jooq.JooqLinkService;
 import edu.java.scrapper.service.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,15 +29,20 @@ import org.springframework.web.bind.annotation.RestController;
 import static edu.java.scrapper.controller.ScrapperController.SCRAPPER_MAPPING;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(SCRAPPER_MAPPING)
 public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
     public static final String LINK_MAPPING = "/links";
     public static final String SCRAPPER_MAPPING = "scrapper-api";
-
     private final ChatService chatService;
     private final LinkService linkService;
+
+    @Autowired
+    //public ScrapperController(JdbcChatService chatService, JdbcLinkService linkService) {
+    public ScrapperController(JooqChatService chatService, JooqLinkService linkService) {
+        this.chatService = chatService;
+        this.linkService = linkService;
+    }
 
     @Operation(summary = "Зарегистрировать чат", description = "Created")
     @ApiResponse(responseCode = "201", description = "Чат зарегистрирован")
@@ -93,6 +100,10 @@ public class ScrapperController {
         content = @Content(mediaType = "application/json",
                            schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
+        responseCode = "404", description = "Ссылка не существует",
+        content = @Content(mediaType = "application/json",
+                           schema = @Schema(implementation = ApiErrorResponse.class)))
+    @ApiResponse(
         responseCode = "409", description = "Данная ссылка уже существует",
         content = @Content(mediaType = "application/json",
                            schema = @Schema(implementation = ApiErrorResponse.class)))
@@ -113,7 +124,8 @@ public class ScrapperController {
         responseCode = "400", description = "Некорректные параметры запроса",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
-        responseCode = "404", description = "Чат не существует",
+        responseCode = "404",
+        description = "Чат не существует",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
         responseCode = "404", description = "Ссылка не найдена",

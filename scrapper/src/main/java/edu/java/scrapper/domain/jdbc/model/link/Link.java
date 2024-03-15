@@ -11,12 +11,7 @@ public class Link {
     private String url;
     private OffsetDateTime createdAt;
     private OffsetDateTime lastUpdateAt;
-
-    public static Link createLink(String url, OffsetDateTime createdAt, OffsetDateTime lastUpdateAt) {
-        Link link = new Link();
-        link.setUrl(url);
-        link.setCreatedAt(createdAt);
-        link.setLastUpdateAt(lastUpdateAt);
-        return link;
-    }
+    private String name;
+    private String author;
+    private OffsetDateTime lastCheckAt;
 }

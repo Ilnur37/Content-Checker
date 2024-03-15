@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatDaoJooq {
+public class JooqChatDao {
     private final DSLContext dsl;
     private final edu.java.scrapper.domain.jooq.generate.tables.Chat chatTable =
         edu.java.scrapper.domain.jooq.generate.tables.Chat.CHAT;

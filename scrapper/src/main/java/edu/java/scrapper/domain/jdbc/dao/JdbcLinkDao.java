@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class LinkDao {
+public class JdbcLinkDao {
     private final JdbcClient jdbcClient;
     private final LinkRowMapper linkRowMapper;
 
@@ -21,31 +21,46 @@ public class LinkDao {
             .query(linkRowMapper).list();
     }
 
-    public Optional<Link> findByUrl(String url) {
+    public Optional<Link> getByUrl(String url) {
         String sql = "SELECT * FROM link WHERE url = ?";
         return jdbcClient.sql(sql)
             .param(url)
             .query(linkRowMapper).optional();
     }
 
-    public Optional<Link> findById(long id) {
+    public Optional<Link> getById(long id) {
         String sql = "SELECT * FROM link WHERE id = ?";
         return jdbcClient.sql(sql)
             .param(id)
             .query(linkRowMapper).optional();
     }
 
-    public List<Link> getByLastUpdate(OffsetDateTime dateTime) {
-        String sql = "SELECT * FROM link WHERE last_update_at < ?";
+    public List<Link> getByLustCheck(OffsetDateTime dateTime) {
+        String sql = "SELECT * FROM link WHERE link.last_check_at < ?";
         return jdbcClient.sql(sql)
             .param(dateTime)
             .query(linkRowMapper).list();
     }
 
     public int save(Link link) {
-        String sql = "INSERT INTO link(url, created_at, last_update_at) VALUES (?, ?, ?)";
+        String sql =
+            "INSERT INTO link(url, created_at, last_update_at, author, name, last_check_at) VALUES (?, ?, ?, ?, ?, ?)";
         return jdbcClient.sql(sql)
-            .params(link.getUrl(), link.getCreatedAt(), link.getLastUpdateAt())
+            .params(
+                link.getUrl(),
+                link.getCreatedAt(),
+                link.getLastUpdateAt(),
+                link.getAuthor(),
+                link.getName(),
+                link.getLastCheckAt()
+            )
+            .update();
+    }
+
+    public void updateLastCheckAtById(long id, OffsetDateTime dateTime) {
+        String sql = "UPDATE link SET last_check_at = ? WHERE id = ?";
+        jdbcClient.sql(sql)
+            .params(dateTime, id)
             .update();
     }
 
