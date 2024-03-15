@@ -45,11 +45,11 @@ public class JooqChatLinkDao {
             .fetchInto(ChatLink.class);
     }
 
-    public List<ChatLinkWithTgChat> getByLinkIdIdJoinChat(long id) {
+    public List<ChatLinkWithTgChat> getByLinkIdJoinChat(long id) {
         return dsl.select(chatLinkTable.CHAT_ID, chatLinkTable.LINK_ID, chatTable.TG_CHAT_ID)
             .from(chatLinkTable)
             .join(chatTable).on(chatLinkTable.CHAT_ID.eq(chatTable.ID))
-            .where(chatLinkTable.CHAT_ID.eq(id))
+            .where(chatLinkTable.LINK_ID.eq(id))
             .fetchInto(ChatLinkWithTgChat.class);
     }
 

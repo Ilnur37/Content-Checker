@@ -139,6 +139,7 @@
 
                 <configuration>
                     <excludes>
+                        <excludes>**/generate/**</excludes>
                         <exclude>**/configuration/*</exclude>
                         <exclude>**/dto/**</exclude>
                         <exclude>**/exception/**</exclude>
