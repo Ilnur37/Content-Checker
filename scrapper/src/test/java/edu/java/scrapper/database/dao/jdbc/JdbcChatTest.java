@@ -1,7 +1,7 @@
-package edu.java.scrapper.database.dao;
+package edu.java.scrapper.database.dao.jdbc;
 
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
 import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.model.chat.Chat;
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.UtilityDb.createChat;
-import static edu.java.scrapper.database.UtilityDb.getAllFromChat;
-import static edu.java.scrapper.database.UtilityDb.insertRowIntoChat;
+import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.createChat;
+import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.getAllFromChat;
+import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.insertRowIntoChat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Transactional
 public class JdbcChatTest extends IntegrationTest {
     @Autowired
-    private ChatDao chatDao;
+    private JdbcChatDao chatDao;
     @Autowired
     private JdbcClient jdbcClient;
 

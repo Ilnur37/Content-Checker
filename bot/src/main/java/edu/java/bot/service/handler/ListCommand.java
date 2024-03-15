@@ -43,7 +43,7 @@ public class ListCommand extends CommandHandler {
             response.append(String.format(RESPONSE_LIST_OF_TRACKED_LINKS, links.size()));
             for (LinkResponse link : links.links()) {
                 response.append("\n(")
-                    .append(link)
+                    .append(link.url())
                     .append(")");
             }
         } catch (RuntimeException ex) {

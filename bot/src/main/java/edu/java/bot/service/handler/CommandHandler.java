@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public abstract class CommandHandler {
-    protected static final String BAD_REQUEST_HTTP = "400 BAD_REQUEST";
-    protected static final String NOT_FOUND_HTTP = "404 NOT_FOUND";
-    protected static final String CONFLICT_HTTP = "409 CONFLICT";
     protected static final String CHAT_ID_FOR_LOGGER = "[chatId = %d] ";
     protected static final String LINK_FOR_LOGGER = "[link = %s] ";
     protected static final String UNSUPPORTED_COMMAND = "Пока что я не могу распознать это сообщение";

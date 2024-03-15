@@ -50,13 +50,14 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
-            () -> Assertions.assertEquals(6, columns.size()),
+            () -> Assertions.assertEquals(7, columns.size()),
             () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("url")),
             () -> Assertions.assertTrue(columns.contains("created_at")),
             () -> Assertions.assertTrue(columns.contains("last_update_at")),
             () -> Assertions.assertTrue(columns.contains("name")),
-            () -> Assertions.assertTrue(columns.contains("author"))
+            () -> Assertions.assertTrue(columns.contains("author")),
+            () -> Assertions.assertTrue(columns.contains("last_check_at"))
         );
     }
 

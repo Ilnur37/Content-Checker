@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class LinkDaoJooq {
+public class JooqLinkDao {
     private final DSLContext dsl;
     private final edu.java.scrapper.domain.jooq.generate.tables.Link linkTable =
         edu.java.scrapper.domain.jooq.generate.tables.Link.LINK;
@@ -32,15 +32,22 @@ public class LinkDaoJooq {
             .fetchOptionalInto(Link.class);
     }
 
-    public List<Link> getByLustUpdate(OffsetDateTime dateTime) {
+    public List<Link> getByLustCheck(OffsetDateTime dateTime) {
         return dsl.selectFrom(linkTable)
-            .where(linkTable.LAST_UPDATE_AT.lessThan(dateTime))
+            .where(linkTable.LAST_CHECK_AT.lessThan(dateTime))
             .fetchInto(Link.class);
     }
 
     public int save(Link newLink) {
         return dsl.insertInto(linkTable)
             .set(dsl.newRecord(linkTable, newLink))
+            .execute();
+    }
+
+    public int updateLastCheckAtById(long id, OffsetDateTime dateTime) {
+        return dsl.update(linkTable)
+            .set(linkTable.LAST_CHECK_AT, dateTime)
+            .where(linkTable.ID.eq(id))
             .execute();
     }
 

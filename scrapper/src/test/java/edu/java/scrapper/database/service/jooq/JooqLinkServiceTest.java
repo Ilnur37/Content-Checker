@@ -1,18 +1,18 @@
-package edu.java.scrapper.database.service;
+package edu.java.scrapper.database.service.jooq;
 
 import edu.java.models.dto.request.AddLinkRequest;
 import edu.java.models.dto.request.RemoveLinkRequest;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
-import edu.java.scrapper.database.IntegrationTest;
 import edu.java.models.exception.ReAddLinkException;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
+import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jooq.dao.JooqChatDao;
+import edu.java.scrapper.domain.jooq.dao.JooqChatLinkDao;
+import edu.java.scrapper.domain.jooq.dao.JooqLinkDao;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
+import edu.java.scrapper.service.JdbcAndJooq.jooq.JooqLinkService;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.UtilityDb.createChat;
-import static edu.java.scrapper.database.UtilityDb.createChatLink;
-import static edu.java.scrapper.database.UtilityDb.createLink;
+import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.createChat;
+import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.createChatLink;
+import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.createLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,15 +32,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @Rollback
 @Transactional
-public class JdbcLinkServiceTest extends IntegrationTest {
+public class JooqLinkServiceTest extends IntegrationTest {
     @Autowired
-    JdbcLinkService linkService;
+    private JooqLinkService linkService;
     @Autowired
-    private ChatDao chatDao;
+    private JooqChatDao chatDao;
     @Autowired
-    private LinkDao linkDao;
+    private JooqLinkDao linkDao;
     @Autowired
-    private ChatLinkDao chatLinkDao;
+    private JooqChatLinkDao chatLinkDao;
     private final long tgChatId = 10;
     private final String url = "url";
 

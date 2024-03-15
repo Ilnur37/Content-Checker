@@ -6,9 +6,9 @@ import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.scrapper.service.ChatService;
+import edu.java.scrapper.service.JdbcAndJooq.jooq.JooqChatService;
+import edu.java.scrapper.service.JdbcAndJooq.jooq.JooqLinkService;
 import edu.java.scrapper.service.LinkService;
-import edu.java.scrapper.service.jdbc.JdbcChatService;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,7 +38,8 @@ public class ScrapperController {
     private final LinkService linkService;
 
     @Autowired
-    public ScrapperController(JdbcChatService chatService, JdbcLinkService linkService) {
+    //public ScrapperController(JdbcChatService chatService, JdbcLinkService linkService) {
+    public ScrapperController(JooqChatService chatService, JooqLinkService linkService) {
         this.chatService = chatService;
         this.linkService = linkService;
     }
@@ -96,6 +97,10 @@ public class ScrapperController {
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
         responseCode = "404", description = "Чат не существует",
+        content = @Content(mediaType = "application/json",
+                           schema = @Schema(implementation = ApiErrorResponse.class)))
+    @ApiResponse(
+        responseCode = "404", description = "Ссылка не существует",
         content = @Content(mediaType = "application/json",
                            schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(

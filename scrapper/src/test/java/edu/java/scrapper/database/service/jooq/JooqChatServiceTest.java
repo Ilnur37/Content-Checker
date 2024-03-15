@@ -1,25 +1,25 @@
-package edu.java.scrapper.database.service;
+package edu.java.scrapper.database.service.jooq;
 
 import edu.java.models.exception.ChatIdNotFoundException;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
-import edu.java.scrapper.database.IntegrationTest;
 import edu.java.models.exception.ReRegistrationException;
-import edu.java.scrapper.domain.jdbc.model.chat.Chat;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
-import edu.java.scrapper.service.jdbc.JdbcChatService;
+import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jooq.dao.JooqChatDao;
+import edu.java.scrapper.domain.jooq.dao.JooqChatLinkDao;
+import edu.java.scrapper.domain.jooq.dao.JooqLinkDao;
 import java.time.OffsetDateTime;
 import java.util.List;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Chat;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
+import edu.java.scrapper.service.JdbcAndJooq.jooq.JooqChatService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.UtilityDb.createChatLink;
-import static edu.java.scrapper.database.UtilityDb.createLink;
+import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.createChatLink;
+import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.createLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,15 +28,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @Rollback
 @Transactional
-public class JdbcChatServiceTest extends IntegrationTest {
+public class JooqChatServiceTest extends IntegrationTest {
     @Autowired
-    private JdbcChatService chatService;
+    private JooqChatService chatService;
     @Autowired
-    private ChatDao chatDao;
+    private JooqChatDao chatDao;
     @Autowired
-    private LinkDao linkDao;
+    private JooqLinkDao linkDao;
     @Autowired
-    private ChatLinkDao chatLinkDao;
+    private JooqChatLinkDao chatLinkDao;
+
     private final long tgChatId = 10;
 
     private Chat createChat() {

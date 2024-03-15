@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
     <include file="v.1.1-changelog.xml" relativeToChangelogFile="true"/>
-    <changeSet id="alter-link-add-colum-name-author.sql" author="Ilnur37">
-        <sqlFile path="sql/alter-link-colum-name-author.sql" relativeToChangelogFile="true"/>
+    <changeSet id="alter-link-add-columns.sql" author="Ilnur37">
+        <sqlFile path="sql/alter-link-add-colums.sql" relativeToChangelogFile="true"/>
     </changeSet>
 </databaseChangeLog>

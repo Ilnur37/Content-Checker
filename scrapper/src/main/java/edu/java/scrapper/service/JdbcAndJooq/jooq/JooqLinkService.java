@@ -1,0 +1,134 @@
+package edu.java.scrapper.service.JdbcAndJooq.jooq;
+
+import edu.java.models.dto.request.AddLinkRequest;
+import edu.java.models.dto.request.RemoveLinkRequest;
+import edu.java.models.dto.response.LinkResponse;
+import edu.java.models.dto.response.ListLinksResponse;
+import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.LinkNotFoundException;
+import edu.java.models.exception.ReAddLinkException;
+import edu.java.scrapper.domain.jooq.dao.JooqChatDao;
+import edu.java.scrapper.domain.jooq.dao.JooqChatLinkDao;
+import edu.java.scrapper.domain.jooq.dao.JooqLinkDao;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Chat;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
+import edu.java.scrapper.domain.model.ChatLinkWithUrl;
+import edu.java.scrapper.dto.github.RepositoryInfo;
+import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
+import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.web.WebResourceHandler;
+import java.time.OffsetDateTime;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class JooqLinkService implements LinkService {
+    private static final String EMPTY_STRING = "";
+    private final JooqChatDao chatDao;
+    private final JooqLinkDao linkDao;
+    private final JooqChatLinkDao chatLinkDao;
+    private final WebResourceHandler webResourceHandler;
+
+    @Override
+    public ListLinksResponse getAll(long tgChatId) {
+        long chatId = getChatByTgChatId(tgChatId).getId();
+
+        List<ChatLinkWithUrl> chatLinksByChat = chatLinkDao.getByChatIdJoinLink(chatId);
+        List<LinkResponse> linkResponses = chatLinksByChat.stream()
+            .map(row -> new LinkResponse(row.getLinkId(), row.getUrl()))
+            .toList();
+
+        return new ListLinksResponse(linkResponses, linkResponses.size());
+    }
+
+    @Override
+    public LinkResponse add(long tgChatId, AddLinkRequest linkRequest) {
+        String url = linkRequest.link();
+        long chatId = getChatByTgChatId(tgChatId).getId();
+        String author = EMPTY_STRING;
+        String title = EMPTY_STRING;
+        if (webResourceHandler.isGitHubUrl(url)) {
+            RepositoryInfo repositoryInfo = webResourceHandler.getRepositoryGitHubInfoByUrl(url);
+            author = repositoryInfo.getActor().getLogin();
+            title = repositoryInfo.getName();
+        } else if (webResourceHandler.isStackOverflowUrl(url)) {
+            QuestionInfo questionInfo = webResourceHandler.getQuestionStackOverflowByUrl(url);
+            author = questionInfo.getOwner().getDisplayName();
+            title = questionInfo.getTitle();
+        }
+
+        Link actualLink;
+        //Создание ссылки в таблице ссылок, если ее нет
+        if (linkDao.getByUrl(url).isEmpty()) {
+            OffsetDateTime nowTime = OffsetDateTime.now();
+            Link createLink = new Link();
+            createLink.setUrl(url);
+            createLink.setCreatedAt(nowTime);
+            createLink.setLastUpdateAt(nowTime);
+            createLink.setAuthor(author);
+            createLink.setName(title);
+            createLink.setLastCheckAt(nowTime);
+            linkDao.save(createLink);
+            actualLink = linkDao.getByUrl(url).get();
+        } else {
+            //Иначе проверка на предмет повторного добавления
+            actualLink = linkDao.getByUrl(url).get();
+            for (ChatLink chatLink : chatLinkDao.getByChatId(chatId)) {
+                if (chatLink.getLinkId() == actualLink.getId()) {
+                    throw new ReAddLinkException(
+                        toExMsg(EX_CHAT, String.valueOf(tgChatId))
+                            + ", "
+                            + toExMsg(EX_LINK, actualLink.getUrl())
+                    );
+                }
+            }
+        }
+
+        ChatLink chatLink = createChatLink(chatId, actualLink.getId());
+        chatLinkDao.save(chatLink);
+
+        return new LinkResponse(actualLink.getId(), actualLink.getUrl());
+    }
+
+    @Override
+    public LinkResponse remove(long tgChatId, RemoveLinkRequest linkRequest) {
+        String url = linkRequest.link();
+        Link actualLink = getLinkByUrl(url);
+        long chatId = getChatByTgChatId(tgChatId).getId();
+        long linkId = actualLink.getId();
+        int countChatTrackLink = chatLinkDao.getByLinkId(linkId).size();
+        chatLinkDao.delete(chatId, linkId);
+        //Если ссылку отслеживает 1 чат, удалить из таблицы ссылок
+        if (countChatTrackLink == 1) {
+            linkDao.deleteByUrl(url);
+        }
+
+        return new LinkResponse(actualLink.getId(), actualLink.getUrl());
+    }
+
+    private ChatLink createChatLink(long chatId, long linkId) {
+        ChatLink chatLink = new ChatLink();
+        chatLink.setChatId(chatId);
+        chatLink.setLinkId(linkId);
+        return chatLink;
+    }
+
+    private Chat getChatByTgChatId(long id) {
+        return chatDao.getByTgChatId(id)
+            .orElseThrow(
+                () -> new ChatIdNotFoundException(toExMsg(EX_CHAT, String.valueOf(id)))
+            );
+    }
+
+    private Link getLinkByUrl(String url) {
+        return linkDao.getByUrl(url)
+            .orElseThrow(
+                () -> new LinkNotFoundException(toExMsg(EX_LINK, url))
+            );
+    }
+}

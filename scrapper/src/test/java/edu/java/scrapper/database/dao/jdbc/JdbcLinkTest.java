@@ -1,7 +1,7 @@
-package edu.java.scrapper.database.dao;
+package edu.java.scrapper.database.dao.jdbc;
 
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
 import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
 import edu.java.scrapper.domain.jdbc.model.link.Link;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.UtilityDb.createLink;
-import static edu.java.scrapper.database.UtilityDb.getAllFromLink;
-import static edu.java.scrapper.database.UtilityDb.insertRowIntoLink;
+import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.createLink;
+import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.getAllFromLink;
+import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.insertRowIntoLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Rollback
 public class JdbcLinkTest extends IntegrationTest {
     @Autowired
-    private LinkDao linkDao;
+    private JdbcLinkDao linkDao;
     @Autowired
     public JdbcClient jdbcClient;
 
@@ -79,10 +79,11 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    void getByLustUpdate() {
+    void getByLustCheck() {
         //Добавление нескольких ссылок
         OffsetDateTime now = OffsetDateTime.now();
-        String sql = "INSERT INTO link(url, created_at, last_update_at) VALUES (?, CURRENT_TIMESTAMP, ?)";
+        String sql = "INSERT INTO link(url, created_at, last_update_at, last_check_at) " +
+            "VALUES (?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)";
         long count = 10;
         for (long id = 1; id <= 10; id++) {
             jdbcClient.sql(sql)
@@ -90,7 +91,7 @@ public class JdbcLinkTest extends IntegrationTest {
                 .update();
         }
 
-        List<Link> actualLinks = linkDao.getByLustUpdate(now.plusSeconds(25));
+        List<Link> actualLinks = linkDao.getByLustCheck(now.plusSeconds(25));
         assertAll(
             "Поддтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),

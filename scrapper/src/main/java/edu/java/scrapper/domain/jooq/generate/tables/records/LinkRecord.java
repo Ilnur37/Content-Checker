@@ -130,6 +130,22 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> {
         return (String) get(5);
     }
 
+    /**
+     * Setter for <code>LINK.LAST_CHECK_AT</code>.
+     */
+    public void setLastCheckAt(@NotNull OffsetDateTime value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>LINK.LAST_CHECK_AT</code>.
+     */
+    @jakarta.validation.constraints.NotNull
+    @NotNull
+    public OffsetDateTime getLastCheckAt() {
+        return (OffsetDateTime) get(6);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -154,8 +170,8 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> {
     /**
      * Create a detached, initialised LinkRecord
      */
-    @ConstructorProperties({ "id", "url", "createdAt", "lastUpdateAt", "name", "author" })
-    public LinkRecord(@Nullable Long id, @NotNull String url, @NotNull OffsetDateTime createdAt, @NotNull OffsetDateTime lastUpdateAt, @Nullable String name, @Nullable String author) {
+    @ConstructorProperties({ "id", "url", "createdAt", "lastUpdateAt", "name", "author", "lastCheckAt" })
+    public LinkRecord(@Nullable Long id, @NotNull String url, @NotNull OffsetDateTime createdAt, @NotNull OffsetDateTime lastUpdateAt, @Nullable String name, @Nullable String author, @NotNull OffsetDateTime lastCheckAt) {
         super(Link.LINK);
 
         setId(id);
@@ -164,6 +180,7 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> {
         setLastUpdateAt(lastUpdateAt);
         setName(name);
         setAuthor(author);
+        setLastCheckAt(lastCheckAt);
         resetChangedOnNotNull();
     }
 
@@ -180,6 +197,7 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> {
             setLastUpdateAt(value.getLastUpdateAt());
             setName(value.getName());
             setAuthor(value.getAuthor());
+            setLastCheckAt(value.getLastCheckAt());
             resetChangedOnNotNull();
         }
     }

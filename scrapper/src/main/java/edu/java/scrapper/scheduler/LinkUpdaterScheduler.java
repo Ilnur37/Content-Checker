@@ -1,12 +1,12 @@
 package edu.java.scrapper.scheduler;
 
-import edu.java.scrapper.dao.ChatLinkDao;
-import edu.java.scrapper.dao.LinkDao;
+import edu.java.scrapper.domain.jooq.dao.JooqChatLinkDao;
+import edu.java.scrapper.domain.jooq.dao.JooqLinkDao;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
+import edu.java.scrapper.domain.model.ChatLinkWithTgChat;
 import edu.java.scrapper.dto.github.ActionsInfo;
 import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.scrapper.dto.stackoverflow.comment.CommentInfo;
-import edu.java.scrapper.model.chatLink.ChatLinkWithTgChat;
-import edu.java.scrapper.model.link.Link;
 import edu.java.scrapper.service.BotService;
 import edu.java.scrapper.service.web.WebResourceHandler;
 import java.time.Duration;
@@ -30,14 +30,18 @@ public class LinkUpdaterScheduler {
     private static final String SOF_HEAD = "В вопросе %s, пользователя %s появились новые ответы/коометарии:\n";
     private static final String SOF_ANSWER = "Новый ответ от польльзователя %s (время %s)\n";
     private static final String SOF_COMMENT = "Новый комментарий от польльзователя %s (время %s)\n";
-    private final LinkDao linkDao;
-    private final ChatLinkDao chatLinkDao;
+    //private final JdbcLinkDao linkDao;
+    //private final JdbcChatLinkDao chatLinkDao;
+    private final JooqLinkDao linkDao;
+    private final JooqChatLinkDao chatLinkDao;
     private final BotService botService;
     private final WebResourceHandler webResourceHandler;
 
     public LinkUpdaterScheduler(
-        LinkDao linkDao,
-        ChatLinkDao chatLinkDao,
+        //JdbcLinkDao linkDao,
+        //JdbcChatLinkDao chatLinkDao,
+        JooqLinkDao linkDao,
+        JooqChatLinkDao chatLinkDao,
         BotService botService,
         WebResourceHandler webResourceHandler
     ) {
@@ -50,13 +54,14 @@ public class LinkUpdaterScheduler {
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
     public void update() {
         OffsetDateTime now = OffsetDateTime.now();
-        List<Link> links = linkDao.getByLustUpdate(now.minus(NEED_TO_CHECK));
+        List<Link> links = linkDao.getByLustCheck(now.minus(NEED_TO_CHECK));
         for (Link link : links) {
             if (webResourceHandler.isGitHubUrl(link.getUrl())) {
                 gitHubProcess(link, now);
             } else {
                 stackOverflowProcess(link, now);
             }
+            linkDao.updateLastCheckAtById(link.getId(), now);
         }
     }
 

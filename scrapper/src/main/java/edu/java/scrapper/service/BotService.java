@@ -1,7 +1,7 @@
 package edu.java.scrapper.service;
 
 import edu.java.scrapper.client.BotClient;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
+import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class BotService {
     private static final String NOT_FOUND_HTTP = "404 NOT_FOUND";
     private final BotClient botClient;
-    private final ChatDao chatDao;
+    private final JdbcChatDao chatDao;
 
     public void sendUpdate(long id, String url, String description, List<Long> tgChatIds) {
         try {

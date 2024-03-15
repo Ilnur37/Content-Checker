@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatDao {
+public class JdbcChatDao {
     private final JdbcClient jdbcClient;
     private final ChatRowMapper chatRowMapper;
 

@@ -1,12 +1,12 @@
-package edu.java.scrapper.domain.jdbc.model.chatLink;
+package edu.java.scrapper.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ChatLinkWithUrl {
+public class ChatLinkWithTgChat {
     private long chatId;
     private long linkId;
-    private String url;
+    private long tgChatId;
 }

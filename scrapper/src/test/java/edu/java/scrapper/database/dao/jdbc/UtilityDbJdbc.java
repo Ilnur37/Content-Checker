@@ -1,4 +1,4 @@
-package edu.java.scrapper.database;
+package edu.java.scrapper.database.dao.jdbc;
 
 import edu.java.scrapper.domain.jdbc.model.chat.Chat;
 import edu.java.scrapper.domain.jdbc.model.chat.ChatRowMapper;
@@ -13,7 +13,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 @UtilityClass
-public class UtilityDb {
+public class UtilityDbJdbc {
     private final ChatRowMapper chatRowMapper = new ChatRowMapper();
     private final LinkRowMapper linkRowMapper = new LinkRowMapper();
     private final ChatLinkRowMapper chatLinkRowMapper = new ChatLinkRowMapper();
@@ -59,7 +59,8 @@ public class UtilityDb {
 
     public static void insertRowIntoLink(JdbcClient jdbcClient, String url) {
         jdbcClient.sql(
-                "INSERT INTO link(url, created_at, last_update_at) VALUES (?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)")
+                "INSERT INTO link(url, created_at, last_update_at, last_check_at) " +
+                    "VALUES (?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)")
             .param(url)
             .update();
     }
@@ -76,6 +77,9 @@ public class UtilityDb {
         link.setUrl(url);
         link.setCreatedAt(OffsetDateTime.now());
         link.setLastUpdateAt(OffsetDateTime.now());
+        link.setAuthor("Author");
+        link.setName("Name");
+        link.setLastCheckAt(OffsetDateTime.now());
         return link;
     }
 
