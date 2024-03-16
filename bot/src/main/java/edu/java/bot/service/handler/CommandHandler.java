@@ -9,15 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public abstract class CommandHandler {
-    protected static final String BAD_REQUEST_HTTP = "400 BAD_REQUEST";
-    protected static final String NOT_FOUND_HTTP = "404 NOT_FOUND";
-    protected static final String CONFLICT_HTTP = "409 CONFLICT";
     protected static final String CHAT_ID_FOR_LOGGER = "[chatId = %d] ";
     protected static final String LINK_FOR_LOGGER = "[link = %s] ";
     protected static final String UNSUPPORTED_COMMAND = "Пока что я не могу распознать это сообщение";
     protected static final String BAD_REQUEST = "Некорректные параметры запроса";
     protected static final String USER_IS_NOT_REGISTERED =
-        "Прежде чем пользоваться фцнкциями бота, вам необходимо зарегестрироваться. Введите команду \"/start\"";
+        "Прежде чем пользоваться функциями бота, вам необходимо зарегистрироваться. Введите команду \"/start\"";
     protected final ScrapperService scrapperService;
     @Getter
     protected CommandHandler next;

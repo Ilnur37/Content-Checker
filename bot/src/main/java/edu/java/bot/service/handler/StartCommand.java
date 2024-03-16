@@ -11,9 +11,9 @@ import static java.lang.String.format;
 @Slf4j
 @Service
 public class StartCommand extends CommandHandler {
-    private static final String USER_SUCCESSFULLY_REGISTERED = "Пользователь успешно зарестрирован";
+    private static final String USER_SUCCESSFULLY_REGISTERED = "Пользователь успешно зарегистрирован";
     private static final String RESPONSE_USER_SUCCESSFULLY_REGISTERED = "Поздравляю, регистрация прошла успешно!";
-    private static final String RESPONSE_USER_IS_ALREADY_REGISTERED = "Вы уже зарагестрированны";
+    private static final String RESPONSE_USER_IS_ALREADY_REGISTERED = "Вы уже зарегистрированы";
 
     public StartCommand(ScrapperService scrapperService, TrackCommand trackCommand) {
         super(scrapperService);
