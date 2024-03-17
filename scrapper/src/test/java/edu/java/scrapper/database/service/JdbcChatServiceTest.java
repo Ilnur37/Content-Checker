@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Rollback
 @Transactional
 public class JdbcChatServiceTest extends IntegrationTest {
+
     @Autowired
     private JdbcChatService chatService;
     @Autowired

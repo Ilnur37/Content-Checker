@@ -25,7 +25,6 @@ public class UnTrackCommandTest extends AbstractTest {
     void unTrackLinkWhenContainLink() {
         String link = "https://github.com/Ilnur37/Content-Checker";
         LinkResponse actualLinkResponse = new LinkResponse(chatId, link);
-
         when(scrapperService.removeLink(chatId, link)).thenReturn(actualLinkResponse);
         mockObjects(chatId, unTrackCommand.command() + " " + link);
 
@@ -43,6 +42,7 @@ public class UnTrackCommandTest extends AbstractTest {
     @DisplayName("Удаление неподдерживаемой ссылки")
     void unTrackLinkWhenUnsupportedDomain(String link) {
         mockObjects(chatId, unTrackCommand.command() + " " + link);
+
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
@@ -56,6 +56,7 @@ public class UnTrackCommandTest extends AbstractTest {
         " url url"})
     void unTrackWhenBadCommandTrack(String link) {
         mockObjects(chatId, unTrackCommand.command() + link);
+
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
@@ -68,7 +69,6 @@ public class UnTrackCommandTest extends AbstractTest {
     @DisplayName("Удаление несуществующей ссылки")
     void unTrackLinkWhenRepeatSupportedLinks() {
         String link = "https://github.com/Ilnur37/Content-Checker";
-
         Mockito.doThrow(new LinkNotFoundException("")).when(scrapperService).removeLink(chatId, link);
         mockObjects(chatId, unTrackCommand.command() + " " + link);
 
@@ -84,7 +84,6 @@ public class UnTrackCommandTest extends AbstractTest {
     @DisplayName("Пользователь не зарегистрирован")
     void unTrackLinkWhenUserNotRegistered() {
         String link = "https://github.com/Ilnur37/Content-Checker";
-
         Mockito.doThrow(new ChatIdNotFoundException("")).when(scrapperService).removeLink(chatId, link);
         mockObjects(chatId, unTrackCommand.command() + " " + link);
 
@@ -99,7 +98,6 @@ public class UnTrackCommandTest extends AbstractTest {
     @Test
     void unTrackLinkWhenBadRequest() {
         String link = "https://github.com/Ilnur37/Content-Checker";
-
         Mockito.doThrow(new IllegalArgumentException("")).when(scrapperService).removeLink(chatId, link);
         mockObjects(chatId, unTrackCommand.command() + " " + link);
 

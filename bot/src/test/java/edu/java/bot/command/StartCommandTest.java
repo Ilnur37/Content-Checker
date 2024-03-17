@@ -20,9 +20,10 @@ public class StartCommandTest extends AbstractTest {
     void registrationUserWhenValidData() {
         doNothing().when(scrapperService).registerChat(chatId);
         mockObjects(chatId, start.command());
+
         SendMessage response = start.handle(update);
 
-        assertEquals(response.getParameters().get("text"), StartCommand.RESPONSE_USER_SUCCESSFULLY_REGISTERED);
+        assertEquals(StartCommand.RESPONSE_USER_SUCCESSFULLY_REGISTERED, response.getParameters().get("text"));
     }
 
     @Test
@@ -30,8 +31,9 @@ public class StartCommandTest extends AbstractTest {
     void registrationUserWhenRepeatChatId() {
         Mockito.doThrow(new ReRegistrationException("")).when(scrapperService).registerChat(chatId);
         mockObjects(chatId, start.command());
+
         SendMessage response = start.handle(update);
 
-        assertEquals(response.getParameters().get("text"), StartCommand.RESPONSE_USER_IS_ALREADY_REGISTERED);
+        assertEquals(StartCommand.RESPONSE_USER_IS_ALREADY_REGISTERED, response.getParameters().get("text"));
     }
 }

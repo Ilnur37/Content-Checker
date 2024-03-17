@@ -25,7 +25,6 @@ public class TrackCommandTest extends AbstractTest {
     void trackLinkWhenSupportedDomain() {
         String link = "https://github.com/Ilnur37/Content-Checker";
         LinkResponse actualLinkResponse = new LinkResponse(chatId, link);
-
         when(scrapperService.addLink(chatId, link)).thenReturn(actualLinkResponse);
         mockObjects(chatId, trackCommand.command() + " " + link);
 
@@ -43,6 +42,7 @@ public class TrackCommandTest extends AbstractTest {
     @DisplayName("Добавление неподдерживаемой ссылки")
     void trackLinkWhenUnsupportedDomain(String link) {
         mockObjects(chatId, trackCommand.command() + " " + link);
+
         SendMessage response = trackCommand.handle(update);
 
         assertEquals(
@@ -56,6 +56,7 @@ public class TrackCommandTest extends AbstractTest {
         " url url"})
     void trackWhenBadCommandTrack(String link) {
         mockObjects(chatId, trackCommand.command() + link);
+
         SendMessage response = trackCommand.handle(update);
 
         assertEquals(
@@ -68,7 +69,6 @@ public class TrackCommandTest extends AbstractTest {
     @DisplayName("Повторное добавление ссылки")
     void trackLinkWhenRepeatSupportedLinks() {
         String link = "https://github.com/Ilnur37/Content-Checker";
-
         Mockito.doThrow(new ReAddLinkException("")).when(scrapperService).addLink(chatId, link);
         mockObjects(chatId, trackCommand.command() + " " + link);
 
@@ -84,7 +84,6 @@ public class TrackCommandTest extends AbstractTest {
     @DisplayName("Пользователь не зарегистрирован")
     void trackLinkWhenUserNotRegistered() {
         String link = "https://github.com/Ilnur37/Content-Checker";
-
         Mockito.doThrow(new ChatIdNotFoundException("")).when(scrapperService).addLink(chatId, link);
         mockObjects(chatId, trackCommand.command() + " " + link);
 
@@ -99,7 +98,6 @@ public class TrackCommandTest extends AbstractTest {
     @Test
     void trackLinkWhenBadRequest() {
         String link = "https://github.com/Ilnur37/Content-Checker";
-
         Mockito.doThrow(new IllegalArgumentException("")).when(scrapperService).addLink(chatId, link);
         mockObjects(chatId, trackCommand.command() + " " + link);
 
