@@ -49,10 +49,7 @@ public class JdbcLinkService implements LinkService {
 
         //Создание ссылки в таблице ссылок, если ее нет
         if (linkDao.findByUrl(url).isEmpty()) {
-            Link createLink = new Link();
-            createLink.setUrl(url);
-            createLink.setCreatedAt(now());
-            createLink.setLastUpdateAt(now());
+            Link createLink = Link.createLink(url, now(), now());
             linkDao.save(createLink);
             actualLink = linkDao.findByUrl(url).get();
         } else {
@@ -69,7 +66,7 @@ public class JdbcLinkService implements LinkService {
             }
         }
 
-        ChatLink chatLink = createChatLink(chatId, actualLink.getId());
+        ChatLink chatLink = ChatLink.createChatLink(chatId, actualLink.getId());
         chatLinkDao.save(chatLink);
 
         return new LinkResponse(actualLink.getId(), actualLink.getUrl());
@@ -89,13 +86,6 @@ public class JdbcLinkService implements LinkService {
         }
 
         return new LinkResponse(actualLink.getId(), actualLink.getUrl());
-    }
-
-    private ChatLink createChatLink(long chatId, long linkId) {
-        ChatLink chatLink = new ChatLink();
-        chatLink.setChatId(chatId);
-        chatLink.setLinkId(linkId);
-        return chatLink;
     }
 
     private Chat getChatByTgChatId(long id) {

@@ -50,7 +50,7 @@ public class ChatLinkDao {
             .query(chatLinkRowMapper).list();
     }
 
-    public List<ChatLinkWithTgChat> getByLinkIdIdJoinChat(long id) {
+    public List<ChatLinkWithTgChat> getByLinkIdJoinChat(long id) {
         String sql = """
             SELECT cl.chat_id, cl.link_id, c.tg_chat_id
             FROM chat_link cl

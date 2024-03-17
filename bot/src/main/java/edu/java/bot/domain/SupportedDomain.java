@@ -19,6 +19,7 @@ public class SupportedDomain {
         "Вы должны передать 1 ссылку с этой командой";
     public static final String RESPONSE_LINK_IS_INVALID =
         "Извините, пока что я не могу работать с ссылкой этого домена";
+
     @NotNull
     private String github;
     @NotNull

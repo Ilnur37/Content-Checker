@@ -80,7 +80,7 @@ public class LinkUpdaterScheduler {
 
     private void updateTablesAndSendMsg(long linkId, OffsetDateTime newUpdateTime, String url) {
         linkDao.updateLastUpdateAtById(linkId, newUpdateTime);
-        List<Long> chatIdsToSendMsg = chatLinkDao.getByLinkIdIdJoinChat(linkId)
+        List<Long> chatIdsToSendMsg = chatLinkDao.getByLinkIdJoinChat(linkId)
             .stream()
             .map(ChatLinkWithTgChat::getTgChatId)
             .toList();

@@ -8,4 +8,11 @@ import lombok.Setter;
 public class ChatLink {
     private long chatId;
     private long linkId;
+
+    public static ChatLink createChatLink(long chatId, long linkId) {
+        ChatLink chatLink = new ChatLink();
+        chatLink.setChatId(chatId);
+        chatLink.setLinkId(linkId);
+        return chatLink;
+    }
 }

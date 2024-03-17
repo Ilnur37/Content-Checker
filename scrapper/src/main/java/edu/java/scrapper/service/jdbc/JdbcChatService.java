@@ -27,9 +27,7 @@ public class JdbcChatService implements ChatService {
         if (chatDao.findByTgChatId(tgChatId).isPresent()) {
             throw new ReRegistrationException(toExMsg(tgChatId));
         }
-        Chat chat = new Chat();
-        chat.setTgChatId(tgChatId);
-        chat.setCreatedAt(now());
+        Chat chat = Chat.createChat(tgChatId, now());
         chatDao.save(chat);
     }
 

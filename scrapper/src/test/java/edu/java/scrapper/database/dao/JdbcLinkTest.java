@@ -3,18 +3,19 @@ package edu.java.scrapper.database.dao;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.domain.jdbc.dao.LinkDao;
 import edu.java.scrapper.domain.jdbc.model.link.Link;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.UtilityDb.createLink;
-import static edu.java.scrapper.database.UtilityDb.getAllFromLink;
-import static edu.java.scrapper.database.UtilityDb.insertRowIntoLink;
+import static edu.java.scrapper.domain.jdbc.model.link.Link.createLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,148 +27,95 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JdbcLinkTest extends IntegrationTest {
     @Autowired
     private LinkDao linkDao;
-    @Autowired
-    public JdbcClient jdbcClient;
 
     private final String defaultUrl = "defaultUrl";
+    private final long defaultId = 1;
 
     @Test
+    @Sql(value = "/sql/insertOneRowLink.sql")
     void getByUrl() {
-        //Добавление ссылки с заданным url
-        insertRowIntoLink(jdbcClient, defaultUrl);
-        List<Link> actualLinks = getAllFromLink(jdbcClient);
-        assertAll(
-            "Поддтверждение, что появилась 1 ссылка",
-            () -> assertFalse(actualLinks.isEmpty()),
-            () -> assertEquals(actualLinks.getFirst().getUrl(), defaultUrl)
-        );
-
-        //Получениие ссылки с заданным url
         Optional<Link> link = linkDao.findByUrl(defaultUrl);
+
         assertAll(
-            "Поддтверждение, что это только что добавленная ссылка",
             () -> assertTrue(link.isPresent()),
-            () -> assertEquals(link.get().getUrl(), defaultUrl)
+            () -> assertEquals(defaultUrl, link.get().getUrl())
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowLink.sql")
     void getById() {
-        //Добавление ссылки с заданным url
-        insertRowIntoLink(jdbcClient, defaultUrl);
-        List<Link> actualLinks = getAllFromLink(jdbcClient);
-        assertAll(
-            "Поддтверждение, что появилась 1 ссылка",
-            () -> assertFalse(actualLinks.isEmpty()),
-            () -> assertEquals(actualLinks.getFirst().getUrl(), defaultUrl)
-        );
-
-        //Получениие ссылки с присвоенным id
-        long id = actualLinks.getFirst().getId();
+        long id = 1;
         Optional<Link> link = linkDao.findById(id);
+
         assertAll(
-            "Поддтверждение, что это только что добавленная ссылка",
             () -> assertTrue(link.isPresent()),
-            () -> assertEquals(link.get().getUrl(), defaultUrl)
+            () -> assertEquals(defaultUrl, link.get().getUrl())
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertFiveRowLink.sql")
     void getByLastUpdate() {
-        //Добавление нескольких ссылок
-        OffsetDateTime now = OffsetDateTime.now();
-        String sql = "INSERT INTO link(url, created_at, last_update_at) VALUES (?, CURRENT_TIMESTAMP, ?)";
-        long count = 10;
-        for (long id = 1; id <= 10; id++) {
-            jdbcClient.sql(sql)
-                .params(defaultUrl + id, now.plusSeconds(5 * id))
-                .update();
-        }
-
-        List<Link> actualLinks = linkDao.getByLastUpdate(now.plusSeconds(25));
+        int count = 5;
+        List<Link> actualLinks = linkDao.getByLastUpdate(OffsetDateTime.now().plusSeconds(30));
         assertAll(
-            "Поддтверждение, что ссылки добавились",
+            "Подтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),
-            () -> assertEquals(actualLinks.size(), count / 2 - 1)
+            () -> assertEquals(2, actualLinks.size())
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertFiveRowLink.sql")
     void getAll() {
-        //Добавление нескольких ссылок
-        long count = 10;
-        for (long id = 1; id < 10; id++) {
-            insertRowIntoLink(jdbcClient, defaultUrl + id);
-        }
-
+        int count = 5;
         List<Link> actualLinks = linkDao.getAll();
+
         assertAll(
-            "Поддтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),
-            () -> assertEquals(actualLinks.size(), count - 1)
+            () -> assertEquals(count, actualLinks.size())
         );
     }
 
     @Test
     void save() {
         //Добавление ссылки с заданным url
-        linkDao.save(createLink(defaultUrl));
+        String url = "url";
+        linkDao.save(createLink(url, OffsetDateTime.now(), OffsetDateTime.now()));
 
-        List<Link> actualLinkList = getAllFromLink(jdbcClient);
-        assertAll(
-            () -> assertFalse(actualLinkList.isEmpty()),
-            () -> assertEquals(actualLinkList.getFirst().getUrl(), defaultUrl)
-        );
+        Optional<Link> actualLink = linkDao.findByUrl(url);
+        assertTrue(actualLink.isPresent());
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowLink.sql")
     void updateLastUpdateAtById() {
-        //Добавление ссылки с заданным url
-        insertRowIntoLink(jdbcClient, defaultUrl);
-        List<Link> links = getAllFromLink(jdbcClient);
-        assertAll(
-            "Поддтверждение, что появилась 1 ссылка",
-            () -> assertFalse(links.isEmpty()),
-            () -> assertEquals(links.getFirst().getUrl(), defaultUrl)
-        );
-
         //Изменение поля last_update_at
-        linkDao.updateLastUpdateAtById(links.getFirst().getId(), OffsetDateTime.MAX);
-        List<Link> actualLinks = getAllFromLink(jdbcClient);
-        assertEquals(actualLinks.getFirst().getLastUpdateAt(), OffsetDateTime.MAX);
+        OffsetDateTime newTime = OffsetDateTime.of(LocalDate.now(), LocalTime.of(12,12), ZoneOffset.UTC);
+        linkDao.updateLastUpdateAtById(defaultId, newTime);
+
+        Link actualLink = linkDao.findByUrl(defaultUrl).orElseThrow();
+        assertEquals(newTime, actualLink.getLastUpdateAt());
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowLink.sql")
     void deleteByUrl() {
-        //Добавление ссылки с заданным url
-        insertRowIntoLink(jdbcClient, defaultUrl);
-        List<Link> links = getAllFromLink(jdbcClient);
-        assertAll(
-            "Поддтверждение, что появилась 1 ссылка",
-            () -> assertFalse(links.isEmpty()),
-            () -> assertEquals(links.getFirst().getUrl(), defaultUrl)
-        );
-
         //Удаление ссылки с заданным url
         linkDao.deleteByUrl(defaultUrl);
-        List<Link> actualLinks = getAllFromLink(jdbcClient);
-        assertTrue(actualLinks.isEmpty());
+
+        Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+        assertTrue(actualLink.isEmpty());
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowLink.sql")
     void deleteById() {
-        //Добавление ссылки с заданным url
-        insertRowIntoLink(jdbcClient, defaultUrl);
-        List<Link> links = getAllFromLink(jdbcClient);
-        assertAll(
-            "Поддтверждение, что появилась 1 ссылка",
-            () -> assertFalse(links.isEmpty()),
-            () -> assertEquals(links.getFirst().getUrl(), defaultUrl)
-        );
-
         //Удаление ссылки с заданным id
-        linkDao.deleteById(links.getFirst().getId());
-        List<Link> actualLinks = getAllFromLink(jdbcClient);
-        assertTrue(actualLinks.isEmpty());
+        linkDao.deleteById(defaultId);
+
+        Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+        assertTrue(actualLink.isEmpty());
     }
 }

@@ -18,10 +18,10 @@ public abstract class CommandHandler {
     public static final String USER_IS_NOT_REGISTERED =
         "Прежде чем пользоваться функциями бота, вам необходимо зарегистрироваться. Введите команду \"/start\"";
 
-    protected final ScrapperService scrapperService;
+    final ScrapperService scrapperService;
 
     @Getter
-    protected CommandHandler next;
+    CommandHandler next;
 
     public abstract String command();
 
