@@ -64,7 +64,7 @@ public class JdbcLinkService implements LinkService {
 
         Link actualLink;
         //Создание ссылки в таблице ссылок, если ее нет
-        if (linkDao.getByUrl(url).isEmpty()) {
+        if (linkDao.findByUrl(url).isEmpty()) {
             OffsetDateTime nowTime = OffsetDateTime.now();
             Link createLink = new Link();
             createLink.setUrl(url);
@@ -74,10 +74,10 @@ public class JdbcLinkService implements LinkService {
             createLink.setName(title);
             createLink.setLastCheckAt(nowTime);
             linkDao.save(createLink);
-            actualLink = linkDao.getByUrl(url).get();
+            actualLink = linkDao.findByUrl(url).get();
         } else {
             //Иначе проверка на предмет повторного добавления
-            actualLink = linkDao.getByUrl(url).get();
+            actualLink = linkDao.findByUrl(url).get();
             for (ChatLink chatLink : chatLinkDao.getByChatId(chatId)) {
                 if (chatLink.getLinkId() == actualLink.getId()) {
                     throw new ReAddLinkException(
@@ -119,14 +119,14 @@ public class JdbcLinkService implements LinkService {
     }
 
     private Chat getChatByTgChatId(long id) {
-        return chatDao.getByTgChatId(id)
+        return chatDao.findByTgChatId(id)
             .orElseThrow(
                 () -> new ChatIdNotFoundException(toExMsg(EX_CHAT, String.valueOf(id)))
             );
     }
 
     private Link getLinkByUrl(String url) {
-        return linkDao.getByUrl(url)
+        return linkDao.findByUrl(url)
             .orElseThrow(
                 () -> new LinkNotFoundException(toExMsg(EX_LINK, url))
             );

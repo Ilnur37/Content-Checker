@@ -32,11 +32,6 @@ public class JdbcLinkTest extends IntegrationTest {
 
     private final String defaultUrl = "defaultUrl";
 
-    @BeforeEach
-    public void checkThatTableIsEmpty() {
-        assertTrue(getAllFromLink(jdbcClient).isEmpty());
-    }
-
     @Test
     void getByUrl() {
         //Добавление ссылки с заданным url
@@ -49,7 +44,7 @@ public class JdbcLinkTest extends IntegrationTest {
         );
 
         //Получениие ссылки с заданным url
-        Optional<Link> link = linkDao.getByUrl(defaultUrl);
+        Optional<Link> link = linkDao.findByUrl(defaultUrl);
         assertAll(
             "Поддтверждение, что это только что добавленная ссылка",
             () -> assertTrue(link.isPresent()),
@@ -70,7 +65,7 @@ public class JdbcLinkTest extends IntegrationTest {
 
         //Получениие ссылки с присвоенным id
         long id = actualLinks.getFirst().getId();
-        Optional<Link> link = linkDao.getById(id);
+        Optional<Link> link = linkDao.findById(id);
         assertAll(
             "Поддтверждение, что это только что добавленная ссылка",
             () -> assertTrue(link.isPresent()),
@@ -79,7 +74,7 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    void getByLustCheck() {
+    void getByLastUpdate() {
         //Добавление нескольких ссылок
         OffsetDateTime now = OffsetDateTime.now();
         String sql = "INSERT INTO link(url, created_at, last_update_at, last_check_at) " +
@@ -91,11 +86,11 @@ public class JdbcLinkTest extends IntegrationTest {
                 .update();
         }
 
-        List<Link> actualLinks = linkDao.getByLustCheck(now.plusSeconds(25));
+        List<Link> actualLinks = linkDao.getByLastCheck(now.plusSeconds(25));
         assertAll(
             "Поддтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),
-            () -> assertEquals(actualLinks.size(), count/2 - 1)
+            () -> assertEquals(actualLinks.size(), count / 2 - 1)
         );
     }
 

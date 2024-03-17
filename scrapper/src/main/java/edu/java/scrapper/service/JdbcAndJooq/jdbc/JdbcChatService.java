@@ -24,7 +24,7 @@ public class JdbcChatService implements ChatService {
 
     @Override
     public void register(long tgChatId) {
-        if (chatDao.getByTgChatId(tgChatId).isPresent()) {
+        if (chatDao.findByTgChatId(tgChatId).isPresent()) {
             throw new ReRegistrationException(toExMsg(tgChatId));
         }
         Chat chat = new Chat();
@@ -35,7 +35,7 @@ public class JdbcChatService implements ChatService {
 
     @Override
     public void unregister(long tgChatId) {
-        long id = chatDao.getByTgChatId(tgChatId)
+        long id = chatDao.findByTgChatId(tgChatId)
             .orElseThrow(
                 () -> new ChatIdNotFoundException(toExMsg(tgChatId))
             ).getId();

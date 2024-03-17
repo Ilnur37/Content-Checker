@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -37,11 +38,7 @@ public class ScrapperClient extends Client {
         webClient.post()
             .uri(URL_TG_CHAT_ID, id)
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
-                .flatMap(error -> {
-                    log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(getCustomApiException(error));
-                }))
+            .onStatus(HttpStatusCode::is4xxClientError, this::handleApiError)
             .bodyToMono(Void.class)
             .block();
     }
@@ -50,11 +47,7 @@ public class ScrapperClient extends Client {
         webClient.delete()
             .uri(URL_TG_CHAT_ID, id)
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
-                .flatMap(error -> {
-                    log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(getCustomApiException(error));
-                }))
+            .onStatus(HttpStatusCode::is4xxClientError, this::handleApiError)
             .bodyToMono(Void.class)
             .block();
     }
@@ -64,11 +57,7 @@ public class ScrapperClient extends Client {
             .uri(URL_LINKS)
             .header(HEADER_TG_CHAT_ID, String.valueOf(id))
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
-                .flatMap(error -> {
-                    log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(getCustomApiException(error));
-                }))
+            .onStatus(HttpStatusCode::is4xxClientError, this::handleApiError)
             .bodyToMono(ListLinksResponse.class)
             .block();
     }
@@ -79,11 +68,7 @@ public class ScrapperClient extends Client {
             .header(HEADER_TG_CHAT_ID, String.valueOf(id))
             .bodyValue(new AddLinkRequest(link))
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
-                .flatMap(error -> {
-                    log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(getCustomApiException(error));
-                }))
+            .onStatus(HttpStatusCode::is4xxClientError, this::handleApiError)
             .bodyToMono(LinkResponse.class)
             .block();
     }
@@ -94,13 +79,17 @@ public class ScrapperClient extends Client {
             .header(HEADER_TG_CHAT_ID, String.valueOf(id))
             .bodyValue(new RemoveLinkRequest(link))
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, response -> response.bodyToMono(ApiErrorResponse.class)
-                .flatMap(error -> {
-                    log.error(error.getDescription() + SPASE + error.getExceptionMessage());
-                    return Mono.error(getCustomApiException(error));
-                }))
+            .onStatus(HttpStatusCode::is4xxClientError, this::handleApiError)
             .bodyToMono(LinkResponse.class)
             .block();
+    }
+
+    private Mono<Exception> handleApiError(ClientResponse response) {
+        return response.bodyToMono(ApiErrorResponse.class)
+            .flatMap(error -> {
+                log.error(error.getDescription() + SPASE + error.getExceptionMessage());
+                return Mono.error(getCustomApiException(error));
+            });
     }
 
     @SuppressWarnings({"ReturnCount", "MissingSwitchDefault"})

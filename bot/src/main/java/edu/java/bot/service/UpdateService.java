@@ -6,16 +6,14 @@ import edu.java.models.dto.request.LinkUpdateRequest;
 import edu.java.models.exception.ChatIdNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UpdateService {
     private static final String DESCRIPTION = "Доступно новое обновление по ссылке ";
     private final TelegramBot telegramBot;
-
-    public UpdateService(TelegramBot telegramBot) {
-        this.telegramBot = telegramBot;
-    }
 
     public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
         List<SendMessage> messages = linkUpdateRequest.tgChatIds()

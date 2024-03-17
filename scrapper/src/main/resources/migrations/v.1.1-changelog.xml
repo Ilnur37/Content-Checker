@@ -8,4 +8,7 @@
     <changeSet id="alter_table_link_column_url_unique" author="Ilnur37">
         <sqlFile path="sql/alter-link-url.sql" relativeToChangelogFile="true"/>
     </changeSet>
+    <changeSet id="create-index-tgChatId-table-chat" author="Ilnur37">
+        <sqlFile path="sql/create-index-chat.sql" relativeToChangelogFile="true"/>
+    </changeSet>
 </databaseChangeLog>

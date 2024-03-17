@@ -34,6 +34,7 @@ public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
     public static final String LINK_MAPPING = "/links";
     public static final String SCRAPPER_MAPPING = "scrapper-api";
+
     private final ChatService chatService;
     private final LinkService linkService;
 
@@ -124,8 +125,7 @@ public class ScrapperController {
         responseCode = "400", description = "Некорректные параметры запроса",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
-        responseCode = "404",
-        description = "Чат не существует",
+        responseCode = "404", description = "Чат не существует",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
         responseCode = "404", description = "Ссылка не найдена",

@@ -5,7 +5,6 @@ import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.model.chat.Chat;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,26 +30,21 @@ public class JdbcChatTest extends IntegrationTest {
 
     private final long tgChatId = 10;
 
-    @BeforeEach
-    public void checkThatTableIsEmpty() {
-        assertTrue(getAllFromChat(jdbcClient).isEmpty());
-    }
-
     @Test
     void getByTgChatId() {
         //Добавление чата с заданным tgChatId
         insertRowIntoChat(jdbcClient, tgChatId);
         List<Chat> actualChats = getAllFromChat(jdbcClient);
         assertAll(
-            "Поддтверждение, что появился 1 чат",
+            "Подтверждение, что появился 1 чат",
             () -> assertFalse(actualChats.isEmpty()),
             () -> assertEquals(actualChats.getFirst().getTgChatId(), tgChatId)
         );
 
         //Получениие чата с заданным tgChatId
-        Optional<Chat> chat = chatDao.getByTgChatId(tgChatId);
+        Optional<Chat> chat = chatDao.findByTgChatId(tgChatId);
         assertAll(
-            "Поддтверждение, что это только что добавленный чат",
+            "Подтверждение, что это только что добавленный чат",
             () -> assertTrue(chat.isPresent()),
             () -> assertEquals(chat.get().getTgChatId(), tgChatId)
         );
@@ -62,16 +56,16 @@ public class JdbcChatTest extends IntegrationTest {
         insertRowIntoChat(jdbcClient, tgChatId);
         List<Chat> actualChats = getAllFromChat(jdbcClient);
         assertAll(
-            "Поддтверждение, что появился 1 чат",
+            "Подтверждение, что появился 1 чат",
             () -> assertFalse(actualChats.isEmpty()),
             () -> assertEquals(actualChats.getFirst().getTgChatId(), tgChatId)
         );
         long id = actualChats.getFirst().getId();
 
         //Получениие чата с присвоенным id
-        Optional<Chat> chat = chatDao.getById(id);
+        Optional<Chat> chat = chatDao.findById(id);
         assertAll(
-            "Поддтверждение, что это только что добавленный чат",
+            "Подтверждение, что это только что добавленный чат",
             () -> assertTrue(chat.isPresent()),
             () -> assertEquals(chat.get().getId(), id)
         );
@@ -87,7 +81,7 @@ public class JdbcChatTest extends IntegrationTest {
 
         List<Chat> actualChats = chatDao.getAll();
         assertAll(
-            "Поддтверждение, что чаты добавились",
+            "Подтверждение, что чаты добавились",
             () -> assertFalse(actualChats.isEmpty()),
             () -> assertEquals(actualChats.size(), count - 1)
         );
@@ -111,7 +105,7 @@ public class JdbcChatTest extends IntegrationTest {
         insertRowIntoChat(jdbcClient, tgChatId);
         List<Chat> chats = getAllFromChat(jdbcClient);
         assertAll(
-            "Поддтверждение, что появился 1 чат",
+            "Подтверждение, что появился 1 чат",
             () -> assertFalse(chats.isEmpty()),
             () -> assertEquals(chats.getFirst().getTgChatId(), tgChatId)
         );

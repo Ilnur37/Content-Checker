@@ -50,17 +50,17 @@ public class JdbcChatServiceTest extends IntegrationTest {
     @Test
     @DisplayName("Регистрация чата")
     void registerChat() {
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
         chatService.register(tgChatId);
-        assertTrue(chatDao.getByTgChatId(tgChatId).isPresent());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isPresent());
     }
 
     @Test
     @DisplayName("Повторная регистрация")
     void reRegisterChat() {
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
         chatDao.save(createChat());
-        assertTrue(chatDao.getByTgChatId(tgChatId).isPresent());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isPresent());
         assertThrows(
             ReRegistrationException.class,
             () -> chatService.register(tgChatId)
@@ -70,17 +70,17 @@ public class JdbcChatServiceTest extends IntegrationTest {
     @Test
     @DisplayName("Удаление чата")
     void unregisterChat() {
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
         chatDao.save(createChat());
-        assertTrue(chatDao.getByTgChatId(tgChatId).isPresent());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isPresent());
         chatService.unregister(tgChatId);
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
     }
 
     @Test
     @DisplayName("Удаление несуществующего чата")
     void unregisterChatWhenChatIdNotFound() {
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
         assertThrows(
             ChatIdNotFoundException.class,
             () -> chatService.unregister(tgChatId)
@@ -90,16 +90,16 @@ public class JdbcChatServiceTest extends IntegrationTest {
     @Test
     @DisplayName("Удаление чата и всех отслеживаемых ссылок")
     void unregisterChatAndDeleteLinks() {
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
         chatDao.save(createChat());
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
-        assertTrue(chatDao.getByTgChatId(tgChatId).isPresent());
+        long chatId = chatDao.findByTgChatId(tgChatId).orElseThrow().getId();
+        assertTrue(chatDao.findByTgChatId(tgChatId).isPresent());
 
         String url = "url";
         linkDao.save(createLink(url));
-        long linkId1 = linkDao.getByUrl(url).orElseThrow().getId();
+        long linkId1 = linkDao.findByUrl(url).orElseThrow().getId();
         linkDao.save(createLink(url + url));
-        long linkId2 = linkDao.getByUrl(url + url).orElseThrow().getId();
+        long linkId2 = linkDao.findByUrl(url + url).orElseThrow().getId();
 
         chatLinkDao.save(createChatLink(chatId, linkId1));
         chatLinkDao.save(createChatLink(chatId, linkId2));
@@ -107,12 +107,12 @@ public class JdbcChatServiceTest extends IntegrationTest {
         assertEquals(2, tempChatLink.size());
 
         chatService.unregister(tgChatId);
-        assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
         List<Link> actualLink = linkDao.getAll();
         assertAll(
             "Удален чат и все ссылки",
-            () -> assertTrue(chatDao.getByTgChatId(tgChatId).isEmpty()),
+            () -> assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty()),
             () -> assertEquals(0, actualChatLink.size()),
             () -> assertEquals(0, actualLink.size())
         );

@@ -20,14 +20,14 @@ public class JdbcChatDao {
             .query(chatRowMapper).list();
     }
 
-    public Optional<Chat> getByTgChatId(long tgChatId) {
+    public Optional<Chat> findByTgChatId(long tgChatId) {
         String sql = "SELECT * FROM chat WHERE tg_chat_id = ?";
         return jdbcClient.sql(sql)
             .param(tgChatId)
             .query(chatRowMapper).optional();
     }
 
-    public Optional<Chat> getById(long id) {
+    public Optional<Chat> findById(long id) {
         String sql = "SELECT * FROM chat WHERE id = ?";
         return jdbcClient.sql(sql)
             .param(id)
