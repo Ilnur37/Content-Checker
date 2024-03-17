@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UpdateService {
     private static final String DESCRIPTION = "Доступно новое обновление по ссылке ";
+
     private final TelegramBot telegramBot;
 
     public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
