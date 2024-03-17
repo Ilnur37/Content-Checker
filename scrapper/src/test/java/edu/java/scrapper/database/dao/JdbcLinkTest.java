@@ -1,12 +1,11 @@
 package edu.java.scrapper.database.dao;
 
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
 import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.dao.LinkDao;
 import edu.java.scrapper.domain.jdbc.model.link.Link;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @Transactional
 @Rollback
+@SpringBootTest
 public class JdbcLinkTest extends IntegrationTest {
     @Autowired
     private LinkDao linkDao;
@@ -31,11 +30,6 @@ public class JdbcLinkTest extends IntegrationTest {
     public JdbcClient jdbcClient;
 
     private final String defaultUrl = "defaultUrl";
-
-    @BeforeEach
-    public void checkThatTableIsEmpty() {
-        assertTrue(getAllFromLink(jdbcClient).isEmpty());
-    }
 
     @Test
     void getByUrl() {
@@ -49,7 +43,7 @@ public class JdbcLinkTest extends IntegrationTest {
         );
 
         //Получениие ссылки с заданным url
-        Optional<Link> link = linkDao.getByUrl(defaultUrl);
+        Optional<Link> link = linkDao.findByUrl(defaultUrl);
         assertAll(
             "Поддтверждение, что это только что добавленная ссылка",
             () -> assertTrue(link.isPresent()),
@@ -70,7 +64,7 @@ public class JdbcLinkTest extends IntegrationTest {
 
         //Получениие ссылки с присвоенным id
         long id = actualLinks.getFirst().getId();
-        Optional<Link> link = linkDao.getById(id);
+        Optional<Link> link = linkDao.findById(id);
         assertAll(
             "Поддтверждение, что это только что добавленная ссылка",
             () -> assertTrue(link.isPresent()),
@@ -79,7 +73,7 @@ public class JdbcLinkTest extends IntegrationTest {
     }
 
     @Test
-    void getByLustUpdate() {
+    void getByLastUpdate() {
         //Добавление нескольких ссылок
         OffsetDateTime now = OffsetDateTime.now();
         String sql = "INSERT INTO link(url, created_at, last_update_at) VALUES (?, CURRENT_TIMESTAMP, ?)";
@@ -90,11 +84,11 @@ public class JdbcLinkTest extends IntegrationTest {
                 .update();
         }
 
-        List<Link> actualLinks = linkDao.getByLustUpdate(now.plusSeconds(25));
+        List<Link> actualLinks = linkDao.getByLastUpdate(now.plusSeconds(25));
         assertAll(
             "Поддтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),
-            () -> assertEquals(actualLinks.size(), count/2 - 1)
+            () -> assertEquals(actualLinks.size(), count / 2 - 1)
         );
     }
 

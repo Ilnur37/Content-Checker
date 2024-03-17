@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class ListCommand extends CommandHandler {
-    private static final String RESPONSE_LIST_OF_TRACKED_LINKS = "Вы отслеживаете %d ссылок \n";
+    public static final String RESPONSE_LIST_OF_TRACKED_LINKS = "Вы отслеживаете %d ссылок \n";
 
     public ListCommand(ScrapperService scrapperService) {
         super(scrapperService);
@@ -32,12 +32,12 @@ public class ListCommand extends CommandHandler {
     @Override
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
-        StringBuilder response = new StringBuilder();
         var isTheCorrectCommand = checkingThatThisIsTheCorrectCommand(this, update.message().text(), update);
         if (isTheCorrectCommand != null) {
             return isTheCorrectCommand;
         }
 
+        StringBuilder response = new StringBuilder();
         try {
             ListLinksResponse links = scrapperService.getAllLinks(chatId);
             response.append(String.format(RESPONSE_LIST_OF_TRACKED_LINKS, links.size()));
@@ -46,12 +46,10 @@ public class ListCommand extends CommandHandler {
                     .append(link)
                     .append(")");
             }
-        } catch (RuntimeException ex) {
-            switch (ex) {
-                case ChatIdNotFoundException chatIdNotFoundException -> response.append(USER_IS_NOT_REGISTERED);
-                case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
-                default -> throw ex;
-            }
+        } catch (ChatIdNotFoundException ex) {
+            response.append(USER_IS_NOT_REGISTERED);
+        } catch (IllegalArgumentException ex) {
+            response.append(BAD_REQUEST);
         }
         return new SendMessage(chatId, response.toString());
     }

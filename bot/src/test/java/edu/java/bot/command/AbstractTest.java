@@ -12,14 +12,13 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {BotApplication.class})
 public abstract class AbstractTest {
+
     @MockBean
     Update update;
     @MockBean
     ScrapperService scrapperService;
+
     final long chatId = 10L;
-    final String USER_IS_NOT_REGISTERED =
-        "Прежде чем пользоваться функциями бота, вам необходимо зарегистрироваться. Введите команду \"/start\"";
-    final String BAD_REQUEST = "Некорректные параметры запроса";
 
     void mockObjects(Long id, String command) {
         Message mockMessage = mock(Message.class);

@@ -14,12 +14,9 @@ import static java.lang.String.format;
 @Service
 public class UnTrackCommand extends CommandHandler {
     private static final String LINK_IS_NO_LONGER_BEING_TRACKED = "Ссылка перестала отслеживается";
-    private static final String RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED = "Вы перестали отслеживать контент по ссылке";
-    private static final String RESPONSE_LINK_NOT_TRACKED = "Вы не отслеживали контент по ссылке";
-    private static final String RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER =
-        "Вы должны передать 1 ссылку с этой командой";
-    private static final String RESPONSE_LINK_IS_INVALID =
-        "Извините, пока что я не могу работать с ссылкой этого домена";
+    public static final String RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED = "Вы перестали отслеживать контент по ссылке";
+    public static final String RESPONSE_LINK_NOT_TRACKED = "Вы не отслеживали контент по ссылке";
+
     private final SupportedDomain supportedDomain;
 
     public UnTrackCommand(
@@ -63,13 +60,12 @@ public class UnTrackCommand extends CommandHandler {
                 log.info(format(CHAT_ID_FOR_LOGGER, chatId)
                     + format(LINK_FOR_LOGGER, link)
                     + LINK_IS_NO_LONGER_BEING_TRACKED);
-            } catch (RuntimeException ex) {
-                switch (ex) {
-                    case LinkNotFoundException linkNotFoundException -> response = RESPONSE_LINK_NOT_TRACKED;
-                    case ChatIdNotFoundException chatIdNotFoundException -> response = USER_IS_NOT_REGISTERED;
-                    case IllegalArgumentException illegalArgumentException -> response = BAD_REQUEST;
-                    default -> throw ex;
-                }
+            } catch (LinkNotFoundException ex) {
+                response = RESPONSE_LINK_NOT_TRACKED;
+            } catch (ChatIdNotFoundException ex) {
+                response = USER_IS_NOT_REGISTERED;
+            } catch (IllegalArgumentException ex) {
+                response = BAD_REQUEST;
             }
         }
         return new SendMessage(chatId, response);

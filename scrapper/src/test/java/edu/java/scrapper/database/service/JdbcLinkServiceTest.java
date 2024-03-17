@@ -5,11 +5,11 @@ import edu.java.models.dto.request.RemoveLinkRequest;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.ReAddLinkException;
+import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.domain.jdbc.dao.ChatDao;
 import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
 import edu.java.scrapper.domain.jdbc.dao.LinkDao;
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.models.exception.ReAddLinkException;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
 import edu.java.scrapper.domain.jdbc.model.link.Link;
 import edu.java.scrapper.service.jdbc.JdbcLinkService;
@@ -50,11 +50,11 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         //Заполнение таблиц
         short countLinks = 8;
         chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
+        long chatId = chatDao.findByTgChatId(tgChatId).orElseThrow().getId();
         for (int i = 0; i < countLinks; i++) {
             String tempUrl = url + i;
             linkDao.save(createLink(tempUrl));
-            long linkId = linkDao.getByUrl(tempUrl).orElseThrow().getId();
+            long linkId = linkDao.findByUrl(tempUrl).orElseThrow().getId();
             chatLinkDao.save(createChatLink(chatId, linkId));
         }
         ListLinksResponse response = linkService.getAll(tgChatId);
@@ -69,9 +69,9 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     void getAllWhenChatIdNotFound() {
         //Заполнение таблиц
         chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
+        long chatId = chatDao.findByTgChatId(tgChatId).orElseThrow().getId();
         linkDao.save(createLink(url));
-        long linkId = linkDao.getByUrl(url).orElseThrow().getId();
+        long linkId = linkDao.findByUrl(url).orElseThrow().getId();
         chatLinkDao.save(createChatLink(chatId, linkId));
 
         assertThrows(
@@ -85,11 +85,11 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     void add() {
         //Заполнение таблиц
         chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
+        long chatId = chatDao.findByTgChatId(tgChatId).orElseThrow().getId();
         LinkResponse response = linkService.add(tgChatId, new AddLinkRequest(url));
 
         ChatLink actualChatLink = chatLinkDao.getByChatId(chatId).getFirst();
-        Link actualLink = linkDao.getByUrl(url).orElseThrow();
+        Link actualLink = linkDao.findByUrl(url).orElseThrow();
 
         assertAll(
             () -> assertEquals(url, response.url()),
@@ -129,13 +129,13 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     void removeWhenOneChatTrack() {
         //Заполнение таблиц
         chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
+        long chatId = chatDao.findByTgChatId(tgChatId).orElseThrow().getId();
         linkDao.save(createLink(url));
-        long linkId = linkDao.getByUrl(url).orElseThrow().getId();
+        long linkId = linkDao.findByUrl(url).orElseThrow().getId();
         chatLinkDao.save(createChatLink(chatId, linkId));
 
         ChatLink tempChatLink = chatLinkDao.getByChatId(chatId).getFirst();
-        Link tempLink = linkDao.getByUrl(url).orElseThrow();
+        Link tempLink = linkDao.findByUrl(url).orElseThrow();
         assertAll(
             "Проверка добавления ссылки",
             () -> assertEquals(url, tempLink.getUrl()),
@@ -147,7 +147,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         linkService.remove(tgChatId, new RemoveLinkRequest(url));
 
         List<ChatLink> actualChatLink = chatLinkDao.getByChatId(chatId);
-        Optional<Link> actualLink = linkDao.getByUrl(url);
+        Optional<Link> actualLink = linkDao.findByUrl(url);
         assertAll(
             "Ссылка удалена из всех таблиц",
             () -> assertEquals(0, actualChatLink.size()),
@@ -160,17 +160,17 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     void removeWhenManyChatsTrack() {
         //Заполнение таблиц
         chatDao.save(createChat(tgChatId));
-        long chatId1 = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
+        long chatId1 = chatDao.findByTgChatId(tgChatId).orElseThrow().getId();
         chatDao.save(createChat(tgChatId + 1));
-        long chatId2 = chatDao.getByTgChatId(tgChatId + 1).orElseThrow().getId();
+        long chatId2 = chatDao.findByTgChatId(tgChatId + 1).orElseThrow().getId();
         linkDao.save(createLink(url));
-        long linkId = linkDao.getByUrl(url).orElseThrow().getId();
+        long linkId = linkDao.findByUrl(url).orElseThrow().getId();
         chatLinkDao.save(createChatLink(chatId1, linkId));
         chatLinkDao.save(createChatLink(chatId2, linkId));
 
         ChatLink tempChatLink1 = chatLinkDao.getByChatId(chatId1).getFirst();
         ChatLink tempChatLink2 = chatLinkDao.getByChatId(chatId2).getFirst();
-        Link tempLink = linkDao.getByUrl(url).orElseThrow();
+        Link tempLink = linkDao.findByUrl(url).orElseThrow();
         assertAll(
             "Проверка добавления ссылки",
             () -> assertEquals(url, tempLink.getUrl()),
@@ -184,7 +184,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         linkService.remove(tgChatId, new RemoveLinkRequest(url));
 
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
-        Optional<Link> actualLink = linkDao.getByUrl(url);
+        Optional<Link> actualLink = linkDao.findByUrl(url);
         assertAll(
             "Удалена только 1 запись о связи",
             () -> assertEquals(1, actualChatLink.size()),

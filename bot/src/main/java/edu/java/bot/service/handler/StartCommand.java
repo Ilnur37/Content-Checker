@@ -12,8 +12,8 @@ import static java.lang.String.format;
 @Service
 public class StartCommand extends CommandHandler {
     private static final String USER_SUCCESSFULLY_REGISTERED = "Пользователь успешно зарегистрирован";
-    private static final String RESPONSE_USER_SUCCESSFULLY_REGISTERED = "Поздравляю, регистрация прошла успешно!";
-    private static final String RESPONSE_USER_IS_ALREADY_REGISTERED = "Вы уже зарегистрированы";
+    public static final String RESPONSE_USER_SUCCESSFULLY_REGISTERED = "Поздравляю, регистрация прошла успешно!";
+    public static final String RESPONSE_USER_IS_ALREADY_REGISTERED = "Вы уже зарегистрированы";
 
     public StartCommand(ScrapperService scrapperService, TrackCommand trackCommand) {
         super(scrapperService);
@@ -39,19 +39,16 @@ public class StartCommand extends CommandHandler {
             return isTheCorrectCommand;
         }
 
-        StringBuilder response = new StringBuilder();
+        String response;
         try {
             scrapperService.registerChat(chatId);
             log.info(format(CHAT_ID_FOR_LOGGER, chatId) + USER_SUCCESSFULLY_REGISTERED);
-            response.append(RESPONSE_USER_SUCCESSFULLY_REGISTERED);
-        } catch (RuntimeException ex) {
-            switch (ex) {
-                case ReRegistrationException reRegistrationException ->
-                    response.append(RESPONSE_USER_IS_ALREADY_REGISTERED);
-                case IllegalArgumentException illegalArgumentException -> response.append(BAD_REQUEST);
-                default -> throw ex;
-            }
+            response = RESPONSE_USER_SUCCESSFULLY_REGISTERED;
+        } catch (ReRegistrationException ex) {
+            response = RESPONSE_USER_IS_ALREADY_REGISTERED;
+        } catch (IllegalArgumentException ex) {
+            response = BAD_REQUEST;
         }
-        return new SendMessage(chatId, response.toString());
+        return new SendMessage(chatId, response);
     }
 }

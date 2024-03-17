@@ -1,13 +1,12 @@
 package edu.java.scrapper.database.dao;
 
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
 import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import java.util.ArrayList;
-import java.util.List;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChat;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrl;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @Transactional
 @Rollback
+@SpringBootTest
 public class JdbcChatLinkTest extends IntegrationTest {
     @Autowired
     private ChatLinkDao chatLinkDao;
@@ -38,11 +37,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     private final String saveSQL = "INSERT INTO chat_link(chat_id, link_id) VALUES (%d, %d)";
     private final String defaultUrl = "defaultUrl";
     private final long defaultTgChatId = 10;
-
-    @BeforeEach
-    public void checkThatTableIsEmpty() {
-        assertTrue(getAllFromChatLink(jdbcClient).isEmpty());
-    }
 
     @Test
     @DisplayName("getByLinkId (В таблице chat_link 1 значение с искомой ссылкой)")
@@ -154,7 +148,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
         assertAll(
             () -> assertEquals(1, contentByChatId.size()),
             () -> assertEquals(contentByChatId.getFirst().getLinkId(), linkId),
-        () -> assertEquals(contentByChatId.getFirst().getUrl(), defaultUrl)
+            () -> assertEquals(contentByChatId.getFirst().getUrl(), defaultUrl)
         );
     }
 

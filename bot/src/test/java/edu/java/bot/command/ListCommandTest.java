@@ -22,7 +22,7 @@ public class ListCommandTest extends AbstractTest {
         SendMessage response = listCommand.handle(update);
 
         assertEquals(
-            USER_IS_NOT_REGISTERED,
+            ListCommand.USER_IS_NOT_REGISTERED,
             response.getParameters().get("text")
         );
     }
@@ -35,7 +35,7 @@ public class ListCommandTest extends AbstractTest {
         SendMessage response = listCommand.handle(update);
 
         assertEquals(
-            BAD_REQUEST,
+            ListCommand.BAD_REQUEST,
             response.getParameters().get("text")
         );
     }

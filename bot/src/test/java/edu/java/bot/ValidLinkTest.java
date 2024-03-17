@@ -2,16 +2,21 @@ package edu.java.bot;
 
 import edu.java.bot.domain.SupportedDomain;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.mockito.Mockito.spy;
 
-@SpringBootTest(classes = {BotApplication.class})
 public class ValidLinkTest {
-    @Autowired
-    SupportedDomain supportedDomain;
+    private static final SupportedDomain supportedDomain = spy(SupportedDomain.class);
+
+    @BeforeAll
+    static void setUp() {
+        supportedDomain.setGithub("github.com");
+        supportedDomain.setStackoverflow("stackoverflow.com");
+    }
+
     private static final String RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER =
         "Вы должны передать 1 ссылку с этой командой";
     private static final String RESPONSE_LINK_IS_INVALID =

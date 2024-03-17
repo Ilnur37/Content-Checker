@@ -14,8 +14,9 @@ import static java.lang.String.format;
 @Service
 public class TrackCommand extends CommandHandler {
     private static final String LINK_HAS_STARTED_TO_BE_TRACKED = "Начала отслеживаться ссылка";
-    private static final String RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED = "Вы начали отслеживать контент по ссылке";
-    private static final String RESPONSE_LINK_IS_ALREADY_BEING_TRACKED = "Вы уже отслеживаете контент этой по ссылке";
+    public static final String RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED = "Вы начали отслеживать контент по ссылке";
+    public static final String RESPONSE_LINK_IS_ALREADY_BEING_TRACKED = "Вы уже отслеживаете контент этой по ссылке";
+
     private final SupportedDomain supportedDomain;
 
     public TrackCommand(
@@ -59,13 +60,12 @@ public class TrackCommand extends CommandHandler {
                 log.info(format(CHAT_ID_FOR_LOGGER, chatId)
                     + format(LINK_FOR_LOGGER, link)
                     + LINK_HAS_STARTED_TO_BE_TRACKED);
-            } catch (RuntimeException ex) {
-                switch (ex) {
-                    case ReAddLinkException reAddLinkException -> response = RESPONSE_LINK_IS_ALREADY_BEING_TRACKED;
-                    case ChatIdNotFoundException chatIdNotFoundException -> response = USER_IS_NOT_REGISTERED;
-                    case IllegalArgumentException illegalArgumentException -> response = BAD_REQUEST;
-                    default -> throw ex;
-                }
+            } catch (ReAddLinkException ex) {
+                response = RESPONSE_LINK_IS_ALREADY_BEING_TRACKED;
+            } catch (ChatIdNotFoundException ex) {
+                response = USER_IS_NOT_REGISTERED;
+            } catch (IllegalArgumentException ex) {
+                response = BAD_REQUEST;
             }
         }
         return new SendMessage(chatId, response);

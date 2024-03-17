@@ -21,21 +21,21 @@ public class LinkDao {
             .query(linkRowMapper).list();
     }
 
-    public Optional<Link> getByUrl(String url) {
+    public Optional<Link> findByUrl(String url) {
         String sql = "SELECT * FROM link WHERE url = ?";
         return jdbcClient.sql(sql)
             .param(url)
             .query(linkRowMapper).optional();
     }
 
-    public Optional<Link> getById(long id) {
+    public Optional<Link> findById(long id) {
         String sql = "SELECT * FROM link WHERE id = ?";
         return jdbcClient.sql(sql)
             .param(id)
             .query(linkRowMapper).optional();
     }
 
-    public List<Link> getByLustUpdate(OffsetDateTime dateTime) {
+    public List<Link> getByLastUpdate(OffsetDateTime dateTime) {
         String sql = "SELECT * FROM link WHERE last_update_at < ?";
         return jdbcClient.sql(sql)
             .param(dateTime)

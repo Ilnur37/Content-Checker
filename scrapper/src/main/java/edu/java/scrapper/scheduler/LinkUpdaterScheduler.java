@@ -49,7 +49,7 @@ public class LinkUpdaterScheduler {
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
     public void update() {
         OffsetDateTime now = OffsetDateTime.now();
-        List<Link> links = linkDao.getByLustUpdate(now.minus(NEED_TO_CHECK));
+        List<Link> links = linkDao.getByLastUpdate(now.minus(NEED_TO_CHECK));
         for (Link link : links) {
             if (link.getUrl().contains(api.github())) {
                 gitHubProcess(link);

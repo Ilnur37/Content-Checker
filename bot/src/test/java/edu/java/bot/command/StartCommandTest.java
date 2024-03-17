@@ -11,10 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 
 public class StartCommandTest extends AbstractTest {
+
     @Autowired
     StartCommand start;
-    private static final String RESPONSE_USER_SUCCESSFULLY_REGISTERED = "Поздравляю, регистрация прошла успешно!";
-    private static final String RESPONSE_USER_IS_ALREADY_REGISTERED = "Вы уже зарегистрированы";
 
     @Test
     @DisplayName("Корректные данные")
@@ -23,7 +22,7 @@ public class StartCommandTest extends AbstractTest {
         mockObjects(chatId, start.command());
         SendMessage response = start.handle(update);
 
-        assertEquals(response.getParameters().get("text"), RESPONSE_USER_SUCCESSFULLY_REGISTERED);
+        assertEquals(response.getParameters().get("text"), StartCommand.RESPONSE_USER_SUCCESSFULLY_REGISTERED);
     }
 
     @Test
@@ -33,6 +32,6 @@ public class StartCommandTest extends AbstractTest {
         mockObjects(chatId, start.command());
         SendMessage response = start.handle(update);
 
-        assertEquals(response.getParameters().get("text"), RESPONSE_USER_IS_ALREADY_REGISTERED);
+        assertEquals(response.getParameters().get("text"), StartCommand.RESPONSE_USER_IS_ALREADY_REGISTERED);
     }
 }

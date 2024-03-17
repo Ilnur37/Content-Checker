@@ -1,6 +1,7 @@
 package edu.java.bot.command;
 
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.domain.SupportedDomain;
 import edu.java.bot.service.handler.UnTrackCommand;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
@@ -15,14 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class UnTrackCommandTest extends AbstractTest {
+
     @Autowired
     UnTrackCommand unTrackCommand;
-    private static final String RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED = "Вы перестали отслеживать контент по ссылке";
-    private static final String RESPONSE_LINK_NOT_TRACKED = "Вы не отслеживали контент по ссылке";
-    private static final String RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER =
-        "Вы должны передать 1 ссылку с этой командой";
-    private static final String RESPONSE_LINK_IS_INVALID =
-        "Извините, пока что я не могу работать с ссылкой этого домена";
 
     @Test
     @DisplayName("Удаление 1 поддерживаемой ссылки")
@@ -36,7 +32,7 @@ public class UnTrackCommandTest extends AbstractTest {
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
-            toResponse(RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED, link),
+            toResponse(UnTrackCommand.RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED, link),
             response.getParameters().get("text")
         );
     }
@@ -50,7 +46,7 @@ public class UnTrackCommandTest extends AbstractTest {
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
-            RESPONSE_LINK_IS_INVALID,
+            SupportedDomain.RESPONSE_LINK_IS_INVALID,
             response.getParameters().get("text")
         );
     }
@@ -63,7 +59,7 @@ public class UnTrackCommandTest extends AbstractTest {
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
-            RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER,
+            SupportedDomain.RESPONSE_COMMAND_SUPPORTS_ONE_PARAMETER,
             response.getParameters().get("text")
         );
     }
@@ -79,7 +75,7 @@ public class UnTrackCommandTest extends AbstractTest {
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
-            RESPONSE_LINK_NOT_TRACKED,
+            UnTrackCommand.RESPONSE_LINK_NOT_TRACKED,
             response.getParameters().get("text")
         );
     }
@@ -95,7 +91,7 @@ public class UnTrackCommandTest extends AbstractTest {
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
-            USER_IS_NOT_REGISTERED,
+            UnTrackCommand.USER_IS_NOT_REGISTERED,
             response.getParameters().get("text")
         );
     }
@@ -110,7 +106,7 @@ public class UnTrackCommandTest extends AbstractTest {
         SendMessage response = unTrackCommand.handle(update);
 
         assertEquals(
-            BAD_REQUEST,
+            UnTrackCommand.BAD_REQUEST,
             response.getParameters().get("text")
         );
     }
