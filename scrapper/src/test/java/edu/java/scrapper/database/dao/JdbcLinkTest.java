@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @Rollback
-@SpringBootTest
 public class JdbcLinkTest extends IntegrationTest {
+
     @Autowired
     private LinkDao linkDao;
-
-    private final String defaultUrl = "defaultUrl";
-    private final long defaultId = 1;
 
     @Test
     @Sql(value = "/sql/insertOneRowLink.sql")

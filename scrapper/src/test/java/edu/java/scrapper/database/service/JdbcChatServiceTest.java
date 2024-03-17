@@ -13,7 +13,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,37 +21,38 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @Rollback
 @Transactional
 public class JdbcChatServiceTest extends IntegrationTest {
 
     @Autowired
     private JdbcChatService chatService;
+
     @Autowired
     private ChatDao chatDao;
+
     @Autowired
     private LinkDao linkDao;
+
     @Autowired
     private ChatLinkDao chatLinkDao;
-    private final long tgChatId = 1;
 
     @Test
     @DisplayName("Регистрация чата")
     void registerChat() {
-        chatService.register(tgChatId);
+        chatService.register(defaultTgChatId);
 
-        assertTrue(chatDao.findByTgChatId(tgChatId).isPresent());
+        assertTrue(chatDao.findByTgChatId(defaultTgChatId).isPresent());
     }
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
     @DisplayName("Повторная регистрация")
     void reRegisterChat() {
-        assertTrue(chatDao.findByTgChatId(tgChatId).isPresent());
+        assertTrue(chatDao.findByTgChatId(defaultTgChatId).isPresent());
         assertThrows(
             ReRegistrationException.class,
-            () -> chatService.register(tgChatId)
+            () -> chatService.register(defaultTgChatId)
         );
     }
 
@@ -60,18 +60,18 @@ public class JdbcChatServiceTest extends IntegrationTest {
     @Sql(value = "/sql/insertOneRowChat.sql")
     @DisplayName("Удаление чата")
     void unregisterChat() {
-        chatService.unregister(tgChatId);
+        chatService.unregister(defaultTgChatId);
 
-        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty());
     }
 
     @Test
     @DisplayName("Удаление несуществующего чата")
     void unregisterChatWhenChatIdNotFound() {
-        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty());
         assertThrows(
             ChatIdNotFoundException.class,
-            () -> chatService.unregister(tgChatId)
+            () -> chatService.unregister(defaultTgChatId)
         );
     }
 
@@ -81,14 +81,14 @@ public class JdbcChatServiceTest extends IntegrationTest {
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Удаление чата и всех отслеживаемых ссылок")
     void unregisterChatAndDeleteLinks() {
-        chatService.unregister(tgChatId);
+        chatService.unregister(defaultTgChatId);
 
-        assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty());
+        assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty());
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
         List<Link> actualLink = linkDao.getAll();
         assertAll(
             "Удален чат и все ссылки",
-            () -> assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty()),
+            () -> assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty()),
             () -> assertEquals(0, actualChatLink.size()),
             () -> assertEquals(0, actualLink.size())
         );

@@ -12,6 +12,7 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.SneakyThrows;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -19,7 +20,11 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
+@SpringBootTest
 public abstract class IntegrationTest {
+    protected final long defaultTgChatId = 1;
+    protected final long defaultId = 1;
+    protected final String defaultUrl = "defaultUrl";
     public static PostgreSQLContainer<?> POSTGRES;
 
     static {
