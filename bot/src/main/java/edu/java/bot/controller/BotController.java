@@ -1,5 +1,6 @@
 package edu.java.bot.controller;
 
+import edu.java.bot.service.UpdateService;
 import edu.java.models.dto.request.LinkUpdateRequest;
 import edu.java.models.dto.response.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,9 +19,12 @@ import static edu.java.bot.controller.BotController.BOT_MAPPING;
 
 @RestController
 @RequestMapping(BOT_MAPPING)
+@RequiredArgsConstructor
 public class BotController {
     public static final String BOT_MAPPING = "bot-api";
     public static final String UPDATE_MAPPING = "/updates";
+
+    private final UpdateService updateService;
 
     @Operation(summary = "Отправить обновление", description = "Ok")
     @ApiResponse(responseCode = "200", description = "Обновление обработано")
@@ -34,6 +39,6 @@ public class BotController {
     @PostMapping(UPDATE_MAPPING)
     @ResponseStatus(HttpStatus.OK)
     public void sendUpdate(@Valid @RequestBody LinkUpdateRequest linkUpdateRequest) {
-        //работа сервиса
+        updateService.sendUpdate(linkUpdateRequest);
     }
 }

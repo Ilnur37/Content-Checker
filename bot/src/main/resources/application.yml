@@ -4,9 +4,8 @@ app:
     scrapper-url: http://localhost:8080
 
 supported:
-  domains:
-    - stackoverflow.com
-    - github.com
+  stackoverflow: stackoverflow.com
+  github: github.com
 
 springdoc.swagger-ui.path: /swagger-ui.html
 

@@ -1,5 +1,6 @@
 package edu.java.models.dto.response;
 
+import edu.java.models.ReasonOfError;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,14 +14,21 @@ public class ApiErrorResponse {
     private String code;
     private String exceptionName;
     private String exceptionMessage;
+    private ReasonOfError reasonOfError;
     private List<String> stacktrace;
 
-    public static ApiErrorResponse toApiErrorResponse(Throwable ex, String description, String code) {
+    public static ApiErrorResponse toApiErrorResponse(
+        Throwable ex,
+        String description,
+        String code,
+        ReasonOfError reasonOfError
+    ) {
         return ApiErrorResponse.builder()
             .description(description)
             .code(code)
             .exceptionName(ex.getClass().getName())
             .exceptionMessage(ex.getMessage())
+            .reasonOfError(reasonOfError)
             .stacktrace(getStacktrace(ex))
             .build();
     }

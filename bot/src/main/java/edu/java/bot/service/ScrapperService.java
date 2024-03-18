@@ -11,23 +11,23 @@ import org.springframework.stereotype.Service;
 public class ScrapperService {
     private final ScrapperClient scrapperClient;
 
-    public void registerChat(int id) {
+    public void registerChat(long id) {
         scrapperClient.registerChat(id);
     }
 
-    public void deleteChat(int id) {
+    public void deleteChat(long id) {
         scrapperClient.deleteChat(id);
     }
 
-    public ListLinksResponse getAllLinks(int id) {
+    public ListLinksResponse getAllLinks(long id) {
         return scrapperClient.getAllLinks(id);
     }
 
-    public LinkResponse addLink(int id, String link) {
+    public LinkResponse addLink(long id, String link) {
         return scrapperClient.addLink(id, link);
     }
 
-    public LinkResponse removeLink(int id, String link) {
+    public LinkResponse removeLink(long id, String link) {
         return scrapperClient.removeLink(id, link);
     }
 }

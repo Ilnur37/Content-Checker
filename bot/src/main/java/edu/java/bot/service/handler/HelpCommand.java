@@ -3,7 +3,7 @@ package edu.java.bot.service.handler;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.repository.UserRepository;
+import edu.java.bot.service.ScrapperService;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,9 @@ public class HelpCommand extends CommandHandler {
     private static final String RESPONSE_LIST_OF_SUPPORTED_COMMANDS =
         "Вы можете воспользоваться следующими командами:\n";
 
-    public HelpCommand(UserRepository userRepository) {
-        super(userRepository);
+    public HelpCommand(ScrapperService scrapperService, StartCommand startCommand) {
+        super(scrapperService);
+        this.next = startCommand;
     }
 
     @Override

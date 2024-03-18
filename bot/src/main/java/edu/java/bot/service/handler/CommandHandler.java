@@ -3,33 +3,25 @@ package edu.java.bot.service.handler;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.entity.Domain;
-import edu.java.bot.entity.Link;
-import edu.java.bot.repository.UserRepository;
-import java.net.URI;
+import edu.java.bot.service.ScrapperService;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public abstract class CommandHandler {
-    private static final String HTTP = "://";
-    protected static final Logger LOGGER = LogManager.getLogger();
-    protected static final String CHAT_ID_FOR_LOGGER = " [chatId = %d] ";
-    protected static final String LINK_FOR_LOGGER = " [link = %s] ";
+    protected static final String CHAT_ID_FOR_LOGGER = "[chatId = %d] ";
+    protected static final String LINK_FOR_LOGGER = "[link = %s] ";
     protected static final String UNSUPPORTED_COMMAND = "Пока что я не могу распознать это сообщение";
-    protected final UserRepository userRepository;
+    public static final String BAD_REQUEST = "Некорректные параметры запроса";
+    public static final String USER_IS_NOT_REGISTERED =
+        "Прежде чем пользоваться функциями бота, вам необходимо зарегистрироваться. Введите команду \"/start\"";
+
+    final ScrapperService scrapperService;
 
     @Getter
-    @Setter
-    protected CommandHandler next;
-
-    public CommandHandler(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    CommandHandler next;
 
     public abstract String command();
 
@@ -39,13 +31,6 @@ public abstract class CommandHandler {
 
     public BotCommand toApiCommand() {
         return new BotCommand(command(), description());
-    }
-
-    @SneakyThrows
-    public Link parsePartOfMessageIntoLink(String message) {
-        URI uri = new URI(message);
-        Domain domain = new Domain(uri.getScheme() + HTTP + uri.getHost());
-        return new Link(domain, uri.getPath());
     }
 
     public SendMessage checkingThatThisIsTheCorrectCommand(

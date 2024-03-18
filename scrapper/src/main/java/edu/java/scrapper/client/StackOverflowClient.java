@@ -25,7 +25,7 @@ public class StackOverflowClient extends Client {
                 .bodyToMono(QuestionItems.class)
                 .block())
             .getQuestionInfo()
-            .get(0);
+            .getFirst();
     }
 
     public List<AnswerInfo> getAnswerInfoByQuestion(Long question) {

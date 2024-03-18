@@ -5,14 +5,15 @@ import edu.java.models.dto.request.RemoveLinkRequest;
 import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
+import edu.java.scrapper.service.ChatService;
+import edu.java.scrapper.service.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +27,15 @@ import org.springframework.web.bind.annotation.RestController;
 import static edu.java.scrapper.controller.ScrapperController.SCRAPPER_MAPPING;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(SCRAPPER_MAPPING)
 public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
     public static final String LINK_MAPPING = "/links";
     public static final String SCRAPPER_MAPPING = "scrapper-api";
-    private final String defaultLink = "aa";
-    private final int defaultId = 1;
+
+    private final ChatService chatService;
+    private final LinkService linkService;
 
     @Operation(summary = "Зарегистрировать чат", description = "Created")
     @ApiResponse(responseCode = "201", description = "Чат зарегистрирован")
@@ -45,7 +48,7 @@ public class ScrapperController {
     @PostMapping(TG_CHAT_ID_MAPPING)
     @ResponseStatus(HttpStatus.CREATED)
     public void registerChat(@Min(1) @PathVariable long id) {
-        // Логика регистрации чата
+        chatService.register(id);
     }
 
     @Operation(summary = "Удалить чат", description = "Ok")
@@ -59,7 +62,7 @@ public class ScrapperController {
     @DeleteMapping(TG_CHAT_ID_MAPPING)
     @ResponseStatus(HttpStatus.OK)
     public void deleteChat(@Min(1) @PathVariable long id) {
-        // Логика удаления чата
+        chatService.unregister(id);
     }
 
     @Operation(summary = "Получить все отслеживаемые ссылки", description = "Ok")
@@ -75,11 +78,7 @@ public class ScrapperController {
     @GetMapping(LINK_MAPPING)
     @ResponseStatus(HttpStatus.OK)
     public ListLinksResponse getAllLinks(@Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId) {
-        // Логика получения всех ссылок для указанного чата
-        // Заполнение списка ссылок
-        List<LinkResponse> linkResponses = new ArrayList<>();
-        ListLinksResponse links = new ListLinksResponse(linkResponses, linkResponses.size());
-        return links;
+        return linkService.getAll(tgChatId);
     }
 
     @Operation(summary = "Добавить отслеживание ссылки", description = "Ok")
@@ -103,10 +102,7 @@ public class ScrapperController {
         @Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId,
         @Valid @RequestBody AddLinkRequest addLinkRequest
     ) {
-        // Логика добавления ссылки для указанного чата
-        // объект LinkResponse с заполненными данными
-        LinkResponse linkResponse = new LinkResponse(defaultId, defaultLink);
-        return linkResponse;
+        return linkService.add(tgChatId, addLinkRequest);
     }
 
     @Operation(summary = "Убрать отслеживание ссылки", description = "Ok")
@@ -117,8 +113,7 @@ public class ScrapperController {
         responseCode = "400", description = "Некорректные параметры запроса",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
-        responseCode = "404",
-        description = "Чат не существует",
+        responseCode = "404", description = "Чат не существует",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
         responseCode = "404", description = "Ссылка не найдена",
@@ -129,9 +124,6 @@ public class ScrapperController {
         @Min(1) @RequestHeader("Tg-Chat-Id") long tgChatId,
         @Valid @RequestBody RemoveLinkRequest removeLinkRequest
     ) {
-        // Логика удаления ссылки для указанного чата
-        LinkResponse linkResponse =
-            new LinkResponse(defaultId, defaultLink); // объект LinkResponse с заполненными данными
-        return linkResponse;
+        return linkService.remove(tgChatId, removeLinkRequest);
     }
 }
