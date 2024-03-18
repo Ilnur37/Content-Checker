@@ -134,6 +134,7 @@ public class JooqLinkServiceTest extends IntegrationTest {
 
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
         Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+
         assertAll(
             "Удалена только 1 запись о связи",
             () -> assertEquals(1, actualChatLink.size()),
