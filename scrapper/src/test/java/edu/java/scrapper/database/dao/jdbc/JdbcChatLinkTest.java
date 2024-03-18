@@ -1,10 +1,3 @@
-<<<<<<<< HEAD:scrapper/src/test/java/edu/java/scrapper/database/dao/jooq/JooqChatLinkTest.java
-package edu.java.scrapper.database.dao.jooq;
-
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jooq.dao.JooqChatLinkDao;
-import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
-========
 package edu.java.scrapper.database.dao.jdbc;
 
 import edu.java.scrapper.database.IntegrationTest;
@@ -28,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @Rollback
-public class JooqChatLinkTest extends IntegrationTest {
+public class JdbcChatLinkTest extends IntegrationTest {
 
     @Autowired
-    private JooqChatLinkDao chatLinkDao;
+    private JdbcChatLinkDao chatLinkDao;
 
     @Autowired JdbcChatDao chatDao;
     @Autowired JdbcLinkDao linkDao;
