@@ -3,123 +3,81 @@ package edu.java.scrapper.database.dao.jooq;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.domain.jooq.dao.JooqChatDao;
 import edu.java.scrapper.domain.jooq.generate.tables.pojos.Chat;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.jooq.DSLContext;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.createChat;
-import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.getAllFromChat;
-import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.getAllFromLink;
-import static edu.java.scrapper.database.dao.jooq.UtilityDbJooq.insertRowIntoChat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @Rollback
 @Transactional
 public class JooqChatTest extends IntegrationTest {
+
     @Autowired
     JooqChatDao chatDao;
-    @Autowired
-    private DSLContext dsl;
-
-    private final long tgChatId = 10;
-
-    @BeforeEach
-    public void checkThatTableIsEmpty() {
-        assertTrue(getAllFromLink(dsl).isEmpty());
-    }
 
     @Test
-    void getByTgChatId() {
-        //Добавление чата с заданным tgChatId
-        insertRowIntoChat(dsl, tgChatId);
-        List<Chat> actualChats = getAllFromChat(dsl);
-        assertAll(
-            "Поддтверждение, что появился 1 чат",
-            () -> assertFalse(actualChats.isEmpty()),
-            () -> assertEquals(actualChats.getFirst().getTgChatId(), tgChatId)
-        );
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    void findByTgChatId() {
+        Optional<Chat> chat = chatDao.findByTgChatId(defaultTgChatId);
 
-        //Получениие чата с заданным tgChatId
-        Optional<Chat> chat = chatDao.getByTgChatId(tgChatId);
         assertAll(
-            "Поддтверждение, что это только что добавленный чат",
             () -> assertTrue(chat.isPresent()),
-            () -> assertEquals(chat.get().getTgChatId(), tgChatId)
+            () -> assertEquals(defaultTgChatId, chat.orElseThrow().getTgChatId())
         );
     }
 
     @Test
-    void getById() {
-        //Добавление чата с заданным tgChatId
-        insertRowIntoChat(dsl, tgChatId);
-        List<Chat> actualChats = getAllFromChat(dsl);
-        assertAll(
-            "Поддтверждение, что появился 1 чат",
-            () -> assertFalse(actualChats.isEmpty()),
-            () -> assertEquals(actualChats.getFirst().getTgChatId(), tgChatId)
-        );
-        long id = actualChats.getFirst().getId();
-
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    void findById() {
         //Получениие чата с присвоенным id
-        Optional<Chat> chat = chatDao.getById(id);
+        Optional<Chat> chat = chatDao.findById(defaultId);
+
         assertAll(
-            "Поддтверждение, что это только что добавленный чат",
             () -> assertTrue(chat.isPresent()),
-            () -> assertEquals(chat.get().getId(), id)
+            () -> assertEquals(defaultId, chat.orElseThrow().getId())
         );
     }
 
     @Test
-    void getAll() {
-        //Добавление нескольких чатов
-        long count = 10;
-        for (long id = 1; id < count; id++) {
-            insertRowIntoChat(dsl, id);
-        }
-
+    @Sql(value = "/sql/insertFiveRowChat.sql")
+    void findAll() {
+        int count = 5;
         List<Chat> actualChats = chatDao.getAll();
+
         assertAll(
-            "Поддтверждение, что чаты добавились",
             () -> assertFalse(actualChats.isEmpty()),
-            () -> assertEquals(actualChats.size(), count - 1)
+            () -> assertEquals(count, actualChats.size())
         );
     }
 
     @Test
     void save() {
+        long tgChatId = 15;
         //Добавление чата с заданным tgChatId
-        chatDao.save(createChat(tgChatId));
+        Chat chat = new Chat();
+        chat.setTgChatId(tgChatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        chatDao.save(chat);
 
-        List<Chat> actualChatsList = getAllFromChat(dsl);
-        assertAll(
-            () -> assertFalse(actualChatsList.isEmpty()),
-            () -> assertEquals(actualChatsList.getFirst().getTgChatId(), tgChatId)
-        );
+        Optional<Chat> actualChat = chatDao.findByTgChatId(tgChatId);
+        assertTrue(actualChat.isPresent());
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
     void delete() {
-        //Добавление чата с заданным tgChatId
-        insertRowIntoChat(dsl, tgChatId);
-        List<Chat> chats = getAllFromChat(dsl);
-        assertAll(
-            "Поддтверждение, что появился 1 чат",
-            () -> assertFalse(chats.isEmpty()),
-            () -> assertEquals(chats.getFirst().getTgChatId(), tgChatId)
-        );
-
         //Удаление чата с заданным tgChatId
-        chatDao.delete(tgChatId);
-        List<Chat> actualChats = getAllFromChat(dsl);
-        assertTrue(actualChats.isEmpty());
+        chatDao.delete(defaultTgChatId);
+
+        Optional<Chat> actualChat = chatDao.findByTgChatId(defaultTgChatId);
+        assertTrue(actualChat.isEmpty());
     }
 }

@@ -6,7 +6,6 @@ package edu.java.scrapper.domain.jooq.generate.tables;
 
 import edu.java.scrapper.domain.jooq.generate.DefaultSchema;
 import edu.java.scrapper.domain.jooq.generate.Keys;
-import edu.java.scrapper.domain.jooq.generate.tables.Chat.ChatPath;
 import edu.java.scrapper.domain.jooq.generate.tables.ChatLink.ChatLinkPath;
 import edu.java.scrapper.domain.jooq.generate.tables.records.LinkRecord;
 
@@ -203,14 +202,6 @@ public class Link extends TableImpl<LinkRecord> {
             _chatLink = new ChatLinkPath(this, null, Keys.CONSTRAINT_86.getInverseKey());
 
         return _chatLink;
-    }
-
-    /**
-     * Get the implicit many-to-many join path to the <code>PUBLIC.CHAT</code>
-     * table
-     */
-    public ChatPath chat() {
-        return chatLink().chat();
     }
 
     @Override

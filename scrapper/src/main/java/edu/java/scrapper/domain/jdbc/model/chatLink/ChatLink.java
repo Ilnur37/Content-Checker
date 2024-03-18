@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChatLink {
+    private long id;
     private long chatId;
     private long linkId;
 

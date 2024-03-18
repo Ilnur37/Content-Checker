@@ -1,7 +1,9 @@
 package edu.java.scrapper.database.dao.jdbc;
 
 import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
+import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
 import edu.java.scrapper.domain.model.ChatLinkWithTgChat;
 import edu.java.scrapper.domain.model.ChatLinkWithUrl;
@@ -24,6 +26,9 @@ public class JdbcChatLinkTest extends IntegrationTest {
 
     @Autowired
     private JdbcChatLinkDao chatLinkDao;
+
+    @Autowired JdbcChatDao chatDao;
+    @Autowired JdbcLinkDao linkDao;
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")

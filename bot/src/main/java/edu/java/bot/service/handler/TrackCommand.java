@@ -17,7 +17,7 @@ public class TrackCommand extends CommandHandler {
     private static final String LINK_HAS_STARTED_TO_BE_TRACKED = "Начала отслеживаться ссылка";
     public static final String RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED = "Вы начали отслеживать контент по ссылке";
     public static final String RESPONSE_LINK_IS_ALREADY_BEING_TRACKED = "Вы уже отслеживаете контент этой по ссылке";
-    private static final String  RESPONSE_URL_IS_EMPTY = "Не найдено ресурса по этой ссылке";
+    public static final String  RESPONSE_URL_IS_EMPTY = "Не найдено ресурса по этой ссылке";
 
     private final SupportedDomain supportedDomain;
 

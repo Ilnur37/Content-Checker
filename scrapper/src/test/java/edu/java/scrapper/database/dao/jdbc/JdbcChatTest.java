@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JdbcChatTest extends IntegrationTest {
 
     @Autowired
-    private ChatDao chatDao;
+    private JdbcChatDao chatDao;
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
@@ -38,14 +38,12 @@ public class JdbcChatTest extends IntegrationTest {
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
     void findById() {
-        long id = 1;
-
         //Получениие чата с присвоенным id
-        Optional<Chat> chat = chatDao.findById(id);
+        Optional<Chat> chat = chatDao.findById(defaultId);
 
         assertAll(
             () -> assertTrue(chat.isPresent()),
-            () -> assertEquals(id, chat.orElseThrow().getId())
+            () -> assertEquals(defaultId, chat.orElseThrow().getId())
         );
     }
 

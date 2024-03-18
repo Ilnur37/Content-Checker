@@ -22,7 +22,7 @@ import static java.lang.String.format;
 @Component
 @ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
 @Slf4j
-public class LinkUpdaterScheduler {
+public class JooqLinkUpdaterScheduler {
     private static final Duration NEED_TO_CHECK = Duration.ofSeconds(30);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy");
     private static final String GIT_HEAD = "В репозитории %s, пользователя %s, %d новых изменений:\n";
@@ -30,16 +30,13 @@ public class LinkUpdaterScheduler {
     private static final String SOF_HEAD = "В вопросе %s, пользователя %s появились новые ответы/коометарии:\n";
     private static final String SOF_ANSWER = "Новый ответ от польльзователя %s (время %s)\n";
     private static final String SOF_COMMENT = "Новый комментарий от польльзователя %s (время %s)\n";
-    //private final JdbcLinkDao linkDao;
-    //private final JdbcChatLinkDao chatLinkDao;
+
     private final JooqLinkDao linkDao;
     private final JooqChatLinkDao chatLinkDao;
     private final BotService botService;
     private final WebResourceHandler webResourceHandler;
 
-    public LinkUpdaterScheduler(
-        //JdbcLinkDao linkDao,
-        //JdbcChatLinkDao chatLinkDao,
+    public JooqLinkUpdaterScheduler(
         JooqLinkDao linkDao,
         JooqChatLinkDao chatLinkDao,
         BotService botService,
@@ -53,8 +50,9 @@ public class LinkUpdaterScheduler {
 
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
     public void update() {
+        linkDao.deleteUnnecessary();
         OffsetDateTime now = OffsetDateTime.now();
-        List<Link> links = linkDao.getByLustCheck(now.minus(NEED_TO_CHECK));
+        List<Link> links = linkDao.getByLastCheck(now.minus(NEED_TO_CHECK));
         for (Link link : links) {
             if (webResourceHandler.isGitHubUrl(link.getUrl())) {
                 gitHubProcess(link, now);

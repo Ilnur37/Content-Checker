@@ -5,6 +5,7 @@ import edu.java.bot.domain.SupportedDomain;
 import edu.java.bot.service.handler.TrackCommand;
 import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.InvalidUrlException;
 import edu.java.models.exception.ReAddLinkException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,21 @@ public class TrackCommandTest extends AbstractTest {
 
         assertEquals(
             TrackCommand.RESPONSE_LINK_IS_ALREADY_BEING_TRACKED,
+            response.getParameters().get("text")
+        );
+    }
+
+    @Test
+    @DisplayName("Добавление несуществующей ссылки")
+    void trackLinkWhenLinkNotExist() {
+        String link = "https://github.com/Ilnur37/Content-Checker";
+        Mockito.doThrow(new InvalidUrlException("")).when(scrapperService).addLink(chatId, link);
+        mockObjects(chatId, trackCommand.command() + " " + link);
+
+        SendMessage response = trackCommand.handle(update);
+
+        assertEquals(
+            TrackCommand.RESPONSE_URL_IS_EMPTY,
             response.getParameters().get("text")
         );
     }

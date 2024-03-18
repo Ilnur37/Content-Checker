@@ -20,6 +20,7 @@ import edu.java.scrapper.service.LinkService;
 import edu.java.scrapper.service.web.WebResourceHandler;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JdbcLinkService implements LinkService {
     private static final String EMPTY_STRING = "";
+
     private final JdbcChatDao chatDao;
     private final JdbcLinkDao linkDao;
     private final JdbcChatLinkDao chatLinkDao;
@@ -72,8 +74,8 @@ public class JdbcLinkService implements LinkService {
         } else {
             //Иначе проверка на предмет повторного добавления
             actualLink = linkDao.findByUrl(url).get();
-            for (ChatLink chatLink : chatLinkDao.getByChatId(chatId)) {
-                if (chatLink.getLinkId() == actualLink.getId()) {
+            for (ChatLinkWithUrl chatLink : chatLinkDao.getByChatIdJoinLink(chatId)) {
+                if (Objects.equals(chatLink.getUrl(), url)) {
                     throw new ReAddLinkException(
                         toExMsg(EX_CHAT, String.valueOf(tgChatId))
                             + ", "

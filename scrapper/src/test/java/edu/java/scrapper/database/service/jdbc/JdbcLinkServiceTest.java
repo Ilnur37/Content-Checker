@@ -7,7 +7,6 @@ import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
 import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
@@ -34,11 +33,10 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     JdbcLinkService linkService;
 
     @Autowired
-    private LinkDao linkDao;
-
     private JdbcLinkDao linkDao;
+
     @Autowired
-    private ChatLinkDao chatLinkDao;
+    private JdbcChatLinkDao chatLinkDao;
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
@@ -47,6 +45,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @DisplayName("Получить все ссылки пользователя")
     void getAll() {
         ListLinksResponse response = linkService.getAll(defaultTgChatId);
+
         assertEquals(1, response.size());
         assertEquals(defaultUrl, response.links().getFirst().url());
     }

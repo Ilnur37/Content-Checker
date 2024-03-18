@@ -5,13 +5,15 @@ package edu.java.scrapper.domain.jooq.generate.tables;
 
 
 import edu.java.scrapper.domain.jooq.generate.DefaultSchema;
+import edu.java.scrapper.domain.jooq.generate.Indexes;
 import edu.java.scrapper.domain.jooq.generate.Keys;
 import edu.java.scrapper.domain.jooq.generate.tables.ChatLink.ChatLinkPath;
-import edu.java.scrapper.domain.jooq.generate.tables.Link.LinkPath;
 import edu.java.scrapper.domain.jooq.generate.tables.records.ChatRecord;
 
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.processing.Generated;
 
@@ -21,6 +23,7 @@ import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -154,6 +157,12 @@ public class Chat extends TableImpl<ChatRecord> {
 
     @Override
     @NotNull
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.TG_CHAT_ID_INDEX);
+    }
+
+    @Override
+    @NotNull
     public Identity<ChatRecord, Long> getIdentity() {
         return (Identity<ChatRecord, Long>) super.getIdentity();
     }
@@ -175,14 +184,6 @@ public class Chat extends TableImpl<ChatRecord> {
             _chatLink = new ChatLinkPath(this, null, Keys.CONSTRAINT_8.getInverseKey());
 
         return _chatLink;
-    }
-
-    /**
-     * Get the implicit many-to-many join path to the <code>PUBLIC.LINK</code>
-     * table
-     */
-    public LinkPath link() {
-        return chatLink().link();
     }
 
     @Override

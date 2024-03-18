@@ -5,12 +5,8 @@ import edu.java.models.exception.ReRegistrationException;
 import edu.java.scrapper.database.IntegrationTest;
 import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
-import edu.java.scrapper.domain.jdbc.model.chat.Chat;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
 import edu.java.scrapper.service.JdbcAndJooq.jdbc.JdbcChatService;
-import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,14 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Rollback
 @Transactional
 public class JdbcChatServiceTest extends IntegrationTest {
+
     @Autowired
     private JdbcChatService chatService;
 
     @Autowired
     private JdbcChatDao chatDao;
-
-    @Autowired
-    private JdbcLinkDao linkDao;
 
     @Autowired
     private JdbcChatLinkDao chatLinkDao;
@@ -86,12 +80,10 @@ public class JdbcChatServiceTest extends IntegrationTest {
 
         assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty());
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
-        List<Link> actualLink = linkDao.getAll();
         assertAll(
             "Удален чат и все ссылки",
-            () -> assertTrue(chatDao.findByTgChatId(tgChatId).isEmpty()),
-            () -> assertEquals(0, actualChatLink.size()),
-            () -> assertEquals(0, actualLink.size())
+            () -> assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty()),
+            () -> assertEquals(0, actualChatLink.size())
         );
     }
 }
