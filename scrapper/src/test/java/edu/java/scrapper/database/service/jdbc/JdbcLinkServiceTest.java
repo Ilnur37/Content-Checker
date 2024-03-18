@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JdbcLinkServiceTest extends IntegrationTest {
 
     @Autowired
-    JdbcLinkService linkService;
+    private JdbcLinkService linkService;
 
     @Autowired
     private JdbcLinkDao linkDao;
@@ -133,10 +133,12 @@ public class JdbcLinkServiceTest extends IntegrationTest {
 
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
         Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+
         assertAll(
             "Удалена только 1 запись о связи",
             () -> assertEquals(1, actualChatLink.size()),
-            () -> assertTrue(actualLink.isPresent())
+            () -> assertTrue(actualLink.isPresent()),
+            () -> assertEquals(defaultUrl, actualLink.get().getUrl())
         );
     }
 }
