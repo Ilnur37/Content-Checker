@@ -124,8 +124,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         "ON CONFLICT DO NOTHING;")
     @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
-    @Sql(statements = "INSERT INTO chat_link(chat_id, link_id) OVERRIDING SYSTEM VALUE\n" +
-        "VALUES (10, 1)\n" +
+    @Sql(statements = "INSERT INTO chat_link(id, chat_id, link_id) OVERRIDING SYSTEM VALUE\n" +
+        "VALUES (2, 10, 1)\n" +
         "ON CONFLICT DO NOTHING;")
     @DisplayName("Удалить ссылку, отслеживаемую несколькими чатами")
     void removeWhenManyChatsTrack() {
