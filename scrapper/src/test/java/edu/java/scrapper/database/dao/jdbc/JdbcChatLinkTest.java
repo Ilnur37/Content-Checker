@@ -29,6 +29,9 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Autowired JdbcChatDao chatDao;
     @Autowired JdbcLinkDao linkDao;
 
+    @Autowired JdbcChatDao chatDao;
+    @Autowired JdbcLinkDao linkDao;
+
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowLink.sql")
