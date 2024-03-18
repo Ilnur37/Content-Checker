@@ -20,6 +20,7 @@ import edu.java.scrapper.service.LinkService;
 import edu.java.scrapper.service.web.WebResourceHandler;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JooqLinkService implements LinkService {
     private static final String EMPTY_STRING = "";
+
     private final JooqChatDao chatDao;
     private final JooqLinkDao linkDao;
     private final JooqChatLinkDao chatLinkDao;
@@ -64,22 +66,16 @@ public class JooqLinkService implements LinkService {
 
         Link actualLink;
         //Создание ссылки в таблице ссылок, если ее нет
-        if (linkDao.getByUrl(url).isEmpty()) {
+        if (linkDao.findByUrl(url).isEmpty()) {
             OffsetDateTime nowTime = OffsetDateTime.now();
-            Link createLink = new Link();
-            createLink.setUrl(url);
-            createLink.setCreatedAt(nowTime);
-            createLink.setLastUpdateAt(nowTime);
-            createLink.setAuthor(author);
-            createLink.setName(title);
-            createLink.setLastCheckAt(nowTime);
+            Link createLink = createLink(url, nowTime, nowTime, author, title, nowTime);
             linkDao.save(createLink);
-            actualLink = linkDao.getByUrl(url).get();
+            actualLink = linkDao.findByUrl(url).get();
         } else {
             //Иначе проверка на предмет повторного добавления
-            actualLink = linkDao.getByUrl(url).get();
-            for (ChatLink chatLink : chatLinkDao.getByChatId(chatId)) {
-                if (chatLink.getLinkId() == actualLink.getId()) {
+            actualLink = linkDao.findByUrl(url).get();
+            for (ChatLinkWithUrl chatLink : chatLinkDao.getByChatIdJoinLink(chatId)) {
+                if (Objects.equals(chatLink.getUrl(), url)) {
                     throw new ReAddLinkException(
                         toExMsg(EX_CHAT, String.valueOf(tgChatId))
                             + ", "
@@ -118,15 +114,33 @@ public class JooqLinkService implements LinkService {
         return chatLink;
     }
 
+    private Link createLink(
+        String url,
+        OffsetDateTime createdAt,
+        OffsetDateTime lastUpdateAt,
+        String name,
+        String author,
+        OffsetDateTime lastCheckAt
+    ) {
+        Link link = new Link();
+        link.setUrl(url);
+        link.setCreatedAt(createdAt);
+        link.setLastUpdateAt(lastUpdateAt);
+        link.setName(name);
+        link.setAuthor(author);
+        link.setLastCheckAt(lastCheckAt);
+        return link;
+    }
+
     private Chat getChatByTgChatId(long id) {
-        return chatDao.getByTgChatId(id)
+        return chatDao.findByTgChatId(id)
             .orElseThrow(
                 () -> new ChatIdNotFoundException(toExMsg(EX_CHAT, String.valueOf(id)))
             );
     }
 
     private Link getLinkByUrl(String url) {
-        return linkDao.getByUrl(url)
+        return linkDao.findByUrl(url)
             .orElseThrow(
                 () -> new LinkNotFoundException(toExMsg(EX_LINK, url))
             );

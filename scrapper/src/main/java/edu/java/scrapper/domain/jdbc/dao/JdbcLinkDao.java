@@ -1,5 +1,6 @@
 package edu.java.scrapper.domain.jdbc.dao;
 
+import edu.java.scrapper.domain.LinkDao;
 import edu.java.scrapper.domain.jdbc.model.link.Link;
 import edu.java.scrapper.domain.jdbc.model.link.LinkRowMapper;
 import java.time.OffsetDateTime;
@@ -9,39 +10,45 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-@Repository
 @RequiredArgsConstructor
-public class JdbcLinkDao {
+@Repository
+public class JdbcLinkDao implements LinkDao<Link> {
+
     private final JdbcClient jdbcClient;
     private final LinkRowMapper linkRowMapper;
 
+    @Override
     public List<Link> getAll() {
         String sql = "SELECT * FROM link";
         return jdbcClient.sql(sql)
             .query(linkRowMapper).list();
     }
 
-    public Optional<Link> getByUrl(String url) {
+    @Override
+    public Optional<Link> findByUrl(String url) {
         String sql = "SELECT * FROM link WHERE url = ?";
         return jdbcClient.sql(sql)
             .param(url)
             .query(linkRowMapper).optional();
     }
 
-    public Optional<Link> getById(long id) {
+    @Override
+    public Optional<Link> findById(long id) {
         String sql = "SELECT * FROM link WHERE id = ?";
         return jdbcClient.sql(sql)
             .param(id)
             .query(linkRowMapper).optional();
     }
 
-    public List<Link> getByLustCheck(OffsetDateTime dateTime) {
+    @Override
+    public List<Link> getByLastCheck(OffsetDateTime dateTime) {
         String sql = "SELECT * FROM link WHERE link.last_check_at < ?";
         return jdbcClient.sql(sql)
             .param(dateTime)
             .query(linkRowMapper).list();
     }
 
+    @Override
     public int save(Link link) {
         String sql =
             "INSERT INTO link(url, created_at, last_update_at, author, name, last_check_at) VALUES (?, ?, ?, ?, ?, ?)";
@@ -57,20 +64,23 @@ public class JdbcLinkDao {
             .update();
     }
 
-    public void updateLastCheckAtById(long id, OffsetDateTime dateTime) {
+    @Override
+    public int updateLastCheckAtById(long id, OffsetDateTime dateTime) {
         String sql = "UPDATE link SET last_check_at = ? WHERE id = ?";
-        jdbcClient.sql(sql)
+        return jdbcClient.sql(sql)
             .params(dateTime, id)
             .update();
     }
 
-    public void updateLastUpdateAtById(long id, OffsetDateTime dateTime) {
+    @Override
+    public int updateLastUpdateAtById(long id, OffsetDateTime dateTime) {
         String sql = "UPDATE link SET last_update_at = ? WHERE id = ?";
-        jdbcClient.sql(sql)
+        return jdbcClient.sql(sql)
             .params(dateTime, id)
             .update();
     }
 
+    @Override
     public int deleteByUrl(String url) {
         String sql = "DELETE FROM link WHERE url = ?";
         return jdbcClient.sql(sql)
@@ -78,10 +88,22 @@ public class JdbcLinkDao {
             .update();
     }
 
-    public void deleteById(long id) {
+    @Override
+    public int deleteById(long id) {
         String sql = "DELETE FROM link WHERE id = ?";
-        jdbcClient.sql(sql)
+        return jdbcClient.sql(sql)
             .param(id)
+            .update();
+    }
+
+    @Override
+    public int deleteUnnecessary() {
+        String sql = "DELETE FROM link WHERE NOT EXISTS ("
+            + "    SELECT 1"
+            + "    FROM chat_link"
+            + "    WHERE link_id = link.id"
+            + ")";
+        return jdbcClient.sql(sql)
             .update();
     }
 }

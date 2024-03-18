@@ -11,7 +11,8 @@ import java.beans.ConstructorProperties;
 import javax.annotation.processing.Generated;
 
 import org.jetbrains.annotations.NotNull;
-import org.jooq.Record2;
+import org.jetbrains.annotations.Nullable;
+import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 
 
@@ -31,10 +32,25 @@ public class ChatLinkRecord extends UpdatableRecordImpl<ChatLinkRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
+     * Setter for <code>CHAT_LINK.ID</code>.
+     */
+    public void setId(@Nullable Long value) {
+        set(0, value);
+    }
+
+    /**
+     * Getter for <code>CHAT_LINK.ID</code>.
+     */
+    @Nullable
+    public Long getId() {
+        return (Long) get(0);
+    }
+
+    /**
      * Setter for <code>CHAT_LINK.CHAT_ID</code>.
      */
     public void setChatId(@NotNull Long value) {
-        set(0, value);
+        set(1, value);
     }
 
     /**
@@ -43,14 +59,14 @@ public class ChatLinkRecord extends UpdatableRecordImpl<ChatLinkRecord> {
     @jakarta.validation.constraints.NotNull
     @NotNull
     public Long getChatId() {
-        return (Long) get(0);
+        return (Long) get(1);
     }
 
     /**
      * Setter for <code>CHAT_LINK.LINK_ID</code>.
      */
     public void setLinkId(@NotNull Long value) {
-        set(1, value);
+        set(2, value);
     }
 
     /**
@@ -59,7 +75,7 @@ public class ChatLinkRecord extends UpdatableRecordImpl<ChatLinkRecord> {
     @jakarta.validation.constraints.NotNull
     @NotNull
     public Long getLinkId() {
-        return (Long) get(1);
+        return (Long) get(2);
     }
 
     // -------------------------------------------------------------------------
@@ -68,8 +84,8 @@ public class ChatLinkRecord extends UpdatableRecordImpl<ChatLinkRecord> {
 
     @Override
     @NotNull
-    public Record2<Long, Long> key() {
-        return (Record2) super.key();
+    public Record1<Long> key() {
+        return (Record1) super.key();
     }
 
     // -------------------------------------------------------------------------
@@ -86,10 +102,11 @@ public class ChatLinkRecord extends UpdatableRecordImpl<ChatLinkRecord> {
     /**
      * Create a detached, initialised ChatLinkRecord
      */
-    @ConstructorProperties({ "chatId", "linkId" })
-    public ChatLinkRecord(@NotNull Long chatId, @NotNull Long linkId) {
+    @ConstructorProperties({ "id", "chatId", "linkId" })
+    public ChatLinkRecord(@Nullable Long id, @NotNull Long chatId, @NotNull Long linkId) {
         super(ChatLink.CHAT_LINK);
 
+        setId(id);
         setChatId(chatId);
         setLinkId(linkId);
         resetChangedOnNotNull();
@@ -102,6 +119,7 @@ public class ChatLinkRecord extends UpdatableRecordImpl<ChatLinkRecord> {
         super(ChatLink.CHAT_LINK);
 
         if (value != null) {
+            setId(value.getId());
             setChatId(value.getChatId());
             setLinkId(value.getLinkId());
             resetChangedOnNotNull();

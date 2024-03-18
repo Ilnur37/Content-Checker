@@ -11,8 +11,9 @@ public class ChatLinkRowMapper implements RowMapper<ChatLink> {
     @SuppressWarnings("MagicNumber")
     public ChatLink mapRow(ResultSet rs, int rowNum) throws SQLException {
         ChatLink chatLink = new ChatLink();
-        chatLink.setChatId(rs.getLong(1));
-        chatLink.setLinkId(rs.getLong(2));
+        chatLink.setId(rs.getLong(1));
+        chatLink.setChatId(rs.getLong(2));
+        chatLink.setLinkId(rs.getLong(3));
         return chatLink;
     }
 }

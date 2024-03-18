@@ -70,7 +70,8 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
-            () -> Assertions.assertEquals(2, columns.size()),
+            () -> Assertions.assertEquals(3, columns.size()),
+            () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("chat_id")),
             () -> Assertions.assertTrue(columns.contains("link_id"))
         );

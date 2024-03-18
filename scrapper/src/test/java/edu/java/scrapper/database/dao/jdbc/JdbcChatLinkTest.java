@@ -1,7 +1,9 @@
 package edu.java.scrapper.database.dao.jdbc;
 
 import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
+import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
 import edu.java.scrapper.domain.model.ChatLinkWithTgChat;
 import edu.java.scrapper.domain.model.ChatLinkWithUrl;
@@ -43,6 +45,9 @@ public class JdbcChatLinkTest extends IntegrationTest {
     public void checkThatTableIsEmpty() {
         assertTrue(getAllFromChatLink(jdbcClient).isEmpty());
     }
+
+    @Autowired JdbcChatDao chatDao;
+    @Autowired JdbcLinkDao linkDao;
 
     @Test
     @DisplayName("getByLinkId (В таблице chat_link 1 значение с искомой ссылкой)")

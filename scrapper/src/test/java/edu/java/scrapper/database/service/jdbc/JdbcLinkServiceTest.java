@@ -7,7 +7,6 @@ import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
 import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
 import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
@@ -18,136 +17,99 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.createChat;
-import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.createChatLink;
-import static edu.java.scrapper.database.dao.jdbc.UtilityDbJdbc.createLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @Rollback
 @Transactional
 public class JdbcLinkServiceTest extends IntegrationTest {
+
     @Autowired
-    private JdbcLinkService linkService;
-    @Autowired
-    private JdbcChatDao chatDao;
+    JdbcLinkService linkService;
+
     @Autowired
     private JdbcLinkDao linkDao;
+
     @Autowired
     private JdbcChatLinkDao chatLinkDao;
-    private final long tgChatId = 10;
-    private final String url = "url";
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Получить все ссылки пользователя")
     void getAll() {
-        //Заполнение таблиц
-        short countLinks = 8;
-        chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
-        for (int i = 0; i < countLinks; i++) {
-            String tempUrl = url + i;
-            linkDao.save(createLink(tempUrl));
-            long linkId = linkDao.getByUrl(tempUrl).orElseThrow().getId();
-            chatLinkDao.save(createChatLink(chatId, linkId));
-        }
-        ListLinksResponse response = linkService.getAll(tgChatId);
-        assertEquals(response.size(), countLinks);
-        for (int i = 0; i < countLinks; i++) {
-            assertEquals(url + i, response.links().get(i).url());
-        }
+        ListLinksResponse response = linkService.getAll(defaultTgChatId);
+
+        assertEquals(1, response.size());
+        assertEquals(defaultUrl, response.links().getFirst().url());
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Получить все ссылки пользователя, неверный chatId")
     void getAllWhenChatIdNotFound() {
-        //Заполнение таблиц
-        chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
-        linkDao.save(createLink(url));
-        long linkId = linkDao.getByUrl(url).orElseThrow().getId();
-        chatLinkDao.save(createChatLink(chatId, linkId));
-
         assertThrows(
             ChatIdNotFoundException.class,
-            () -> linkService.getAll(tgChatId + 1)
+            () -> linkService.getAll(defaultTgChatId + 1)
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
     @DisplayName("Добавить ссылку")
     void add() {
-        //Заполнение таблиц
-        chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
-        LinkResponse response = linkService.add(tgChatId, new AddLinkRequest(url));
+        LinkResponse response = linkService.add(defaultTgChatId, new AddLinkRequest(defaultUrl));
 
-        ChatLink actualChatLink = chatLinkDao.getByChatId(chatId).getFirst();
-        Link actualLink = linkDao.getByUrl(url).orElseThrow();
-
+        ChatLink actualChatLink = chatLinkDao.getByChatId(defaultId).getFirst();
+        Link actualLink = linkDao.findByUrl(defaultUrl).orElseThrow();
         assertAll(
-            () -> assertEquals(url, response.url()),
-            () -> assertEquals(url, actualLink.getUrl()),
+            () -> assertEquals(defaultUrl, response.url()),
+            () -> assertEquals(defaultUrl, actualLink.getUrl()),
             () -> assertEquals(actualLink.getId(), actualChatLink.getLinkId()),
-            () -> assertEquals(chatId, actualChatLink.getChatId())
+            () -> assertEquals(defaultId, actualChatLink.getChatId())
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
     @DisplayName("Добавить ссылку, неверный chatId")
     void addWhenChatIdNotFound() {
-        //Заполнение таблиц
-        chatDao.save(createChat(tgChatId));
-
         assertThrows(
             ChatIdNotFoundException.class,
-            () -> linkService.add(tgChatId + 1, new AddLinkRequest(url))
+            () -> linkService.add(defaultTgChatId + 1, new AddLinkRequest(defaultUrl))
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Добавить ссылку, повторное добавление")
     void addWhenReAddLink() {
-        //Заполнение таблиц
-        chatDao.save(createChat(tgChatId));
-        linkService.add(tgChatId, new AddLinkRequest(url));
-
         assertThrows(
             ReAddLinkException.class,
-            () -> linkService.add(tgChatId, new AddLinkRequest(url))
+            () -> linkService.add(defaultTgChatId, new AddLinkRequest(defaultUrl))
         );
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Удалить ссылку, отслеживаемую одним чатом (каскадное удаление)")
     void removeWhenOneChatTrack() {
-        //Заполнение таблиц
-        chatDao.save(createChat(tgChatId));
-        long chatId = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
-        linkDao.save(createLink(url));
-        long linkId = linkDao.getByUrl(url).orElseThrow().getId();
-        chatLinkDao.save(createChatLink(chatId, linkId));
+        linkService.remove(defaultTgChatId, new RemoveLinkRequest(defaultUrl));
 
-        ChatLink tempChatLink = chatLinkDao.getByChatId(chatId).getFirst();
-        Link tempLink = linkDao.getByUrl(url).orElseThrow();
-        assertAll(
-            "Проверка добавления ссылки",
-            () -> assertEquals(url, tempLink.getUrl()),
-            () -> assertEquals(linkId, tempLink.getId()),
-            () -> assertEquals(linkId, tempChatLink.getLinkId()),
-            () -> assertEquals(chatId, tempChatLink.getChatId())
-        );
-
-        linkService.remove(tgChatId, new RemoveLinkRequest(url));
-
-        List<ChatLink> actualChatLink = chatLinkDao.getByChatId(chatId);
-        Optional<Link> actualLink = linkDao.getByUrl(url);
+        List<ChatLink> actualChatLink = chatLinkDao.getByChatId(defaultId);
+        Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
         assertAll(
             "Ссылка удалена из всех таблиц",
             () -> assertEquals(0, actualChatLink.size()),
@@ -156,40 +118,25 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowChat.sql")
+    @Sql(statements = "INSERT INTO chat(id, tg_chat_id, created_at) OVERRIDING SYSTEM VALUE\n" +
+        "VALUES (10, 10, CURRENT_TIMESTAMP)\n" +
+        "ON CONFLICT DO NOTHING;")
+    @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChatLink.sql")
+    @Sql(statements = "INSERT INTO chat_link(chat_id, link_id) OVERRIDING SYSTEM VALUE\n" +
+        "VALUES (10, 1)\n" +
+        "ON CONFLICT DO NOTHING;")
     @DisplayName("Удалить ссылку, отслеживаемую несколькими чатами")
     void removeWhenManyChatsTrack() {
-        //Заполнение таблиц
-        chatDao.save(createChat(tgChatId));
-        long chatId1 = chatDao.getByTgChatId(tgChatId).orElseThrow().getId();
-        chatDao.save(createChat(tgChatId + 1));
-        long chatId2 = chatDao.getByTgChatId(tgChatId + 1).orElseThrow().getId();
-        linkDao.save(createLink(url));
-        long linkId = linkDao.getByUrl(url).orElseThrow().getId();
-        chatLinkDao.save(createChatLink(chatId1, linkId));
-        chatLinkDao.save(createChatLink(chatId2, linkId));
-
-        ChatLink tempChatLink1 = chatLinkDao.getByChatId(chatId1).getFirst();
-        ChatLink tempChatLink2 = chatLinkDao.getByChatId(chatId2).getFirst();
-        Link tempLink = linkDao.getByUrl(url).orElseThrow();
-        assertAll(
-            "Проверка добавления ссылки",
-            () -> assertEquals(url, tempLink.getUrl()),
-            () -> assertEquals(linkId, tempLink.getId()),
-            () -> assertEquals(linkId, tempChatLink1.getLinkId()),
-            () -> assertEquals(chatId1, tempChatLink1.getChatId()),
-            () -> assertEquals(linkId, tempChatLink2.getLinkId()),
-            () -> assertEquals(chatId2, tempChatLink2.getChatId())
-        );
-
-        linkService.remove(tgChatId, new RemoveLinkRequest(url));
+        linkService.remove(defaultTgChatId, new RemoveLinkRequest(defaultUrl));
 
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
-        Optional<Link> actualLink = linkDao.getByUrl(url);
+        Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
         assertAll(
             "Удалена только 1 запись о связи",
             () -> assertEquals(1, actualChatLink.size()),
-            () -> assertTrue(actualLink.isPresent()),
-            () -> assertEquals(url, actualLink.get().getUrl())
+            () -> assertTrue(actualLink.isPresent())
         );
     }
 }

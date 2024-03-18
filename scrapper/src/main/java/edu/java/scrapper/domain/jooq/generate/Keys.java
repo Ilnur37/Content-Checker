@@ -39,7 +39,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<ChatRecord> CONSTRAINT_1 = Internal.createUniqueKey(Chat.CHAT, DSL.name("CONSTRAINT_1"), new TableField[] { Chat.CHAT.ID }, true);
-    public static final UniqueKey<ChatLinkRecord> CONSTRAINT_868 = Internal.createUniqueKey(ChatLink.CHAT_LINK, DSL.name("CONSTRAINT_868"), new TableField[] { ChatLink.CHAT_LINK.CHAT_ID, ChatLink.CHAT_LINK.LINK_ID }, true);
+    public static final UniqueKey<ChatLinkRecord> CONSTRAINT_868 = Internal.createUniqueKey(ChatLink.CHAT_LINK, DSL.name("CONSTRAINT_868"), new TableField[] { ChatLink.CHAT_LINK.ID }, true);
     public static final UniqueKey<LinkRecord> CONSTRAINT_2 = Internal.createUniqueKey(Link.LINK, DSL.name("CONSTRAINT_2"), new TableField[] { Link.LINK.ID }, true);
     public static final UniqueKey<LinkRecord> UNIQUE_URL = Internal.createUniqueKey(Link.LINK, DSL.name("UNIQUE_URL"), new TableField[] { Link.LINK.URL }, true);
 

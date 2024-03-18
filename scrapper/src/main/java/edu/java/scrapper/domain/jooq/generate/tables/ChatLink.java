@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -68,6 +69,11 @@ public class ChatLink extends TableImpl<ChatLinkRecord> {
     public Class<ChatLinkRecord> getRecordType() {
         return ChatLinkRecord.class;
     }
+
+    /**
+     * The column <code>CHAT_LINK.ID</code>.
+     */
+    public final TableField<ChatLinkRecord, Long> ID = createField(DSL.name("ID"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>CHAT_LINK.CHAT_ID</code>.
@@ -145,6 +151,12 @@ public class ChatLink extends TableImpl<ChatLinkRecord> {
     @Nullable
     public Schema getSchema() {
         return aliased() ? null : DefaultSchema.DEFAULT_SCHEMA;
+    }
+
+    @Override
+    @NotNull
+    public Identity<ChatLinkRecord, Long> getIdentity() {
+        return (Identity<ChatLinkRecord, Long>) super.getIdentity();
     }
 
     @Override

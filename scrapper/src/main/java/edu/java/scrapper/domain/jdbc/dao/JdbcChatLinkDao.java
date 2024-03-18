@@ -1,5 +1,6 @@
 package edu.java.scrapper.domain.jdbc.dao;
 
+import edu.java.scrapper.domain.ChatLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkRowMapper;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChatRowMapper;
@@ -13,18 +14,21 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcChatLinkDao {
+public class JdbcChatLinkDao implements ChatLinkDao<ChatLink> {
+
     private final JdbcClient jdbcClient;
     private final ChatLinkRowMapper chatLinkRowMapper;
     private final ChatLinkWithUrlRowMapper chatLinkWithUrlRowMapper;
     private final ChatLinkWithTgChatRowMapper chatLinkWithTgChatRowMapper;
 
+    @Override
     public List<ChatLink> getAll() {
         String sql = "SELECT * FROM chat_link";
         return jdbcClient.sql(sql)
             .query(chatLinkRowMapper).list();
     }
 
+    @Override
     public List<ChatLink> getByChatId(long id) {
         String sql = "SELECT * FROM chat_link WHERE chat_id = ?";
         return jdbcClient.sql(sql)
@@ -32,6 +36,7 @@ public class JdbcChatLinkDao {
             .query(chatLinkRowMapper).list();
     }
 
+    @Override
     public List<ChatLinkWithUrl> getByChatIdJoinLink(long id) {
         String sql = """
             SELECT cl.chat_id, cl.link_id, l.url
@@ -43,6 +48,7 @@ public class JdbcChatLinkDao {
             .query(chatLinkWithUrlRowMapper).list();
     }
 
+    @Override
     public List<ChatLink> getByLinkId(long id) {
         String sql = "SELECT * FROM chat_link WHERE link_id = ?";
         return jdbcClient.sql(sql)
@@ -50,6 +56,7 @@ public class JdbcChatLinkDao {
             .query(chatLinkRowMapper).list();
     }
 
+    @Override
     public List<ChatLinkWithTgChat> getByLinkIdJoinChat(long id) {
         String sql = """
             SELECT cl.chat_id, cl.link_id, c.tg_chat_id
@@ -61,6 +68,7 @@ public class JdbcChatLinkDao {
             .query(chatLinkWithTgChatRowMapper).list();
     }
 
+    @Override
     public int save(ChatLink chatLink) {
         String sql = "INSERT INTO chat_link(chat_id, link_id) VALUES (?, ?)";
         return jdbcClient.sql(sql)
@@ -68,6 +76,7 @@ public class JdbcChatLinkDao {
             .update();
     }
 
+    @Override
     public int delete(long chatId, long linkId) {
         String sql = "DELETE FROM chat_link WHERE chat_id = ? AND link_id = ?";
         return jdbcClient.sql(sql)

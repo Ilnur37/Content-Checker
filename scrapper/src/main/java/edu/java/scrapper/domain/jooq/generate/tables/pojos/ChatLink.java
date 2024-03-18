@@ -10,6 +10,7 @@ import java.io.Serializable;
 import javax.annotation.processing.Generated;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -27,23 +28,42 @@ public class ChatLink implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long id;
     private Long chatId;
     private Long linkId;
 
     public ChatLink() {}
 
     public ChatLink(ChatLink value) {
+        this.id = value.id;
         this.chatId = value.chatId;
         this.linkId = value.linkId;
     }
 
-    @ConstructorProperties({ "chatId", "linkId" })
+    @ConstructorProperties({ "id", "chatId", "linkId" })
     public ChatLink(
+        @Nullable Long id,
         @NotNull Long chatId,
         @NotNull Long linkId
     ) {
+        this.id = id;
         this.chatId = chatId;
         this.linkId = linkId;
+    }
+
+    /**
+     * Getter for <code>CHAT_LINK.ID</code>.
+     */
+    @Nullable
+    public Long getId() {
+        return this.id;
+    }
+
+    /**
+     * Setter for <code>CHAT_LINK.ID</code>.
+     */
+    public void setId(@Nullable Long id) {
+        this.id = id;
     }
 
     /**
@@ -87,6 +107,12 @@ public class ChatLink implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         final ChatLink other = (ChatLink) obj;
+        if (this.id == null) {
+            if (other.id != null)
+                return false;
+        }
+        else if (!this.id.equals(other.id))
+            return false;
         if (this.chatId == null) {
             if (other.chatId != null)
                 return false;
@@ -106,6 +132,7 @@ public class ChatLink implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
         result = prime * result + ((this.chatId == null) ? 0 : this.chatId.hashCode());
         result = prime * result + ((this.linkId == null) ? 0 : this.linkId.hashCode());
         return result;
@@ -115,7 +142,8 @@ public class ChatLink implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("ChatLink (");
 
-        sb.append(chatId);
+        sb.append(id);
+        sb.append(", ").append(chatId);
         sb.append(", ").append(linkId);
 
         sb.append(")");
