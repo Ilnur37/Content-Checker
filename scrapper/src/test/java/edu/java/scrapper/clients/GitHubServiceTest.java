@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GitHubServiceTest extends AbstractServiceTest {
+
     @Autowired
     private GitHubService gitHubService;
 

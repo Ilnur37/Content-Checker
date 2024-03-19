@@ -124,8 +124,7 @@ public class ScrapperController {
         responseCode = "400", description = "Некорректные параметры запроса",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
-        responseCode = "404",
-        description = "Чат не существует",
+        responseCode = "404", description = "Чат не существует",
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
         responseCode = "404", description = "Ссылка не найдена",

@@ -17,8 +17,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 public class ScrapperControllerTest extends IntegrationTest {
     private final WebTestClient webTestClient;
-    private final String defaultLink = "aa";
-    private final int defaultId = 1;
 
     @Autowired
     public ScrapperControllerTest(ScrapperController scrapperController) {
@@ -61,7 +59,7 @@ public class ScrapperControllerTest extends IntegrationTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new AddLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(defaultUrl)))
             .exchange().expectStatus().isOk();
     }
 
@@ -73,7 +71,7 @@ public class ScrapperControllerTest extends IntegrationTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new RemoveLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new RemoveLinkRequest(defaultUrl)))
             .exchange().expectStatus().isOk();
     }
 
@@ -113,7 +111,7 @@ public class ScrapperControllerTest extends IntegrationTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new AddLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(defaultUrl)))
             .exchange().expectStatus().isBadRequest();
     }
 

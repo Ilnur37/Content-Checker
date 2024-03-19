@@ -27,9 +27,9 @@ public class JooqLinkUpdaterScheduler {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy");
     private static final String GIT_HEAD = "В репозитории %s, пользователя %s, %d новых изменений:\n";
     private static final String GIT_ABOUT = "В ветку %s были внесены изменения (тип: %s, время %s)\n";
-    private static final String SOF_HEAD = "В вопросе %s, пользователя %s появились новые ответы/коометарии:\n";
-    private static final String SOF_ANSWER = "Новый ответ от польльзователя %s (время %s)\n";
-    private static final String SOF_COMMENT = "Новый комментарий от польльзователя %s (время %s)\n";
+    private static final String SOF_HEAD = "В вопросе %s, пользователя %s появились новые ответы/кометарии:\n";
+    private static final String SOF_ANSWER = "Новый ответ от пользователя %s (время %s)\n";
+    private static final String SOF_COMMENT = "Новый комментарий от пользователя %s (время %s)\n";
 
     private final JooqLinkDao linkDao;
     private final JooqChatLinkDao chatLinkDao;

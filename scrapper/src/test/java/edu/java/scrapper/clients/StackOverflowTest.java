@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class StackOverflowTest extends AbstractServiceTest {
+
     @Autowired
     private StackOverflowService stackOverflowService;
 
