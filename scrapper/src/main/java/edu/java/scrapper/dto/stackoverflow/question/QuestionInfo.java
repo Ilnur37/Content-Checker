@@ -1,21 +1,15 @@
 package edu.java.scrapper.dto.stackoverflow.question;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.java.scrapper.dto.stackoverflow.OwnerInfo;
-import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import java.time.OffsetDateTime;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class QuestionInfo {
-    @JsonIgnore
-    private List<AnswerInfo> answers;
-
     private OwnerInfo owner;
 
     @JsonProperty("answer_count")
@@ -25,10 +19,12 @@ public class QuestionInfo {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private OffsetDateTime lastActivityDate;
 
-    @JsonProperty("creation_date")
+    @JsonProperty("last_edit_date")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private OffsetDateTime creationDate;
+    private OffsetDateTime lastEditDate;
 
     @JsonProperty("question_id")
     private long questionId;
+
+    private String title;
 }

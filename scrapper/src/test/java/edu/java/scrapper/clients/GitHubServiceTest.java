@@ -1,8 +1,10 @@
 package edu.java.scrapper.clients;
 
+import edu.java.scrapper.dto.github.ActionsInfo;
 import edu.java.scrapper.dto.github.RepositoryInfo;
 import edu.java.scrapper.service.web.GitHubService;
 import java.time.OffsetDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,11 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GitHubServiceTest extends AbstractServiceTest {
+
     @Autowired
     private GitHubService gitHubService;
 
     @Test
-    public void testGetRepositoryInfo() {
+    public void getRepositoryInfo() {
         stubFor(get(urlEqualTo("/repos/owner/repo"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
@@ -33,21 +36,41 @@ public class GitHubServiceTest extends AbstractServiceTest {
         assertNotNull(repositoryInfo);
         assertAll(
             () -> assertEquals(751871695, repositoryInfo.getId()),
-            () -> assertEquals("Ilnur37/Content-Checker", repositoryInfo.getFullName()),
-            () -> assertEquals("https://api.github.com/repos/Ilnur37/Content-Checker", repositoryInfo.getUrl()),
-            () -> assertEquals(OffsetDateTime.parse("2024-02-16T18:02:44Z"), repositoryInfo.getPushedAt())
+            () -> assertEquals("NAME", repositoryInfo.getName()),
+            () -> assertEquals("Ilnur37", repositoryInfo.getActor().getLogin())
         );
     }
 
     @Test
-    public void testGetRepositoryInfo_404() {
+    public void getActionInfo() {
+        stubFor(get(urlEqualTo("/repos/owner/repo/activity"))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", "application/json")
+                .withBody(jsonToStr("src/test/resources/github/action-info.json"))));
+
+        List<ActionsInfo> actionsInfo = gitHubService.getActionsInfo("owner", "repo");
+
+        assertNotNull(actionsInfo);
+        assertAll(
+            () -> assertEquals(actionsInfo.size(), 2),
+            () -> assertEquals(751871695, actionsInfo.getFirst().getId()),
+            () -> assertEquals("hw5", actionsInfo.getFirst().getRef()),
+            () -> assertEquals(OffsetDateTime.parse("2024-03-10T22:40:35Z"), actionsInfo.getFirst().getPushedAt()),
+            () -> assertEquals("push", actionsInfo.getFirst().getActivityType()),
+            () -> assertEquals("Ilnur37", actionsInfo.getFirst().getActor().getLogin())
+        );
+    }
+
+    @Test
+    public void getRepositoryInfo_404() {
         stubFor(get(urlEqualTo("/repos/owner/repo"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.NOT_FOUND.value())));
 
         assertThrows(
             WebClientResponseException.NotFound.class,
-            () -> gitHubService.getRepositoryInfo("owner", "repo")
+            () -> gitHubService.getActionsInfo("owner", "repo")
         );
     }
 }

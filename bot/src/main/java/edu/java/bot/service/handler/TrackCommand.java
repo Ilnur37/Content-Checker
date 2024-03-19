@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.domain.SupportedDomain;
 import edu.java.bot.service.ScrapperService;
 import edu.java.models.exception.ChatIdNotFoundException;
+import edu.java.models.exception.InvalidUrlException;
 import edu.java.models.exception.ReAddLinkException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class TrackCommand extends CommandHandler {
     private static final String LINK_HAS_STARTED_TO_BE_TRACKED = "Начала отслеживаться ссылка";
     public static final String RESPONSE_LINK_HAS_STARTED_TO_BE_TRACKED = "Вы начали отслеживать контент по ссылке";
     public static final String RESPONSE_LINK_IS_ALREADY_BEING_TRACKED = "Вы уже отслеживаете контент этой по ссылке";
+    public static final String  RESPONSE_URL_IS_EMPTY = "Не найдено ресурса по этой ссылке";
 
     private final SupportedDomain supportedDomain;
 
@@ -66,6 +68,8 @@ public class TrackCommand extends CommandHandler {
                 response = USER_IS_NOT_REGISTERED;
             } catch (IllegalArgumentException ex) {
                 response = BAD_REQUEST;
+            } catch (InvalidUrlException ex) {
+                response = RESPONSE_URL_IS_EMPTY;
             }
         }
         return new SendMessage(chatId, response);

@@ -1,8 +1,13 @@
 {
     "id": 751871695,
-    "full_name": "Ilnur37/Content-Checker",
-    "url": "https://api.github.com/repos/Ilnur37/Content-Checker",
-    "created_at": "2024-02-02T14:09:59Z",
-    "updated_at": "2024-02-02T14:10:21Z",
-    "pushed_at": "2024-02-16T18:02:44Z"
+    "node_id": "PSH_kwLOLNCmz88AAAAEEbSk9A",
+    "ref": "refs/heads/hw5",
+    "name": "NAME",
+    "owner": {
+        "login": "Ilnur37",
+        "id": 101991994,
+        "node_id": "U_kgDOBhRGOg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/101991994?v=4",
+        "site_admin": false
+    }
 }

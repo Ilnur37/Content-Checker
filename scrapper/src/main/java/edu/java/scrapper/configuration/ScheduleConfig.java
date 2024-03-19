@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ScheduleConfig {
+
     @Bean
     public long schedulerIntervalMs(ApplicationConfig config) {
         return config.scheduler().interval().toMillis();

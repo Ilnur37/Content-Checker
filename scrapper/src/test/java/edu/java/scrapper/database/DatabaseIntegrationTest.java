@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
 public class DatabaseIntegrationTest extends IntegrationTest {
+
     @Autowired
     JdbcClient jdbcClient;
 
@@ -34,6 +34,7 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
+            () -> Assertions.assertEquals(3, columns.size()),
             () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("tg_chat_id")),
             () -> Assertions.assertTrue(columns.contains("created_at"))
@@ -49,10 +50,14 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
+            () -> Assertions.assertEquals(7, columns.size()),
             () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("url")),
             () -> Assertions.assertTrue(columns.contains("created_at")),
-            () -> Assertions.assertTrue(columns.contains("last_update_at"))
+            () -> Assertions.assertTrue(columns.contains("last_update_at")),
+            () -> Assertions.assertTrue(columns.contains("name")),
+            () -> Assertions.assertTrue(columns.contains("author")),
+            () -> Assertions.assertTrue(columns.contains("last_check_at"))
         );
     }
 
@@ -65,6 +70,8 @@ public class DatabaseIntegrationTest extends IntegrationTest {
             .singleColumn();
 
         assertAll(
+            () -> Assertions.assertEquals(3, columns.size()),
+            () -> Assertions.assertTrue(columns.contains("id")),
             () -> Assertions.assertTrue(columns.contains("chat_id")),
             () -> Assertions.assertTrue(columns.contains("link_id"))
         );
