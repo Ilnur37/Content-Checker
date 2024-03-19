@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
 public class DatabaseIntegrationTest extends IntegrationTest {
+
     @Autowired
     JdbcClient jdbcClient;
 

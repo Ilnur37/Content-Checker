@@ -1,6 +1,7 @@
 package edu.java.scrapper.service.web;
 
 import edu.java.scrapper.client.GithubClient;
+import edu.java.scrapper.dto.github.ActionsInfo;
 import edu.java.scrapper.dto.github.RepositoryInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

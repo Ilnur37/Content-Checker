@@ -1,4 +1,4 @@
-package edu.java.scrapper.service.jdbc;
+package edu.java.scrapper.service.JdbcAndJooq.jdbc;
 
 import edu.java.models.dto.request.AddLinkRequest;
 import edu.java.models.dto.request.RemoveLinkRequest;
