@@ -1,18 +1,15 @@
-package edu.java.scrapper.database.dao;
+package edu.java.scrapper.database.dao.jdbc;
 
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
+import edu.java.scrapper.database.JdbcIntegrationTest;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithTgChat;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrl;
+import edu.java.scrapper.domain.model.ChatLinkWithTgChat;
+import edu.java.scrapper.domain.model.ChatLinkWithUrl;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink.createChatLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,10 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @Rollback
-public class JdbcChatLinkTest extends IntegrationTest {
-
-    @Autowired
-    private ChatLinkDao chatLinkDao;
+public class JdbcChatLinkTest extends JdbcIntegrationTest {
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
@@ -56,7 +50,7 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertFiveRowChatLink.sql")
     @DisplayName("getByLinkIdIdJoinChat (В таблице chat_link несколько значений с искомой ссылкой)")
-    void getByLinkIdJoinChatWhenManyChats() {
+    void getByLinkIdIdJoinChatWhenManyChats() {
         int count = 5;
 
         List<ChatLinkWithTgChat> contentByLinkId = chatLinkDao.getByLinkIdJoinChat(defaultId);
@@ -87,7 +81,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     void getByChatIdJoinLink() {
         List<ChatLinkWithUrl> contentByChatId = chatLinkDao.getByChatIdJoinLink(defaultId);
-
         assertAll(
             () -> assertEquals(1, contentByChatId.size()),
             () -> assertEquals(defaultId, contentByChatId.getFirst().getLinkId()),
@@ -101,7 +94,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Sql(value = "/sql/insertFiveRowChatLink.sql")
     void getAll() {
         int count = 5;
-
         List<ChatLink> content = chatLinkDao.getAll();
 
         assertEquals(count, content.size());
@@ -116,7 +108,10 @@ public class JdbcChatLinkTest extends IntegrationTest {
     @Sql(value = "/sql/insertOneRowLink.sql")
     void save() {
         //Добавление связи в chat_link
-        chatLinkDao.save(createChatLink(defaultId, defaultId));
+        ChatLink chatLink = new ChatLink();
+        chatLink.setChatId(defaultId);
+        chatLink.setLinkId(defaultId);
+        chatLinkDao.save(chatLink);
 
         List<ChatLink> content = chatLinkDao.getAll();
 
@@ -137,7 +132,6 @@ public class JdbcChatLinkTest extends IntegrationTest {
         chatLinkDao.delete(defaultId, defaultId);
 
         List<ChatLink> actualContent = chatLinkDao.getAll();
-
         assertTrue(actualContent.isEmpty());
     }
 }

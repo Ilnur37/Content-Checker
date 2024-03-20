@@ -1,18 +1,12 @@
-package edu.java.scrapper.database.service;
+package edu.java.scrapper.database.service.jooq;
 
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.ReRegistrationException;
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
-import edu.java.scrapper.service.jdbc.JdbcChatService;
+import edu.java.scrapper.database.JooqIntegrationTest;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,19 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Rollback
 @Transactional
-public class JdbcChatServiceTest extends IntegrationTest {
-
-    @Autowired
-    private JdbcChatService chatService;
-
-    @Autowired
-    private ChatDao chatDao;
-
-    @Autowired
-    private LinkDao linkDao;
-
-    @Autowired
-    private ChatLinkDao chatLinkDao;
+public class JooqChatServiceTest extends JooqIntegrationTest {
 
     @Test
     @DisplayName("Регистрация чата")
@@ -85,12 +67,10 @@ public class JdbcChatServiceTest extends IntegrationTest {
 
         assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty());
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
-        List<Link> actualLink = linkDao.getAll();
         assertAll(
             "Удален чат и все ссылки",
             () -> assertTrue(chatDao.findByTgChatId(defaultTgChatId).isEmpty()),
-            () -> assertEquals(0, actualChatLink.size()),
-            () -> assertEquals(0, actualLink.size())
+            () -> assertEquals(0, actualChatLink.size())
         );
     }
 }

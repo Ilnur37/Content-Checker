@@ -16,9 +16,9 @@ public class AnswerInfo {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private OffsetDateTime lastActivityDate;
 
-    @JsonProperty("creation_date")
+    @JsonProperty("last_edit_date")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private OffsetDateTime creationDate;
+    private OffsetDateTime lastEditDate;
 
     @JsonProperty("answer_id")
     private long answerId;

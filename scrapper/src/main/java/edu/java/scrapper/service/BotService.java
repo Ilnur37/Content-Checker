@@ -2,7 +2,7 @@ package edu.java.scrapper.service;
 
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.scrapper.client.BotClient;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
+import edu.java.scrapper.domain.ChatDao;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

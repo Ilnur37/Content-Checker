@@ -4,9 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 
-@Component
 public class LinkRowMapper implements RowMapper<Link> {
     @Override
     @SuppressWarnings("MagicNumber")

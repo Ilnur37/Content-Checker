@@ -1,11 +1,10 @@
 package edu.java.scrapper.domain.jdbc.model.chatLink;
 
+import edu.java.scrapper.domain.model.ChatLinkWithUrl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ChatLinkWithUrlRowMapper implements RowMapper<ChatLinkWithUrl> {
     @Override
     @SuppressWarnings("MagicNumber")

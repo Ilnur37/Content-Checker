@@ -4,9 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ChatRowMapper implements RowMapper<Chat> {
     @Override
     @SuppressWarnings("MagicNumber")
