@@ -8,6 +8,7 @@ import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.scrapper.dto.stackoverflow.comment.CommentInfo;
 import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -71,7 +72,7 @@ public class WebResourceHandler {
         String[] urlParts = url.split(SPLIT_URL);
         try {
             return stackOverflowService.getQuestionInfo(Long.valueOf(urlParts[urlParts.length - 2]));
-        } catch (WebClientResponseException ex) {
+        } catch (NoSuchElementException ex) {
             throw new InvalidUrlException(URL + url);
         }
     }
