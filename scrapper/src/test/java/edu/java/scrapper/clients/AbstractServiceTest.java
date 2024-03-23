@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import edu.java.scrapper.database.IntegrationTest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class AbstractServiceTest {
+public class AbstractServiceTest extends IntegrationTest {
     private WireMockServer wireMockServer;
     private final int port = 8080;
     private final String host = "localhost";

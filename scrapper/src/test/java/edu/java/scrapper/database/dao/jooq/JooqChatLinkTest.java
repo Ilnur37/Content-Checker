@@ -57,7 +57,7 @@ public class JooqChatLinkTest extends JooqIntegrationTest {
 
         assertEquals(count, contentByLinkId.size());
         for (int i = 0; i < count; i++) {
-            assertEquals(i + 1, contentByLinkId.get(i).getChatId());
+            assertEquals((i + 1) * 10, contentByLinkId.get(i).getChatId());
             assertEquals(i + 1, contentByLinkId.get(i).getTgChatId());
         }
     }
@@ -98,7 +98,7 @@ public class JooqChatLinkTest extends JooqIntegrationTest {
 
         assertEquals(count, content.size());
         for (int i = 0; i < count; i++) {
-            assertEquals(i + 1, content.get(i).getChatId());
+            assertEquals((i + 1) * 10, content.get(i).getChatId());
             assertEquals(defaultId, content.get(i).getLinkId());
         }
     }

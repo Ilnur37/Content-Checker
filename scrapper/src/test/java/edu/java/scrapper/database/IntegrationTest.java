@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 public abstract class IntegrationTest {
     protected final long defaultTgChatId = 1;
-    protected final long defaultId = 1;
+    protected final long defaultId = 10;
     protected final String defaultUrl = "defaultUrl";
     protected final String defaultName = "defaultName";
     protected final String defaultAuthor = "defaultAuthor";

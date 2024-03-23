@@ -1,3 +1,3 @@
 INSERT INTO chat_link(id, chat_id, link_id) OVERRIDING SYSTEM VALUE
-VALUES (1, 1, 1)
+VALUES (1, 10, 10)
 ON CONFLICT DO NOTHING;
