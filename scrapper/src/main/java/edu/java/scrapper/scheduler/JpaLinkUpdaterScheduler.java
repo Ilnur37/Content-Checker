@@ -8,6 +8,7 @@ import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.scrapper.dto.stackoverflow.comment.CommentInfo;
 import edu.java.scrapper.service.BotService;
 import edu.java.scrapper.service.web.WebResourceHandler;
+import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ public class JpaLinkUpdaterScheduler {
     }
 
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
+    @Transactional
     public void update() {
         linkRepository.deleteUnnecessary();
         OffsetDateTime now = OffsetDateTime.now();

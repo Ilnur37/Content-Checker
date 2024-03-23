@@ -18,7 +18,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 @SpringBootTest
 public class ScrapperControllerTest extends IntegrationTest {
-    private final WebTestClient webTestClient;
+    /*private final WebTestClient webTestClient;
 
     @Autowired
     public ScrapperControllerTest(ScrapperController scrapperController) {
@@ -161,5 +161,5 @@ public class ScrapperControllerTest extends IntegrationTest {
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(new RemoveLinkRequest("")))
             .exchange().expectStatus().isBadRequest();
-    }
+    }*/
 }

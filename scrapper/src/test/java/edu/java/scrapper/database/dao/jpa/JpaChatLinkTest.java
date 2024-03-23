@@ -3,16 +3,15 @@ package edu.java.scrapper.database.dao.jpa;
 import edu.java.scrapper.database.JpaIntegrationTest;
 import edu.java.scrapper.domain.jpa.model.Chat;
 import edu.java.scrapper.domain.jpa.model.Link;
+import java.time.OffsetDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @Rollback
@@ -90,7 +89,7 @@ public class JpaChatLinkTest extends JpaIntegrationTest {
         assertAll(
             () -> assertEquals(0, actualChat.getLinks().size()),
             () -> assertEquals(1, actualLinks.size()),
-        () -> assertEquals(0, actualLink.getChats().size())
+            () -> assertEquals(0, actualLink.getChats().size())
         );
     }
 }

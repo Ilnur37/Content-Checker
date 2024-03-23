@@ -1,21 +1,24 @@
 package edu.java.scrapper.database.dao.jpa;
 
-import edu.java.scrapper.database.IntegrationTest;
+import edu.java.scrapper.database.JpaIntegrationTest;
 import edu.java.scrapper.domain.jpa.dao.JpaChatRepository;
 import edu.java.scrapper.domain.jpa.model.Chat;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Rollback
 @Transactional
-public class JpaChatTest extends IntegrationTest {
+public class JpaChatTest extends JpaIntegrationTest {
 
     @Autowired
     private JpaChatRepository chatRepository;
