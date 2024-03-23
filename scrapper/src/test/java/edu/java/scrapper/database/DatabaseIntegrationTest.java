@@ -3,11 +3,9 @@ package edu.java.scrapper.database;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
 public class DatabaseIntegrationTest extends IntegrationTest {
     @Autowired
     JdbcClient jdbcClient;

@@ -4,6 +4,7 @@ import edu.java.models.ReasonOfError;
 import edu.java.models.dto.response.ApiErrorResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.CustomApiException;
+import edu.java.models.exception.InvalidUrlException;
 import edu.java.models.exception.LinkNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
 import edu.java.models.exception.ReRegistrationException;
@@ -35,7 +36,7 @@ public class ExceptionScrapperApiHandler {
         return ResponseEntity.status(httpStatus).body(errors);
     }
 
-    @ExceptionHandler({ChatIdNotFoundException.class, LinkNotFoundException.class})
+    @ExceptionHandler({ChatIdNotFoundException.class, LinkNotFoundException.class, InvalidUrlException.class})
     public ResponseEntity<ApiErrorResponse> handleChatIdNotFoundException(CustomApiException ex) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         ReasonOfError reasonOfError = getReason(ex);
@@ -58,6 +59,8 @@ public class ExceptionScrapperApiHandler {
         } else if (ex instanceof LinkNotFoundException
             || ex instanceof ReAddLinkException) {
             return ReasonOfError.LINK;
+        } else if (ex instanceof InvalidUrlException) {
+            return ReasonOfError.URL;
         } else {
             return ReasonOfError.ELSE;
         }

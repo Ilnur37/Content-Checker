@@ -28,6 +28,10 @@
         <jetbrains-annotations.version>24.1.0</jetbrains-annotations.version>
         <java-telegram-bot-api.version>7.0.1</java-telegram-bot-api.version>
 
+        <!-- DataBase -->
+        <jooq.version>3.19.6</jooq.version>
+        <liquibase.version>4.26.0</liquibase.version>
+
         <!-- Tests -->
         <testcontainers.version>1.19.4</testcontainers.version>
         <wiremock.version>3.3.1</wiremock.version>
@@ -49,6 +53,7 @@
         <module>bot</module>
         <module>scrapper</module>
         <module>models</module>
+        <module>scrapper-jooq</module>
     </modules>
 
     <dependencyManagement>
@@ -134,6 +139,7 @@
 
                 <configuration>
                     <excludes>
+                        <excludes>**/generate/**</excludes>
                         <exclude>**/configuration/*</exclude>
                         <exclude>**/dto/**</exclude>
                         <exclude>**/exception/**</exclude>
@@ -291,6 +297,7 @@
                         </dependency>
                     </dependencies>
                     <configuration>
+                        <excludes>**/generate/**</excludes>
                         <configLocation>checkstyle.xml</configLocation>
                         <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
                         <consoleOutput>true</consoleOutput>

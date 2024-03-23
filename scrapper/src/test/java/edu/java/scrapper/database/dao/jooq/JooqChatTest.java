@@ -1,17 +1,14 @@
-package edu.java.scrapper.database.dao;
+package edu.java.scrapper.database.dao.jooq;
 
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
-import edu.java.scrapper.domain.jdbc.model.chat.Chat;
+import edu.java.scrapper.database.JooqIntegrationTest;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Chat;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.domain.jdbc.model.chat.Chat.createChat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,10 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Rollback
 @Transactional
-public class JdbcChatTest extends IntegrationTest {
-
-    @Autowired
-    private ChatDao chatDao;
+public class JooqChatTest extends JooqIntegrationTest {
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
@@ -38,20 +32,18 @@ public class JdbcChatTest extends IntegrationTest {
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
     void findById() {
-        long id = 1;
-
         //Получениие чата с присвоенным id
-        Optional<Chat> chat = chatDao.findById(id);
+        Optional<Chat> chat = chatDao.findById(defaultId);
 
         assertAll(
             () -> assertTrue(chat.isPresent()),
-            () -> assertEquals(id, chat.orElseThrow().getId())
+            () -> assertEquals(defaultId, chat.orElseThrow().getId())
         );
     }
 
     @Test
     @Sql(value = "/sql/insertFiveRowChat.sql")
-    void getAll() {
+    void findAll() {
         int count = 5;
         List<Chat> actualChats = chatDao.getAll();
 
@@ -65,7 +57,10 @@ public class JdbcChatTest extends IntegrationTest {
     void save() {
         long tgChatId = 15;
         //Добавление чата с заданным tgChatId
-        chatDao.save(createChat(tgChatId, OffsetDateTime.now()));
+        Chat chat = new Chat();
+        chat.setTgChatId(tgChatId);
+        chat.setCreatedAt(OffsetDateTime.now());
+        chatDao.save(chat);
 
         Optional<Chat> actualChat = chatDao.findByTgChatId(tgChatId);
         assertTrue(actualChat.isPresent());

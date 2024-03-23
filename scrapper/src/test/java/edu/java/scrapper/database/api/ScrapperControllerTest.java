@@ -10,15 +10,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+@SpringBootTest
 public class ScrapperControllerTest extends IntegrationTest {
     private final WebTestClient webTestClient;
-    private final String defaultLink = "aa";
-    private final int defaultId = 1;
 
     @Autowired
     public ScrapperControllerTest(ScrapperController scrapperController) {
@@ -61,7 +61,7 @@ public class ScrapperControllerTest extends IntegrationTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new AddLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(defaultUrl)))
             .exchange().expectStatus().isOk();
     }
 
@@ -73,7 +73,7 @@ public class ScrapperControllerTest extends IntegrationTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new RemoveLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new RemoveLinkRequest(defaultUrl)))
             .exchange().expectStatus().isOk();
     }
 
@@ -113,7 +113,7 @@ public class ScrapperControllerTest extends IntegrationTest {
             .uri("/scrapper-api/links")
             .header("Tg-Chat-Id", String.valueOf(id))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new AddLinkRequest(defaultLink)))
+            .body(BodyInserters.fromValue(new AddLinkRequest(defaultUrl)))
             .exchange().expectStatus().isBadRequest();
     }
 

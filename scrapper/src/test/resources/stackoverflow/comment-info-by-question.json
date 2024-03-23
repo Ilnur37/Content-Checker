@@ -1,0 +1,22 @@
+{
+    "items": [
+        {
+            "owner": {
+                "account_id": 1000,
+                "user_id": 1002,
+                "display_name": "tempUser",
+                "link": "https://stackoverflow.com/users/1001/tempUser"
+            },
+            "reply_to_user": {
+                "account_id": 24747,
+                "link": "https://stackoverflow.com/users/63136/not-sure"
+            },
+            "edited": false,
+            "score": 0,
+            "creation_date": 1679576593,
+            "post_id": 951635,
+            "comment_id": 133748455,
+            "content_license": "CC BY-SA 4.0"
+        }
+    ]
+}

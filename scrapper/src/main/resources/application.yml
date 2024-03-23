@@ -10,6 +10,7 @@ app:
   supported:
     stackoverflow: stackoverflow.com
     github: github.com
+  database-access-type: jdbc
 
 
 springdoc.swagger-ui.path: /swagger-ui.html

@@ -1,8 +1,7 @@
-package edu.java.scrapper.database.dao;
+package edu.java.scrapper.database.dao.jooq;
 
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
+import edu.java.scrapper.database.JooqIntegrationTest;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -10,11 +9,9 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import static edu.java.scrapper.domain.jdbc.model.link.Link.createLink;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,41 +19,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @Rollback
-public class JdbcLinkTest extends IntegrationTest {
-
-    @Autowired
-    private LinkDao linkDao;
+public class JooqLinkTest extends JooqIntegrationTest {
 
     @Test
     @Sql(value = "/sql/insertOneRowLink.sql")
     void getByUrl() {
+        //Получениие ссылки с заданным url
         Optional<Link> link = linkDao.findByUrl(defaultUrl);
 
         assertAll(
             () -> assertTrue(link.isPresent()),
-            () -> assertEquals(defaultUrl, link.get().getUrl())
+            () -> assertEquals(defaultUrl, link.orElseThrow().getUrl())
         );
     }
 
     @Test
     @Sql(value = "/sql/insertOneRowLink.sql")
     void getById() {
-        long id = 1;
-        Optional<Link> link = linkDao.findById(id);
+        Optional<Link> link = linkDao.findById(defaultId);
 
         assertAll(
             () -> assertTrue(link.isPresent()),
-            () -> assertEquals(defaultUrl, link.get().getUrl())
+            () -> assertEquals(defaultUrl, link.orElseThrow().getUrl())
         );
     }
 
     @Test
     @Sql(value = "/sql/insertFiveRowLink.sql")
-    void getByLastUpdate() {
-        int count = 5;
-        List<Link> actualLinks = linkDao.getByLastUpdate(OffsetDateTime.now().plusSeconds(30));
+    void getByLastCheck() {
+        List<Link> actualLinks = linkDao.getByLastCheck(OffsetDateTime.now().plusSeconds(30));
+
         assertAll(
-            "Подтверждение, что ссылки добавились",
             () -> assertFalse(actualLinks.isEmpty()),
             () -> assertEquals(2, actualLinks.size())
         );
@@ -65,7 +58,8 @@ public class JdbcLinkTest extends IntegrationTest {
     @Test
     @Sql(value = "/sql/insertFiveRowLink.sql")
     void getAll() {
-        int count = 5;
+        //Добавление нескольких ссылок
+        long count = 5;
         List<Link> actualLinks = linkDao.getAll();
 
         assertAll(
@@ -78,21 +72,31 @@ public class JdbcLinkTest extends IntegrationTest {
     void save() {
         //Добавление ссылки с заданным url
         String url = "url";
-        linkDao.save(createLink(url, OffsetDateTime.now(), OffsetDateTime.now()));
+        Link link = new Link();
+        link.setUrl(url);
+        link.setCreatedAt(OffsetDateTime.now());
+        link.setLastUpdateAt(OffsetDateTime.now());
+        link.setAuthor(defaultAuthor);
+        link.setName(defaultName);
+        link.setLastCheckAt(OffsetDateTime.now());
+        linkDao.save(link);
 
-        Optional<Link> actualLink = linkDao.findByUrl(url);
-        assertTrue(actualLink.isPresent());
+        List<Link> actualLinkList = linkDao.getAll();
+        assertAll(
+            () -> assertFalse(actualLinkList.isEmpty()),
+            () -> assertEquals(url, actualLinkList.getFirst().getUrl())
+        );
     }
 
     @Test
     @Sql(value = "/sql/insertOneRowLink.sql")
     void updateLastUpdateAtById() {
         //Изменение поля last_update_at
-        OffsetDateTime newTime = OffsetDateTime.of(LocalDate.now(), LocalTime.of(12,12), ZoneOffset.UTC);
+        OffsetDateTime newTime = OffsetDateTime.of(LocalDate.now(), LocalTime.of(12, 12), ZoneOffset.UTC);
         linkDao.updateLastUpdateAtById(defaultId, newTime);
 
         Link actualLink = linkDao.findByUrl(defaultUrl).orElseThrow();
-        assertEquals(newTime, actualLink.getLastUpdateAt());
+        assertTrue(newTime.isEqual(actualLink.getLastUpdateAt()));
     }
 
     @Test
@@ -113,5 +117,14 @@ public class JdbcLinkTest extends IntegrationTest {
 
         Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
         assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    @Sql(value = "/sql/insertFiveRowLink.sql")
+    void deleteUnnecessary() {
+        linkDao.deleteUnnecessary();
+        List<Link> actualLinks = linkDao.getAll();
+
+        assertTrue(actualLinks.isEmpty());
     }
 }

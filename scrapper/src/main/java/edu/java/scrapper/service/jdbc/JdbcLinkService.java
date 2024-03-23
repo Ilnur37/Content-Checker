@@ -7,27 +7,32 @@ import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.LinkNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
-import edu.java.scrapper.domain.jdbc.dao.ChatDao;
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
+import edu.java.scrapper.domain.jdbc.dao.JdbcChatDao;
+import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
+import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
 import edu.java.scrapper.domain.jdbc.model.chat.Chat;
 import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLinkWithUrl;
 import edu.java.scrapper.domain.jdbc.model.link.Link;
+import edu.java.scrapper.domain.model.ChatLinkWithUrl;
+import edu.java.scrapper.dto.github.RepositoryInfo;
+import edu.java.scrapper.dto.stackoverflow.question.QuestionInfo;
 import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.web.WebResourceHandler;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import static java.time.OffsetDateTime.now;
 
-@Service
 @RequiredArgsConstructor
 @Transactional
 public class JdbcLinkService implements LinkService {
-    private final ChatDao chatDao;
-    private final LinkDao linkDao;
-    private final ChatLinkDao chatLinkDao;
+    private static final String EMPTY_STRING = "";
+
+    private final JdbcChatDao chatDao;
+    private final JdbcLinkDao linkDao;
+    private final JdbcChatLinkDao chatLinkDao;
+    private final WebResourceHandler webResourceHandler;
 
     @Override
     public ListLinksResponse getAll(long tgChatId) {
@@ -45,18 +50,30 @@ public class JdbcLinkService implements LinkService {
     public LinkResponse add(long tgChatId, AddLinkRequest linkRequest) {
         String url = linkRequest.link();
         long chatId = getChatByTgChatId(tgChatId).getId();
-        Link actualLink;
+        String author = EMPTY_STRING;
+        String title = EMPTY_STRING;
+        if (webResourceHandler.isGitHubUrl(url)) {
+            RepositoryInfo repositoryInfo = webResourceHandler.getRepositoryGitHubInfoByUrl(url);
+            author = repositoryInfo.getActor().getLogin();
+            title = repositoryInfo.getName();
+        } else if (webResourceHandler.isStackOverflowUrl(url)) {
+            QuestionInfo questionInfo = webResourceHandler.getQuestionStackOverflowByUrl(url);
+            author = questionInfo.getOwner().getDisplayName();
+            title = questionInfo.getTitle();
+        }
 
+        Link actualLink;
         //Создание ссылки в таблице ссылок, если ее нет
         if (linkDao.findByUrl(url).isEmpty()) {
-            Link createLink = Link.createLink(url, now(), now());
+            OffsetDateTime nowTime = OffsetDateTime.now();
+            Link createLink = Link.createLink(url, nowTime, nowTime, author, title, nowTime);
             linkDao.save(createLink);
             actualLink = linkDao.findByUrl(url).get();
         } else {
             //Иначе проверка на предмет повторного добавления
             actualLink = linkDao.findByUrl(url).get();
-            for (ChatLink chatLink : chatLinkDao.getByChatId(chatId)) {
-                if (chatLink.getLinkId() == actualLink.getId()) {
+            for (ChatLinkWithUrl chatLink : chatLinkDao.getByChatIdJoinLink(chatId)) {
+                if (Objects.equals(chatLink.getUrl(), url)) {
                     throw new ReAddLinkException(
                         toExMsg(EX_CHAT, String.valueOf(tgChatId))
                             + ", "

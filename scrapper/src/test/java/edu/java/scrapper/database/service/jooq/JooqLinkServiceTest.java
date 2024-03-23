@@ -1,4 +1,4 @@
-package edu.java.scrapper.database.service;
+package edu.java.scrapper.database.service.jooq;
 
 import edu.java.models.dto.request.AddLinkRequest;
 import edu.java.models.dto.request.RemoveLinkRequest;
@@ -6,17 +6,13 @@ import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
-import edu.java.scrapper.database.IntegrationTest;
-import edu.java.scrapper.domain.jdbc.dao.ChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.LinkDao;
-import edu.java.scrapper.domain.jdbc.model.chatLink.ChatLink;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
-import edu.java.scrapper.service.jdbc.JdbcLinkService;
+import edu.java.scrapper.database.JooqIntegrationTest;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
+import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,16 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Rollback
 @Transactional
-public class JdbcLinkServiceTest extends IntegrationTest {
-
-    @Autowired
-    JdbcLinkService linkService;
-
-    @Autowired
-    private LinkDao linkDao;
-
-    @Autowired
-    private ChatLinkDao chatLinkDao;
+public class JooqLinkServiceTest extends JooqIntegrationTest {
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
@@ -45,6 +32,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @DisplayName("Получить все ссылки пользователя")
     void getAll() {
         ListLinksResponse response = linkService.getAll(defaultTgChatId);
+
         assertEquals(1, response.size());
         assertEquals(defaultUrl, response.links().getFirst().url());
     }
@@ -69,6 +57,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
 
         ChatLink actualChatLink = chatLinkDao.getByChatId(defaultId).getFirst();
         Link actualLink = linkDao.findByUrl(defaultUrl).orElseThrow();
+
         assertAll(
             () -> assertEquals(defaultUrl, response.url()),
             () -> assertEquals(defaultUrl, actualLink.getUrl()),
@@ -123,8 +112,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         "ON CONFLICT DO NOTHING;")
     @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
-    @Sql(statements = "INSERT INTO chat_link(chat_id, link_id) OVERRIDING SYSTEM VALUE\n" +
-        "VALUES (10, 1)\n" +
+    @Sql(statements = "INSERT INTO chat_link(id, chat_id, link_id) OVERRIDING SYSTEM VALUE\n" +
+        "VALUES (2, 10, 1)\n" +
         "ON CONFLICT DO NOTHING;")
     @DisplayName("Удалить ссылку, отслеживаемую несколькими чатами")
     void removeWhenManyChatsTrack() {
@@ -132,10 +121,12 @@ public class JdbcLinkServiceTest extends IntegrationTest {
 
         List<ChatLink> actualChatLink = chatLinkDao.getAll();
         Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+
         assertAll(
             "Удалена только 1 запись о связи",
             () -> assertEquals(1, actualChatLink.size()),
-            () -> assertTrue(actualLink.isPresent())
+            () -> assertTrue(actualLink.isPresent()),
+            () -> assertEquals(defaultUrl, actualLink.get().getUrl())
         );
     }
 }

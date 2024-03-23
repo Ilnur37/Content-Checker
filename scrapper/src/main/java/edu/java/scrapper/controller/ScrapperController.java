@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import static edu.java.scrapper.controller.ScrapperController.SCRAPPER_MAPPING;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(SCRAPPER_MAPPING)
 public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
@@ -36,6 +35,12 @@ public class ScrapperController {
 
     private final ChatService chatService;
     private final LinkService linkService;
+
+    @Autowired
+    public ScrapperController(ChatService chatService, LinkService linkService) {
+        this.chatService = chatService;
+        this.linkService = linkService;
+    }
 
     @Operation(summary = "Зарегистрировать чат", description = "Created")
     @ApiResponse(responseCode = "201", description = "Чат зарегистрирован")
@@ -90,6 +95,10 @@ public class ScrapperController {
         content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(
         responseCode = "404", description = "Чат не существует",
+        content = @Content(mediaType = "application/json",
+                           schema = @Schema(implementation = ApiErrorResponse.class)))
+    @ApiResponse(
+        responseCode = "404", description = "Ссылки не существует",
         content = @Content(mediaType = "application/json",
                            schema = @Schema(implementation = ApiErrorResponse.class)))
     @ApiResponse(

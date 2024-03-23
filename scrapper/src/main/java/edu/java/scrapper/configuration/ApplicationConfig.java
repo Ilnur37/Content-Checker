@@ -11,7 +11,9 @@ public record ApplicationConfig(
     @NotNull
     Scheduler scheduler,
     Api api,
-    Supported supported
+    Supported supported,
+
+    AccessType databaseAccessType
 ) {
     public record Api(String gitUrl, String stackoverflowUrl, String botUrl) {
     }
@@ -20,5 +22,10 @@ public record ApplicationConfig(
     }
 
     public record Supported(String stackoverflow, String github) {
+    }
+
+    public enum AccessType {
+        JDBC,
+        JOOQ
     }
 }
