@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
-@SpringBootTest
 public class ScrapperControllerTest extends IntegrationTest {
     /*private final WebTestClient webTestClient;
 

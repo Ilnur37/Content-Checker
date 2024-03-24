@@ -20,9 +20,7 @@ public class JpaChatService implements ChatService {
         if (chatRepository.findChatByTgChatId(tgChatId).isPresent()) {
             throw new ReRegistrationException(toExMsg(tgChatId));
         }
-        Chat chat = new Chat();
-        chat.setTgChatId(tgChatId);
-        chat.setCreatedAt(now());
+        Chat chat = Chat.createChat(tgChatId, now());
         chatRepository.save(chat);
     }
 

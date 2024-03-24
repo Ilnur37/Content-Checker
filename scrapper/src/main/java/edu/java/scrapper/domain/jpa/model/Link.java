@@ -45,4 +45,15 @@ public class Link {
     @ManyToMany(mappedBy = "links", fetch = FetchType.LAZY)
     private Set<Chat> chats = new HashSet<>();
 
+    public static Link createLink(String url, String name, String author, OffsetDateTime now) {
+        Link link = new Link();
+        link.setUrl(url);
+        link.setName(name);
+        link.setAuthor(author);
+        link.setCreatedAt(now);
+        link.setLastUpdateAt(now);
+        link.setLastCheckAt(now);
+        return link;
+    }
+
 }

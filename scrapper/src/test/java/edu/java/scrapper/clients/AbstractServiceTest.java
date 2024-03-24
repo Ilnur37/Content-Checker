@@ -3,7 +3,6 @@ package edu.java.scrapper.clients;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import edu.java.scrapper.database.IntegrationTest;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import lombok.SneakyThrows;
@@ -14,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class AbstractServiceTest extends IntegrationTest {
+public class AbstractServiceTest {
     private WireMockServer wireMockServer;
     private final int port = 8080;
     private final String host = "localhost";

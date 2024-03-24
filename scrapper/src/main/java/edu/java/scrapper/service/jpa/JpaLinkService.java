@@ -61,7 +61,7 @@ public class JpaLinkService implements LinkService {
         //Создание ссылки в таблице ссылок, если ее нет
         if (linkRepository.findLinkByUrl(url).isEmpty()) {
             OffsetDateTime nowTime = OffsetDateTime.now();
-            Link createLink = createLink(url, nowTime, nowTime, author, title, nowTime);
+            Link createLink = Link.createLink(url, title, author, nowTime);
             linkRepository.save(createLink);
             actualLink = linkRepository.findLinkByUrl(url).get();
         } else {
@@ -105,23 +105,5 @@ public class JpaLinkService implements LinkService {
             .orElseThrow(
                 () -> new LinkNotFoundException(toExMsg(EX_LINK, url))
             );
-    }
-
-    private Link createLink(
-        String url,
-        OffsetDateTime createdAt,
-        OffsetDateTime lastUpdateAt,
-        String name,
-        String author,
-        OffsetDateTime lastCheckAt
-    ) {
-        Link link = new Link();
-        link.setUrl(url);
-        link.setCreatedAt(createdAt);
-        link.setLastUpdateAt(lastUpdateAt);
-        link.setName(name);
-        link.setAuthor(author);
-        link.setLastCheckAt(lastCheckAt);
-        return link;
     }
 }

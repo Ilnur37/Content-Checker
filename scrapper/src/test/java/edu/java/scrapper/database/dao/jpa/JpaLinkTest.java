@@ -72,13 +72,7 @@ public class JpaLinkTest extends JpaIntegrationTest {
     void save() {
         //Добавление ссылки с заданным url
         String url = "url";
-        Link link = new Link();
-        link.setUrl(url);
-        link.setCreatedAt(OffsetDateTime.now());
-        link.setLastUpdateAt(OffsetDateTime.now());
-        link.setAuthor(defaultAuthor);
-        link.setName(defaultName);
-        link.setLastCheckAt(OffsetDateTime.now());
+        Link link = Link.createLink(url, defaultName, defaultAuthor, OffsetDateTime.now());
         linkRepository.save(link);
 
         List<Link> actualLinkList = linkRepository.findAll();

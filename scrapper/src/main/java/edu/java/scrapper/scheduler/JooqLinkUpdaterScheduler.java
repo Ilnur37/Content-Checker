@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ import static java.lang.String.format;
 
 @ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
 @Slf4j
+@RequiredArgsConstructor
 public class JooqLinkUpdaterScheduler {
     private static final Duration NEED_TO_CHECK = Duration.ofSeconds(30);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy");
@@ -33,18 +35,6 @@ public class JooqLinkUpdaterScheduler {
     private final JooqChatLinkDao chatLinkDao;
     private final BotService botService;
     private final WebResourceHandler webResourceHandler;
-
-    public JooqLinkUpdaterScheduler(
-        JooqLinkDao linkDao,
-        JooqChatLinkDao chatLinkDao,
-        BotService botService,
-        WebResourceHandler webResourceHandler
-    ) {
-        this.linkDao = linkDao;
-        this.chatLinkDao = chatLinkDao;
-        this.botService = botService;
-        this.webResourceHandler = webResourceHandler;
-    }
 
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
     public void update() {

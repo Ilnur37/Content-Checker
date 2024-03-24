@@ -53,6 +53,13 @@ public class Chat {
         link.getChats().remove(this);
     }
 
+    public static Chat createChat(long tgChatId, OffsetDateTime createdAt) {
+        Chat chat = new Chat();
+        chat.setTgChatId(tgChatId);
+        chat.setCreatedAt(createdAt);
+        return chat;
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o) {
             return true;

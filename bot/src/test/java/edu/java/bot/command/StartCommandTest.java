@@ -13,15 +13,15 @@ import static org.mockito.Mockito.doNothing;
 public class StartCommandTest extends AbstractTest {
 
     @Autowired
-    StartCommand start;
+    StartCommand startCommand;
 
     @Test
     @DisplayName("Корректные данные")
     void registrationUserWhenValidData() {
         doNothing().when(scrapperService).registerChat(chatId);
-        mockObjects(chatId, start.command());
+        mockObjects(chatId, startCommand.command());
 
-        SendMessage response = start.handle(update);
+        SendMessage response = startCommand.handle(update);
 
         assertEquals(StartCommand.RESPONSE_USER_SUCCESSFULLY_REGISTERED, response.getParameters().get("text"));
     }
@@ -30,9 +30,9 @@ public class StartCommandTest extends AbstractTest {
     @DisplayName("Повторная регистрация")
     void registrationUserWhenRepeatChatId() {
         Mockito.doThrow(new ReRegistrationException("")).when(scrapperService).registerChat(chatId);
-        mockObjects(chatId, start.command());
+        mockObjects(chatId, startCommand.command());
 
-        SendMessage response = start.handle(update);
+        SendMessage response = startCommand.handle(update);
 
         assertEquals(StartCommand.RESPONSE_USER_IS_ALREADY_REGISTERED, response.getParameters().get("text"));
     }

@@ -12,7 +12,6 @@ app:
     github: github.com
   database-access-type: jpa
 
-
 springdoc.swagger-ui.path: /swagger-ui.html
 
 spring:
@@ -30,8 +29,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: 8080
