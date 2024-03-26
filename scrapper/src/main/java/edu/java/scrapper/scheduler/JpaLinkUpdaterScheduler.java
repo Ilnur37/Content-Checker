@@ -9,9 +9,7 @@ import edu.java.scrapper.dto.stackoverflow.comment.CommentInfo;
 import edu.java.scrapper.service.BotService;
 import edu.java.scrapper.service.web.WebResourceHandler;
 import jakarta.transaction.Transactional;
-import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +20,7 @@ import static java.lang.String.format;
 @ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
 @Slf4j
 @RequiredArgsConstructor
-public class JpaLinkUpdaterScheduler {
-    private static final Duration NEED_TO_CHECK = Duration.ofSeconds(30);
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy");
-    private static final String GIT_HEAD = "В репозитории %s, пользователя %s, %d новых изменений:\n";
-    private static final String GIT_ABOUT = "В ветку %s были внесены изменения (тип: %s, время %s)\n";
-    private static final String SOF_HEAD = "В вопросе %s, пользователя %s появились новые ответы/кометарии:\n";
-    private static final String SOF_ANSWER = "Новый ответ от пользователя %s (время %s)\n";
-    private static final String SOF_COMMENT = "Новый комментарий от пользователя %s (время %s)\n";
+public class JpaLinkUpdaterScheduler extends AbstractScheduler {
 
     private final JpaLinkRepository linkRepository;
     private final BotService botService;
@@ -47,7 +38,7 @@ public class JpaLinkUpdaterScheduler {
             } else {
                 stackOverflowProcess(link, now);
             }
-            linkRepository.updateLastCheckAtById(link.getId(), now);
+            link.setLastCheckAt(now);
         }
     }
 
@@ -98,12 +89,11 @@ public class JpaLinkUpdaterScheduler {
     }
 
     private void updateTablesAndSendMsg(Link link, OffsetDateTime newUpdateTime, String description) {
-        long linkId = link.getId();
-        linkRepository.updateLastUpdateAtById(linkId, newUpdateTime);
+        link.setLastUpdateAt(newUpdateTime);
         List<Long> chatIdsToSendMsg = link.getChats()
             .stream()
             .map(Chat::getTgChatId)
             .toList();
-        botService.sendUpdate(linkId, link.getUrl(), description, chatIdsToSendMsg);
+        botService.sendUpdate(link.getId(), link.getUrl(), description, chatIdsToSendMsg);
     }
 }

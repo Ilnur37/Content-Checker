@@ -2,10 +2,7 @@ package edu.java.scrapper.database.dao.jpa;
 
 import edu.java.scrapper.database.JpaIntegrationTest;
 import edu.java.scrapper.domain.jpa.model.Link;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -80,17 +77,6 @@ public class JpaLinkTest extends JpaIntegrationTest {
             () -> assertFalse(actualLinkList.isEmpty()),
             () -> assertEquals(url, actualLinkList.getFirst().getUrl())
         );
-    }
-
-    @Test
-    @Sql(value = "/sql/insertOneRowLink.sql")
-    void updateLastUpdateAtById() {
-        //Изменение поля last_update_at
-        OffsetDateTime newTime = OffsetDateTime.of(LocalDate.now(), LocalTime.of(12, 12), ZoneOffset.UTC);
-        linkRepository.updateLastUpdateAtById(defaultId, newTime);
-
-        Link actualLink = linkRepository.findLinkByUrl(defaultUrl).orElseThrow();
-        assertTrue(newTime.isEqual(actualLink.getLastUpdateAt()));
     }
 
     @Test

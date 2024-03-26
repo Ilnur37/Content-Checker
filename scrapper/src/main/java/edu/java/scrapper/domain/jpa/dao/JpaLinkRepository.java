@@ -21,14 +21,6 @@ public interface JpaLinkRepository extends JpaRepository<Link, Long> {
 
     List<Link> findLinksByLastCheckAtBefore(OffsetDateTime dateTime);
 
-    @Modifying
-    @Query("UPDATE Link l SET l.lastCheckAt = :dateTime WHERE l.id = :id")
-    void updateLastCheckAtById(long id, OffsetDateTime dateTime);
-
-    @Modifying
-    @Query("UPDATE Link l SET l.lastUpdateAt = :dateTime WHERE l.id = :id")
-    void updateLastUpdateAtById(long id, OffsetDateTime dateTime);
-
     void deleteByUrl(String url);
 
     @Modifying
