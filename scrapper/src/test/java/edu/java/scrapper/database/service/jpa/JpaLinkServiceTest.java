@@ -1,4 +1,4 @@
-package edu.java.scrapper.database.service.jooq;
+package edu.java.scrapper.database.service.jpa;
 
 import edu.java.models.dto.request.AddLinkRequest;
 import edu.java.models.dto.request.RemoveLinkRequest;
@@ -6,10 +6,9 @@ import edu.java.models.dto.response.LinkResponse;
 import edu.java.models.dto.response.ListLinksResponse;
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.models.exception.ReAddLinkException;
-import edu.java.scrapper.database.JooqIntegrationTest;
-import edu.java.scrapper.domain.jooq.generate.tables.pojos.ChatLink;
-import edu.java.scrapper.domain.jooq.generate.tables.pojos.Link;
-import java.util.List;
+import edu.java.scrapper.database.JpaIntegrationTest;
+import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.jpa.model.Link;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Rollback
 @Transactional
-public class JooqLinkServiceTest extends JooqIntegrationTest {
+public class JpaLinkServiceTest extends JpaIntegrationTest {
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
@@ -53,16 +52,13 @@ public class JooqLinkServiceTest extends JooqIntegrationTest {
     @Sql(value = "/sql/insertOneRowChat.sql")
     @DisplayName("Добавить ссылку")
     void add() {
-        LinkResponse response = linkService.add(defaultTgChatId, new AddLinkRequest(defaultUrl));
+        String url = defaultUrl + defaultUrl;
+        LinkResponse response = linkService.add(defaultTgChatId, new AddLinkRequest(url));
 
-        ChatLink actualChatLink = chatLinkDao.getByChatId(defaultId).getFirst();
-        Link actualLink = linkDao.findByUrl(defaultUrl).orElseThrow();
-
+        Chat chat = chatRepository.findChatByTgChatId(defaultTgChatId).orElseThrow();
         assertAll(
-            () -> assertEquals(defaultUrl, response.url()),
-            () -> assertEquals(defaultUrl, actualLink.getUrl()),
-            () -> assertEquals(actualLink.getId(), actualChatLink.getLinkId()),
-            () -> assertEquals(defaultId, actualChatLink.getChatId())
+            () -> assertEquals(url, response.url()),
+            () -> assertEquals(1, chat.getLinks().size())
         );
     }
 
@@ -92,23 +88,23 @@ public class JooqLinkServiceTest extends JooqIntegrationTest {
     @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
-    @DisplayName("Удалить ссылку, отслеживаемую одним чатом (каскадное удаление)")
+    @DisplayName("Удалить ссылку, отслеживаемую одним чатом")
     void removeWhenOneChatTrack() {
         linkService.remove(defaultTgChatId, new RemoveLinkRequest(defaultUrl));
 
-        List<ChatLink> actualChatLink = chatLinkDao.getByChatId(defaultId);
-        Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+        Chat chat = chatRepository.findChatByTgChatId(defaultTgChatId).orElseThrow();
+        Optional<Link> actualLink = linkRepository.findLinkByUrl(defaultUrl);
         assertAll(
             "Ссылка удалена из всех таблиц",
-            () -> assertEquals(0, actualChatLink.size()),
-            () -> assertTrue(actualLink.isEmpty())
+            () -> assertEquals(0, chat.getLinks().size()),
+            () -> assertTrue(actualLink.isPresent())
         );
     }
 
     @Test
     @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(statements = "INSERT INTO chat(id, tg_chat_id, created_at) OVERRIDING SYSTEM VALUE\n" +
-        "VALUES (100, 10, CURRENT_TIMESTAMP)\n" +
+        "VALUES (100, 100, CURRENT_TIMESTAMP)\n" +
         "ON CONFLICT DO NOTHING;")
     @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
@@ -119,14 +115,15 @@ public class JooqLinkServiceTest extends JooqIntegrationTest {
     void removeWhenManyChatsTrack() {
         linkService.remove(defaultTgChatId, new RemoveLinkRequest(defaultUrl));
 
-        List<ChatLink> actualChatLink = chatLinkDao.getAll();
-        Optional<Link> actualLink = linkDao.findByUrl(defaultUrl);
+        Chat chat1 = chatRepository.findChatByTgChatId(defaultTgChatId).orElseThrow();
+        Chat chat2 = chatRepository.findChatByTgChatId(100).orElseThrow();
+        Link actualLink = linkRepository.findLinkByUrl(defaultUrl).orElseThrow();
 
         assertAll(
             "Удалена только 1 запись о связи",
-            () -> assertEquals(1, actualChatLink.size()),
-            () -> assertTrue(actualLink.isPresent()),
-            () -> assertEquals(defaultUrl, actualLink.get().getUrl())
+            () -> assertEquals(0, chat1.getLinks().size()),
+            () -> assertEquals(1, chat2.getLinks().size()),
+            () -> assertEquals(1, actualLink.getChats().size())
         );
     }
 }

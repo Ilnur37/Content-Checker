@@ -1,14 +1,14 @@
 package edu.java.scrapper.scheduler;
 
-import edu.java.scrapper.domain.jdbc.dao.JdbcChatLinkDao;
-import edu.java.scrapper.domain.jdbc.dao.JdbcLinkDao;
-import edu.java.scrapper.domain.jdbc.model.link.Link;
-import edu.java.scrapper.domain.model.ChatLinkWithTgChat;
+import edu.java.scrapper.domain.jpa.dao.JpaLinkRepository;
+import edu.java.scrapper.domain.jpa.model.Chat;
+import edu.java.scrapper.domain.jpa.model.Link;
 import edu.java.scrapper.dto.github.ActionsInfo;
 import edu.java.scrapper.dto.stackoverflow.answer.AnswerInfo;
 import edu.java.scrapper.dto.stackoverflow.comment.CommentInfo;
 import edu.java.scrapper.service.BotService;
 import edu.java.scrapper.service.web.WebResourceHandler;
+import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,25 +20,25 @@ import static java.lang.String.format;
 @ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true", matchIfMissing = true)
 @Slf4j
 @RequiredArgsConstructor
-public class JdbcLinkUpdaterScheduler extends AbstractScheduler {
+public class JpaLinkUpdaterScheduler extends AbstractScheduler {
 
-    private final JdbcLinkDao linkDao;
-    private final JdbcChatLinkDao chatLinkDao;
+    private final JpaLinkRepository linkRepository;
     private final BotService botService;
     private final WebResourceHandler webResourceHandler;
 
     @Scheduled(fixedDelayString = "#{@schedulerIntervalMs}")
+    @Transactional
     public void update() {
-        linkDao.deleteUnnecessary();
+        linkRepository.deleteUnnecessary();
         OffsetDateTime now = OffsetDateTime.now();
-        List<Link> links = linkDao.getByLastCheck(now.minus(NEED_TO_CHECK));
+        List<Link> links = linkRepository.findLinksByLastCheckAtBefore(now.minus(NEED_TO_CHECK));
         for (Link link : links) {
             if (webResourceHandler.isGitHubUrl(link.getUrl())) {
                 gitHubProcess(link, now);
             } else {
                 stackOverflowProcess(link, now);
             }
-            linkDao.updateLastCheckAtById(link.getId(), now);
+            link.setLastCheckAt(now);
         }
     }
 
@@ -89,12 +89,11 @@ public class JdbcLinkUpdaterScheduler extends AbstractScheduler {
     }
 
     private void updateTablesAndSendMsg(Link link, OffsetDateTime newUpdateTime, String description) {
-        long linkId = link.getId();
-        linkDao.updateLastUpdateAtById(linkId, newUpdateTime);
-        List<Long> chatIdsToSendMsg = chatLinkDao.getByLinkIdJoinChat(linkId)
+        link.setLastUpdateAt(newUpdateTime);
+        List<Long> chatIdsToSendMsg = link.getChats()
             .stream()
-            .map(ChatLinkWithTgChat::getTgChatId)
+            .map(Chat::getTgChatId)
             .toList();
-        botService.sendUpdate(linkId, link.getUrl(), description, chatIdsToSendMsg);
+        botService.sendUpdate(link.getId(), link.getUrl(), description, chatIdsToSendMsg);
     }
 }

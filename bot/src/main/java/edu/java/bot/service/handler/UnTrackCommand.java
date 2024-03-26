@@ -52,22 +52,22 @@ public class UnTrackCommand extends CommandHandler {
         String response = supportedDomain.validateCommand(message);
         if (!response.isEmpty()) {
             return new SendMessage(chatId, response);
-        } else {
-            try {
-                String link = message[1];
-                scrapperService.removeLink(chatId, link);
-                response = RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED + " (" + link + ")\n";
-                log.info(format(CHAT_ID_FOR_LOGGER, chatId)
-                    + format(LINK_FOR_LOGGER, link)
-                    + LINK_IS_NO_LONGER_BEING_TRACKED);
-            } catch (LinkNotFoundException ex) {
-                response = RESPONSE_LINK_NOT_TRACKED;
-            } catch (ChatIdNotFoundException ex) {
-                response = USER_IS_NOT_REGISTERED;
-            } catch (IllegalArgumentException ex) {
-                response = BAD_REQUEST;
-            }
         }
+        try {
+            String link = message[1];
+            scrapperService.removeLink(chatId, link);
+            response = RESPONSE_LINK_IS_NO_LONGER_BEING_TRACKED + " (" + link + ")\n";
+            log.info(format(CHAT_ID_FOR_LOGGER, chatId)
+                + format(LINK_FOR_LOGGER, link)
+                + LINK_IS_NO_LONGER_BEING_TRACKED);
+        } catch (LinkNotFoundException ex) {
+            response = RESPONSE_LINK_NOT_TRACKED;
+        } catch (ChatIdNotFoundException ex) {
+            response = USER_IS_NOT_REGISTERED;
+        } catch (IllegalArgumentException ex) {
+            response = BAD_REQUEST;
+        }
+
         return new SendMessage(chatId, response);
     }
 }

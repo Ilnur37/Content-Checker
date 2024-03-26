@@ -10,8 +10,7 @@ app:
   supported:
     stackoverflow: stackoverflow.com
     github: github.com
-  database-access-type: jdbc
-
+  database-access-type: jpa
 
 springdoc.swagger-ui.path: /swagger-ui.html
 
@@ -25,6 +24,12 @@ spring:
     username: ${USERNAME_DB}
     password: ${PASSWORD_DB}
     driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: 8080

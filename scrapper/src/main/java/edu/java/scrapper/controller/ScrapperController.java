@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +28,7 @@ import static edu.java.scrapper.controller.ScrapperController.SCRAPPER_MAPPING;
 
 @RestController
 @RequestMapping(SCRAPPER_MAPPING)
+@RequiredArgsConstructor
 public class ScrapperController {
     public static final String TG_CHAT_ID_MAPPING = "/tg-chat/{id}";
     public static final String LINK_MAPPING = "/links";
@@ -35,12 +36,6 @@ public class ScrapperController {
 
     private final ChatService chatService;
     private final LinkService linkService;
-
-    @Autowired
-    public ScrapperController(ChatService chatService, LinkService linkService) {
-        this.chatService = chatService;
-        this.linkService = linkService;
-    }
 
     @Operation(summary = "Зарегистрировать чат", description = "Created")
     @ApiResponse(responseCode = "201", description = "Чат зарегистрирован")

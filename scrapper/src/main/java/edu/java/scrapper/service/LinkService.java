@@ -8,6 +8,7 @@ import edu.java.models.dto.response.ListLinksResponse;
 public interface LinkService {
     String EX_CHAT = "tg_chat_id = ";
     String EX_LINK = "url = ";
+    String EMPTY_STRING = "";
 
     ListLinksResponse getAll(long tgChatId);
 

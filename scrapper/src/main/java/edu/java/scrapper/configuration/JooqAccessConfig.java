@@ -33,12 +33,12 @@ public class JooqAccessConfig {
     }
 
     @Bean
-    public JooqChatService createJdbcChatService(JooqChatDao jooqChatDao) {
+    public JooqChatService jooqChatService(JooqChatDao jooqChatDao) {
         return new JooqChatService(jooqChatDao);
     }
 
     @Bean
-    public JooqLinkService createJdbcLinkService(
+    public JooqLinkService jooqLinkService(
         JooqChatDao chatDao,
         JooqLinkDao linkDao,
         JooqChatLinkDao chatLinkDao,

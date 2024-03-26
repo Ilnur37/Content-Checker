@@ -2,7 +2,6 @@ package edu.java.scrapper.service;
 
 import edu.java.models.exception.ChatIdNotFoundException;
 import edu.java.scrapper.client.BotClient;
-import edu.java.scrapper.domain.ChatDao;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BotService {
     private final BotClient botClient;
-    private final ChatDao chatDao;
+    private final ChatService chatService;
 
     public void sendUpdate(long id, String url, String description, List<Long> tgChatIds) {
         try {
@@ -36,6 +35,6 @@ public class BotService {
             } catch (NumberFormatException ignored) {
             }
         }
-        badIds.forEach(chatDao::delete);
+        badIds.forEach(chatService::unregister);
     }
 }

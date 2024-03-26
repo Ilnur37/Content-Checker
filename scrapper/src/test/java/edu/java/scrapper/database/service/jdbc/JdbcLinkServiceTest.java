@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JdbcLinkServiceTest extends JdbcIntegrationTest {
 
     @Test
-    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Получить все ссылки пользователя")
     void getAll() {
@@ -38,8 +38,8 @@ public class JdbcLinkServiceTest extends JdbcIntegrationTest {
     }
 
     @Test
-    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Получить все ссылки пользователя, неверный chatId")
     void getAllWhenChatIdNotFound() {
@@ -76,8 +76,8 @@ public class JdbcLinkServiceTest extends JdbcIntegrationTest {
     }
 
     @Test
-    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Добавить ссылку, повторное добавление")
     void addWhenReAddLink() {
@@ -88,8 +88,8 @@ public class JdbcLinkServiceTest extends JdbcIntegrationTest {
     }
 
     @Test
-    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowLink.sql")
+    @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     @DisplayName("Удалить ссылку, отслеживаемую одним чатом (каскадное удаление)")
     void removeWhenOneChatTrack() {
@@ -105,14 +105,14 @@ public class JdbcLinkServiceTest extends JdbcIntegrationTest {
     }
 
     @Test
+    @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertOneRowChat.sql")
     @Sql(statements = "INSERT INTO chat(id, tg_chat_id, created_at) OVERRIDING SYSTEM VALUE\n" +
-        "VALUES (10, 10, CURRENT_TIMESTAMP)\n" +
+        "VALUES (100, 100, CURRENT_TIMESTAMP)\n" +
         "ON CONFLICT DO NOTHING;")
-    @Sql(value = "/sql/insertOneRowLink.sql")
     @Sql(value = "/sql/insertOneRowChatLink.sql")
     @Sql(statements = "INSERT INTO chat_link(id, chat_id, link_id) OVERRIDING SYSTEM VALUE\n" +
-        "VALUES (2, 10, 1)\n" +
+        "VALUES (2, 100, 10)\n" +
         "ON CONFLICT DO NOTHING;")
     @DisplayName("Удалить ссылку, отслеживаемую несколькими чатами")
     void removeWhenManyChatsTrack() {

@@ -23,7 +23,7 @@ public class BotControllerTest {
     private final String defaultDescription = "aa";
     private final List<Long> defaultList = List.of(1L, 2L);
 
-    @Autowired
+    @Autowired          //без @Autowired не запускается (org.junit.jupiter.api.extension.ParameterResolutionException: No ParameterResolver registered for parameter [edu.java.bot.controller.BotController botController] in constructor [public edu.java.bot.api.BotControllerTest(edu.java.bot.controller.BotController)].)
     public BotControllerTest(BotController botController) {
         webTestClient = WebTestClient.bindToController(botController).build();
     }

@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class JooqLinkService implements LinkService {
-    private static final String EMPTY_STRING = "";
 
     private final JooqChatDao chatDao;
     private final JooqLinkDao linkDao;
